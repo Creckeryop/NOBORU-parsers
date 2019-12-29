@@ -28,7 +28,7 @@ function ReadManga:getChapters (manga)
 	for link, name in file:gmatch("<td class%=.-<a href%=\""..manga.link.."(/vol%S-)\".->(.-)</a>") do
 		local chapter = {name = name:gsub("%s+"," "), link = link, pages = {}}
 		list[#list + 1] = chapter
-		Console.addLine("got chapter\""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_RED)
+		Console.addLine(chapter.name, LUA_COLOR_RED)
 	end
 	return list
 end
