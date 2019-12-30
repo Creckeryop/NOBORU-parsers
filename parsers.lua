@@ -53,10 +53,10 @@ function ReadManga:getChapters (manga)
 end
 
 function ReadManga:getPagesCount (chapter)
-	Console.addLine(chapter.manga.link..chapter.link)
-	Net.downloadFile ("http://readmanga.me"..chapter.manga.link..chapter.link.."#","ux0:data/vsKoob/lol.php")
-	--[[for count in file:gmatch ("<span class=\"pages-count\">(.-)</span>") do
-		return count
-	end]]
+	local file = Net.downloadString ("http://readmanga.me"..chapter.manga.link..chapter.link.."#")
+	local pages
+	for text in file:gmatch ("rm_h.init(%(.-)%);") do
+		return load ("return #"..text:gsub("[","{"):gsub("]","}"))()
+	end
 	return 0
 end
