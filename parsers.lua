@@ -41,5 +41,5 @@ function ReadManga:getChapters (manga)
 		list[#list + 1] = chapter
 		Console.addLine("Parser: Got chapter \""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_GREEN)
 	end
-	return list
+	return TableReverse(list)
 end
