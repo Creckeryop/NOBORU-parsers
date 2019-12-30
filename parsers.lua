@@ -53,7 +53,7 @@ function ReadManga:getChapters (manga)
 end
 
 function ReadManga:getPagesCount (chapter)
-	Console.addLine ("http://readmanga.me"..chapter.manga.link..chapter.link.."#")
+	Console.addLine(chapter.manga.link..chapter.link)
 	Net.downloadFile ("http://readmanga.me"..chapter.manga.link..chapter.link.."#","ux0:data\vsKoob\lol.php")
 	--[[for count in file:gmatch ("<span class=\"pages-count\">(.-)</span>") do
 		return count
