@@ -54,8 +54,10 @@ end
 
 function ReadManga:getPagesCount (chapter)
 	local file = Net.downloadString ("http://readmanga.me"..chapter.manga.link..chapter.link.."#")
-	for text in file:gmatch ("rm_h.init%((.-)%);") do
-		return load ("return #"..text:gsub("%[","{"):gsub("%]","}"))()
+	local text = file:match ("rm_h.init%((.-%]%])%")
+	if text~=nil then
+		return load ("return #"..:gsub("%[","{"):gsub("%]","}"))()
+	else
+		return 0
 	end
-	return 0
 end
