@@ -6,7 +6,6 @@ function MangaReader:getManga (i, table, index)
 	while file.string == nil do
 		coroutine.yield()
 	end
-    table[index] = {}
 	for img_link, link, name in file.string:gmatch ("image:url%('(%S-)'.-<div class=\"manga_name\">.-<a href=\"(%S-)\">(.-)</a>") do
         table[index][#table[index] + 1] = Manga:new (name, link, img_link, self)
 		coroutine.yield()
@@ -24,12 +23,22 @@ function MangaReader:getChapters (manga)
 	return list
 end
 
-function MangaReader:getPagesCount (chapter)
-	local file = Net.downloadString ("https://www.mangareader.net"..chapter.manga.link..chapter.link.."#")
-	for count in file:gmatch ("\" of (.-)\"") do
-		return count
+function MangaReader:getChapterInfo (chapter, index)
+	local file = {}
+	Net.downloadStringAsync ("https://www.mangareader.net"..chapter.manga.link..chapter.link.."#",file,'string')
+	while file.string == nil do
+		coroutine.yield()
 	end
-	return 0
+	local count = file.string:match ("\" of (.-)\"")
+	for i = 1, count do
+		file = {}
+		Net.downloadStringAsync ("https://www.mangareader.net"..chapter.manga.link..chapter.link.."/"..i,file,'string')
+		while file.string == nil do
+			coroutine.yield()
+		end
+		chapter[index][i] = file.string:match ("id=\"img\".-src=\"(.-)\"")
+		Console.addLine("Got "..chapter[index][i])
+	end
 end
 
 ReadManga = Parser:new ("ReadManga", "https://readmanga.me", "RUS")
@@ -40,10 +49,9 @@ function ReadManga:getManga (i, table, index)
 	while file.string == nil do
 		coroutine.yield()
 	end
-    table[index] = {}
-	for link, img_link, name in file.strin:gmatch ("<a href=\"(/%S-)\" class=\"non%-hover\".-original='(%S-)' title='(.-)'") do
+	for link, img_link, name in file.string:gmatch ("<a href=\"(/%S-)\" class=\"non%-hover\".-original='(%S-)' title='(.-)'") do
 		if link:match ("^/") then
-			list[#list + 1] = Manga:new (name, link, img_link, self)
+			table[index][#table[index] + 1] = Manga:new (name, link, img_link, self)
 		end
 		coroutine.yield()
 	end
@@ -55,18 +63,22 @@ function ReadManga:getChapters (manga)
 	for link, name in file:gmatch ("<td class%=.-<a href%=\""..manga.link.."(/vol%S-)\".->(.-)</a>") do
 		local chapter = {name = name:gsub ("%s+"," "), link = link, pages = {}, manga = manga}
 		list[#list + 1] = chapter
-		--Console.addLine ("Parser: Got chapter \""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_GREEN)
 	end
 	return TableReverse (list)
 end
 
-function ReadManga:getPagesCount (chapter)
-	local file = Net.downloadString ("http://readmanga.me"..chapter.manga.link..chapter.link.."#")
-	local text = file:match ("rm_h.init%((.-%]%])")
-	if text~=nil then
-		chapter.pages = load ("return "..text:gsub("%[","{"):gsub("%]","}"))()
-		return #chapter.pages
-	else
-		return 0
+function ReadManga:getChapterInfo (chapter, index)
+	local file = {}
+	Net.downloadStringAsync ("http://readmanga.me"..chapter.manga.link..chapter.link.."#", file, 'string')
+	while file.string == nil do
+		coroutine.yield()
+	end
+	local text = file.string:match ("rm_h.init%((.-%]%])")
+	if text ~= nil then
+		chapter[index] = load ("return "..text:gsub("%[","{"):gsub("%]","}"))()
+		for i = 1, #chapter[index] do
+			chapter[index][i] = chapter[index][2]..chapter[index][3]
+			Console.addLine("Got "..chapter[index][i])
+		end
 	end
 end
