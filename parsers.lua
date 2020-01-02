@@ -15,7 +15,7 @@ end
 function MangaReader:getChapters (manga)
 	local file = Net.downloadString ("https://www.mangareader.net"..manga.link)
 	local list = {}
-	for link, name, subName in file:gmatch ("<td>.-<a href%=\""..manga.link.."(/%S-)\">(.-)</a>.-\"(.-)\"") do
+	for link, name, subName in file:gmatch ("<td>.-<a href%=\""..manga.link.."(/%S-)\">(.-)</a>(.-)</td>") do
 		local chapter = {name = name..subName, link = link, pages = {}, manga = manga}
 		list[#list + 1] = chapter
 		Console.addLine ("Parser: Got chapter \""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_GREEN)
