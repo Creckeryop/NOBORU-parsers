@@ -18,7 +18,7 @@ function MangaReader:getChapters (manga)
 	for link, name, subName in file:gmatch ("<td>.-<a href%=\""..manga.link.."(/%S-)\">(.-)</a>.-\"(.-)") do
 		local chapter = {name = name..subName, link = link, pages = {}, manga = manga}
 		list[#list + 1] = chapter
-		--Console.addLine ("Parser: Got chapter \""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_GREEN)
+		Console.addLine ("Parser: Got chapter \""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_GREEN)
 	end
 	return list
 end
