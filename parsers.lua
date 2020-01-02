@@ -1,12 +1,16 @@
 MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG")
 
-function MangaReader:getManga (i)
-    local file = Net.downloadString ('https://www.mangareader.net/popular/'..((i - 1) * 30))
-    local list = {}
-	for img_link, link, name in file:gmatch ("image:url%('(%S-)'.-<div class=\"manga_name\">.-<a href=\"(%S-)\">(.-)</a>") do
-        list[#list + 1] = Manga:new (name, link, img_link, self)
+function MangaReader:getManga (i, table, index)
+	local file = {}
+    Net.downloadStringAsync ('https://www.mangareader.net/popular/'..((i - 1) * 30), file, 'string')
+	while file.string == nil do
+		coroutine.yield()
 	end
-	return list
+    table[index] = {}
+	for img_link, link, name in file.string:gmatch ("image:url%('(%S-)'.-<div class=\"manga_name\">.-<a href=\"(%S-)\">(.-)</a>") do
+        table[index][#table[index] + 1] = Manga:new (name, link, img_link, self)
+		coroutine.yield()
+	end
 end
 
 function MangaReader:getChapters (manga)
@@ -30,15 +34,19 @@ end
 
 ReadManga = Parser:new ("ReadManga", "https://readmanga.me", "RUS")
 
-function ReadManga:getManga (i)
-	local file = Net.downloadString ("http://readmanga.me/list?sortType=rate&offset="..((i - 1) * 70))
-	local list = {}
-	for link, img_link, name in file:gmatch ("<a href=\"(/%S-)\" class=\"non%-hover\".-original='(%S-)' title='(.-)'") do
+function ReadManga:getManga (i, table, index)
+	local file = {}
+	Net.downloadStringAsync ("http://readmanga.me/list?sortType=rate&offset="..((i - 1) * 70), file, 'string')
+	while file.string == nil do
+		coroutine.yield()
+	end
+    table[index] = {}
+	for link, img_link, name in file.strin:gmatch ("<a href=\"(/%S-)\" class=\"non%-hover\".-original='(%S-)' title='(.-)'") do
 		if link:match ("^/") then
 			list[#list + 1] = Manga:new (name, link, img_link, self)
 		end
+		coroutine.yield()
 	end
-	return list
 end
 
 function ReadManga:getChapters (manga)
