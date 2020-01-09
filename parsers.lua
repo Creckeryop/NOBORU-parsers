@@ -43,6 +43,17 @@ function MangaReader:getChapterInfo(chapter, index)
 	end
 end
 
+function MangaReader:getMangaFromUrl(url)
+	local file = {}
+	Net.downloadStringAsync("https://www.mangareader.net" .. url, file, "string")
+	while file.string == nil do
+		coroutine.yield()
+	end
+	local name = file.string:match('aname">(.-)<')
+	local img_link = file.string:match('mangaimg">.-src%="(.-)"')
+	return Manga:new(name, url, img_link, self)
+end
+
 ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", 2)
 
 function ReadManga:getManga(i, table, index)
@@ -87,6 +98,17 @@ function ReadManga:getChapterInfo(chapter, index)
 	end
 end
 
+function ReadManga:getMangaFromUrl(url)
+	local file = {}
+	Net.downloadStringAsync("http://www.readmanga.me" .. url, file, "string")
+	while file.string == nil do
+		coroutine.yield()
+	end
+	local name = file.string:match("<span class%='name'>(.-)</span>")
+	local img_link = file.string:match('<img class="" src%="(.-)" alt')
+	return Manga:new(name, url, img_link, self)
+end
+
 MintManga = Parser:new("MintManga", "https://mintmanga.live", "RUS", 3)
 
 function MintManga:getManga(i, table, index)
@@ -129,4 +151,15 @@ function MintManga:getChapterInfo(chapter, index)
 			chapter[index][i] = list[i][2] .. list[i][3]
 		end
 	end
+end
+
+function MintManga:getMangaFromUrl(url)
+	local file = {}
+	Net.downloadStringAsync("http://www.mintmanga.live" .. url, file, "string")
+	while file.string == nil do
+		coroutine.yield()
+	end
+	local name = file.string:match("<span class%='name'>(.-)</span>")
+	local img_link = file.string:match('<img class="" src%="(.-)" alt')
+	return Manga:new(name, url, img_link, self)
 end
