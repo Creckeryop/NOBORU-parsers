@@ -1,4 +1,4 @@
-MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG")
+MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", 1)
 
 function MangaReader:getManga(i, table, index)
 	local file = {}
@@ -43,7 +43,7 @@ function MangaReader:getChapterInfo(chapter, index)
 	end
 end
 
-ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS")
+ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", 2)
 
 function ReadManga:getManga(i, table, index)
 	local file = {}
@@ -87,7 +87,7 @@ function ReadManga:getChapterInfo(chapter, index)
 	end
 end
 
-MintManga = Parser:new("MintManga", "https://mintmanga.live", "RUS")
+MintManga = Parser:new("MintManga", "https://mintmanga.live", "RUS", 3)
 
 function MintManga:getManga(i, table, index)
 	local file = {}
