@@ -106,7 +106,7 @@ function ReadManga:getMangaFromUrl(url)
 		coroutine.yield(false)
 	end
 	local name = file.string:match("<span class%='name'>(.-)</span>")
-	local img_link = file.string:match('<img class="" src%="(.-)" alt')
+	local img_link = file.string:match('<img class="" src%="(.-)"')
 	return Manga:new(name, url, img_link, self)
 end
 
@@ -161,7 +161,7 @@ function MintManga:getMangaFromUrl(url)
 		coroutine.yield(false)
 	end
 	local name = file.string:match("<span class%='name'>(.-)</span>")
-	local img_link = file.string:match('<img class="" src%="(.-)" alt')
+	local img_link = file.string:match('<img class="" src%="(.-)"')
 	return Manga:new(name, url, img_link, self)
 end
 
