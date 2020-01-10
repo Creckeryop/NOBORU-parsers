@@ -164,3 +164,60 @@ function MintManga:getMangaFromUrl(url)
 	local img_link = file.string:match('<img class="" src%="(.-)" alt')
 	return Manga:new(name, url, img_link, self)
 end
+
+MangaPanda = Parser:new("MangaPanda", "https://www.mangapanda.com", "ENG", 4)
+
+function MangaPanda:getManga(i, table, index)
+	local file = {}
+	Net.downloadStringAsync("https://www.mangapanda.com/popular/" .. ((i - 1) * 30), file, "string")
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	for img_link, link, name in file.string:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
+		table[index][#table[index] + 1] = Manga:new(name, link, img_link, self)
+		coroutine.yield(true)
+	end
+end
+
+function MangaPanda:getChapters(manga, index)
+	local file = {}
+	Net.downloadStringAsync("https://www.mangapanda.com" .. manga.link, file, "string")
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	file.string = file.string:match('id="chapterlist"(.+)$') or ""
+	for link, name, subName in file.string:gmatch('<td>.-<a href%="/.-(/%S-)">(.-)</a>(.-)</td>') do
+		local chapter = {name = name .. subName, link = link, pages = {}, manga = manga}
+		manga[index][#manga[index] + 1] = chapter
+		--Console.addLine ("Parser: Got chapter \""..chapter.name.."\" ("..chapter.link..")", LUA_COLOR_GREEN)
+	end
+end
+
+function MangaPanda:getChapterInfo(chapter, index)
+	local file = {}
+	Net.downloadStringAsync("https://www.mangapanda.com" .. chapter.manga.link .. chapter.link .. "#", file, "string")
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local count = file.string:match(" of (.-)<")
+	for i = 1, count do
+		file = {}
+		Net.downloadStringAsync("https://www.mangapanda.com" .. chapter.manga.link .. chapter.link .. "/" .. i, file, "string")
+		while file.string == nil do
+			coroutine.yield(false)
+		end
+		chapter[index][i] = file.string:match('id="img".-src="(.-)"')
+		coroutine.yield(true)
+	end
+end
+
+function MangaPanda:getMangaFromUrl(url)
+	local file = {}
+	Net.downloadStringAsync("https://www.mangapanda.com" .. url, file, "string")
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local name = file.string:match('aname">(.-)<')
+	local img_link = file.string:match('mangaimg">.-src%="(.-)"')
+	return Manga:new(name, url, img_link, self)
+end
