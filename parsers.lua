@@ -74,6 +74,7 @@ ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", 2)
 function ReadManga:getManga(page, table)
 	local file = {}
 	threads.DownloadStringAsync(self.Link.."/list?sortType=rate&offset=" .. ((page - 1) * 70), file, "string", true)
+	--threads.DownloadStringAsync(self.Link.."/search", file, "string", true, POST_METHOD, "q=naruto&offset="..((page-1)*50))
 	while file.string == nil do
 		coroutine.yield(false)
 	end
