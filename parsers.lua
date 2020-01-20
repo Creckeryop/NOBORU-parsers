@@ -150,3 +150,105 @@ end
 
 MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", 3)
 MangaPanda = MangaReader:new("MangaPanda", "https://www.mangapanda.com", "ENG", 4)
+NineHentai = Parser:new("NineHentai", "https://9hentai.com","DIF",5)
+NineHentai.query = [[
+	{
+		"search":{
+			"text":"",
+			"page":%s,
+			"sort":0,
+			"pages":{
+				"range":[0,100000]
+			},
+			"tag":{
+				"text":"",
+				"type":1,
+				"tags":[],
+				"items":{
+					"included":[],
+					"excluded":[]
+				}
+			}
+		}
+	}
+]]
+function NineHentai:getManga(page, table)
+	local file = {}
+	threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,page - 1), JSON)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for id, title, count, link in file.string:gmatch('"id":(%d-),"title":"(.-)",.-"total_page":(.-),.-"image_server":"(.-)"') do
+		local server = link:gsub("\\/","/")..id.."/"
+		local manga = CreateManga(title, id, server.."cover-small.jpg", self.ID, self.Link.."/g/"..id)
+		if manga then
+			manga.Count = count
+			manga.NineHentaiServer = server
+			t[#t + 1] = manga
+		end
+		coroutine.yield(true)
+	end
+end
+function NineHentai:getChapters(manga, table)
+	table[#table + 1] = {
+		Name = manga.Name,
+		Link = manga.Link,
+		Pages = {},
+		Manga = manga
+	}
+end
+function NineHentai:prepareChapter(chapter, table)
+	local t = table
+	for i = 1, chapter.Manga.Count do
+		t[i] = chapter.Manga.NineHentaiServer..i..".jpg"
+		Console.writeLine("Got "..t[i])
+	end
+end
+function NineHentai:loadChapterPage(link, table)
+	table.Link = link
+end
+
+NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", 6)
+
+function NudeMoon:getManga(page, table)
+	local file = {}
+	threads.DownloadStringAsync(self.Link.."/all_manga?rowstart=" .. ((page - 1) * 30), file, "string", true)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for Link, Name, ImageLink in file.string:gmatch("<td colspan.-<a href=\"(.-)\".-title=\"(.-)\".-src=\"(.-)\"") do 
+		local manga = CreateManga(AnsiToUtf8(Name), Link, self.Link..ImageLink, self.ID, self.Link..Link)
+		if manga then
+			t[#t + 1] = manga
+		end
+		coroutine.yield(true)
+	end
+end
+
+function NudeMoon:getChapters(manga, table)
+	table[#table + 1] = {
+		Name = manga.Name,
+		Link = manga.Link:gsub("%-%-","-online--"),
+		Pages = {},
+		Manga = manga
+	}
+end
+
+function NudeMoon:prepareChapter(chapter, table)
+	local file = {}
+	threads.DownloadStringAsync(self.Link..chapter.Link.."?page=1", file, "string", true)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for link in file.string:gmatch("images%[%d-%].src = '%.(.-)';") do
+		t[#t + 1] = self.Link .. link
+		Console.writeLine("Got "..t[#t])
+	end
+end
+
+function NudeMoon:loadChapterPage(link, table)
+	table.Link = link
+end
