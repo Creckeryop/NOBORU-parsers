@@ -2,20 +2,20 @@ MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", 1)
 
 function MangaReader:getManga(page, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link .. "/popular/" .. ((page - 1) * 30), file, "string", true)
+	Threads.DownloadStringAsync(self.Link .. "/popular/" .. ((page - 1) * 30), file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
 	local t = table
 	for ImageLink, Link, Name in file.string:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
 		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link..Link)
-		coroutine.yield(true)
+		coroutine.yield(false)
 	end
 end
 
 function MangaReader:getChapters(manga, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
+	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -28,7 +28,7 @@ end
 
 function MangaReader:prepareChapter(chapter, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link .. chapter.Manga.Link .. chapter.Link .. "#", file, "string", true)
+	Threads.DownloadStringAsync(self.Link .. chapter.Manga.Link .. chapter.Link .. "#", file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -42,7 +42,7 @@ end
 
 function MangaReader:loadChapterPage(link, table)
 	local file = {}
-	threads.DownloadStringAsync(link, file, "string", true)
+	Threads.DownloadStringAsync(link, file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -51,7 +51,7 @@ end
 
 function MangaReader:getMangaUrl(url, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link .. url, file, "string", true)
+	Threads.DownloadStringAsync(self.Link .. url, file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end

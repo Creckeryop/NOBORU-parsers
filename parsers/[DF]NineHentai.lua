@@ -26,7 +26,7 @@ NineHentai.query = [[
 
 function NineHentai:getManga(page, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,page - 1), JSON)
+	Threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,page - 1), JSON)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -39,7 +39,7 @@ function NineHentai:getManga(page, table)
 			manga.NineHentaiServer = server
 			t[#t + 1] = manga
 		end
-		coroutine.yield(true)
+		coroutine.yield(false)
 	end
 end
 

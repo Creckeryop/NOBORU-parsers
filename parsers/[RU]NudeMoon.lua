@@ -4,7 +4,7 @@ NudeMoon.NSFW = true
 
 function NudeMoon:getManga(page, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link.."/all_manga?rowstart=" .. ((page - 1) * 30), file, "string", true)
+	Threads.DownloadStringAsync(self.Link.."/all_manga?rowstart=" .. ((page - 1) * 30), file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -14,7 +14,7 @@ function NudeMoon:getManga(page, table)
 		if manga then
 			t[#t + 1] = manga
 		end
-		coroutine.yield(true)
+		coroutine.yield(false)
 	end
 end
 
@@ -29,7 +29,7 @@ end
 
 function NudeMoon:prepareChapter(chapter, table)
 	local file = {}
-	threads.DownloadStringAsync(self.Link..chapter.Link.."?page=1", file, "string", true)
+	Threads.DownloadStringAsync(self.Link..chapter.Link.."?page=1", file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
