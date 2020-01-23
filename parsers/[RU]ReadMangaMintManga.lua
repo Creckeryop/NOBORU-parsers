@@ -19,7 +19,21 @@ end
 function ReadManga:getPopularManga(page, table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link.."/list?sortType=rate&offset=" .. ((page - 1) * 70), file, "string", true)
-	--Threads.DownloadStringAsync(self.Link.."/search", file, "string", true, POST_METHOD, "q=naruto&offset="..((page-1)*50))
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for Link, ImageLink, Name in file.string:gmatch('<a href="(/%S-)" class="non%-hover".-original=\'(%S-)\' title=\'(.-)\' alt') do
+		if Link:match("^/") then
+			t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link..Link)
+		end
+		coroutine.yield(false)
+	end
+end
+
+function ReadManga:searchManga(data, page, table)
+	local file = {}
+	Threads.DownloadStringAsync(self.Link.."/search", file, "string", true, POST_METHOD, string.format("q=%s&offset=",data)..((page-1)*50))
 	while file.string == nil do
 		coroutine.yield(false)
 	end
