@@ -32,6 +32,22 @@ function MangaHub:getPopularManga(page, table)
 	end
 end
 
+function MangaHub:searchManga(data, page, table)
+	local file = {}
+	Threads.DownloadStringAsync(self.Link.."/search/"..string.format("page/%s?q=%s&order=POPULAR&genre=all",page,data), file, "string", true)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for Link, ImageLink, Name in file.string:gmatch("media%-left\">.-<a href=\"([^\"]-/manga/[^\"]-)\">.-src=\"([^\"]-)\" alt=\"(.-)\"") do
+		local manga = CreateManga(Name:gsub("&#x27;","'"), Link, ImageLink, self.ID, Link)
+		if manga then
+			t[#t + 1] = manga
+		end
+		coroutine.yield(false)
+	end
+end
+
 function MangaHub:getChapters(manga, table)
 	local file = {}
 	Threads.DownloadStringAsync(manga.Link, file, "string", true)
