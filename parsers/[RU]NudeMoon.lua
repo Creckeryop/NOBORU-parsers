@@ -44,7 +44,6 @@ function NudeMoon:searchManga(data, page, table)
 			stext[#stext+1] = c
 		end
 	end
-	stext = concat(stext):gsub("%%","%%%%")
 	Threads.DownloadStringAsync(self.Link..string.format("/search?stext=%s&rowstart=%s",stext,((page - 1) * 30)), file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)

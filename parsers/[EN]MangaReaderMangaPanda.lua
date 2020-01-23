@@ -13,6 +13,19 @@ function MangaReader:getPopularManga(page, table)
 	end
 end
 
+function MangaReader:searchManga(data, page, table)
+	local file = {}
+	Threads.DownloadStringAsync(self.Link .. string.format("/search/?w=%s&rd=&status=&order=&genre=&p=%s",data,(page - 1) * 30), file, "string", true)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for ImageLink, Link, Name in file.string:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
+		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link..Link)
+		coroutine.yield(false)
+	end
+end
+
 function MangaReader:getChapters(manga, table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
@@ -25,6 +38,7 @@ function MangaReader:getChapters(manga, table)
 		t[#t + 1] = {Name = Name .. subName, Link = Link, Pages = {}, Manga = manga}
 	end
 end
+
 
 function MangaReader:prepareChapter(chapter, table)
 	local file = {}
