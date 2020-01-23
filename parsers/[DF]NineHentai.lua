@@ -64,7 +64,7 @@ end
 
 function NineHentai:searchManga(data, page, table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,data,page - 1,0), JSON)
+	Threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,data:gsub("%%","%*"),page - 1,0), JSON)
 	while file.string == nil do
 		coroutine.yield(false)
 	end

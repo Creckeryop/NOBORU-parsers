@@ -62,7 +62,7 @@ end
 function NudeMoon:getChapters(manga, table)
 	table[#table + 1] = {
 		Name = manga.Name,
-		Link = manga.Link:gsub("%-%-","-online--"),
+		Link = manga.Link:gsub("^(/%d*)","%1-online"),
 		Pages = {},
 		Manga = manga
 	}
