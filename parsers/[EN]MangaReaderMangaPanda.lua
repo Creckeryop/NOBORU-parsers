@@ -1,6 +1,6 @@
 MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", 1)
 
-function MangaReader:getManga(page, table)
+function MangaReader:getPopularManga(page, table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link .. "/popular/" .. ((page - 1) * 30), file, "string", true)
 	while file.string == nil do

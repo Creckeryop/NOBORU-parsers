@@ -1,6 +1,22 @@
 MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", 7)
 
-function MangaHub:getManga(page, table)
+function MangaHub:getLatestManga(page, table)
+	local file = {}
+	Threads.DownloadStringAsync(self.Link.."/updates/page/" .. page, file, "string", true)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for Link, ImageLink, Name in file.string:gmatch("media%-left\">.-<a href=\"([^\"]-/manga/[^\"]-)\">.-src=\"([^\"]-)\" alt=\"(.-)\"") do
+		local manga = CreateManga(Name:gsub("&#x27;","'"), Link, ImageLink, self.ID, Link)
+		if manga then
+			t[#t + 1] = manga
+		end
+		coroutine.yield(false)
+	end
+end
+
+function MangaHub:getPopularManga(page, table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link.."/popular/page/" .. page, file, "string", true)
 	while file.string == nil do

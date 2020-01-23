@@ -7,7 +7,7 @@ NineHentai.query = [[
 		"search":{
 			"text":"",
 			"page":%s,
-			"sort":0,
+			"sort":%s,
 			"pages":{
 				"range":[0,100000]
 			},
@@ -24,9 +24,28 @@ NineHentai.query = [[
 	}
 ]]
 
-function NineHentai:getManga(page, table)
+function NineHentai:getLatestManga(page, table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,page - 1), JSON)
+	Threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,page - 1,0), JSON)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local t = table
+	for id, title, count, link in file.string:gmatch('"id":(%d-),"title":"(.-)",.-"total_page":(.-),.-"image_server":"(.-)"') do
+		local server = link:gsub("\\/","/")..id.."/"
+		local manga = CreateManga(title, id, server.."cover-small.jpg", self.ID, self.Link.."/g/"..id)
+		if manga then
+			manga.Count = count
+			manga.NineHentaiServer = server
+			t[#t + 1] = manga
+		end
+		coroutine.yield(false)
+	end
+end
+
+function NineHentai:getPopularManga(page, table)
+	local file = {}
+	Threads.DownloadStringAsync(self.Link.."/api/getBook", file, "string", true, POST_METHOD, string.format(self.query,page - 1,1), JSON)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
