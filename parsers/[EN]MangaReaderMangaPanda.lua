@@ -1,29 +1,29 @@
 MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", 1)
 
-function MangaReader:getPopularManga(page, table)
+function MangaReader:getManga(link, table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link .. "/popular/" .. ((page - 1) * 30), file, "string", true)
+	Threads.DownloadStringAsync(link, file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
 	local t = table
+	local done = true
 	for ImageLink, Link, Name in file.string:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
-		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link..Link)
+		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
+		done = false
 		coroutine.yield(false)
+	end
+	if done then
+		t.NoPages = true
 	end
 end
 
-function MangaReader:searchManga(data, page, table)
-	local file = {}
-	Threads.DownloadStringAsync(self.Link .. string.format("/search/?w=%s&rd=&status=&order=&genre=&p=%s",data,(page - 1) * 30), file, "string", true)
-	while file.string == nil do
-		coroutine.yield(false)
-	end
-	local t = table
-	for ImageLink, Link, Name in file.string:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
-		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link..Link)
-		coroutine.yield(false)
-	end
+function MangaReader:getPopularManga(page, table)
+	self:getManga(string.format("%s/popular/%s", self.Link, (page - 1) * 30), table)
+end
+
+function MangaReader:searchManga(search, page, table)
+	self:getManga(string.format("%s/search/?w=%s&rd=&status=&order=&genre=&p=%s", self.Link, search, (page - 1) * 30), table)
 end
 
 function MangaReader:getChapters(manga, table)
@@ -39,7 +39,6 @@ function MangaReader:getChapters(manga, table)
 	end
 end
 
-
 function MangaReader:prepareChapter(chapter, table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link .. chapter.Manga.Link .. chapter.Link .. "#", file, "string", true)
@@ -50,7 +49,7 @@ function MangaReader:prepareChapter(chapter, table)
 	local t = table
 	for i = 1, count do
 		t[i] = self.Link .. chapter.Manga.Link .. chapter.Link .. "/" .. i
-		Console.writeLine("Got "..t[i])
+		Console.write("Got " .. t[i])
 	end
 end
 
