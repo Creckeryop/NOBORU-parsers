@@ -1,7 +1,7 @@
 ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", 2)
 
-function ReadManga:getManga(table, content)
-	local t = table
+function ReadManga:getManga(dest_table, content)
+	local t = dest_table
 	local done = true
 	for Link, ImageLink, Name in content:gmatch('<a href="(/%S-)" class="non%-hover".-original=\'(%S-)\' title=\'(.-)\' alt') do
 		if Link:match("^/") then
@@ -15,34 +15,34 @@ function ReadManga:getManga(table, content)
 	end
 end
 
-function ReadManga:getLatestManga(page, table)
+function ReadManga:getLatestManga(page, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(string.format("%s/list?sortType=updated&offset=%s", self.Link, (page - 1) * 70), file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
-	self:getManga(table, file.string)
+	self:getManga(dest_table, file.string)
 end
 
-function ReadManga:getPopularManga(page, table)
+function ReadManga:getPopularManga(page, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(string.format("%s/list?sortType=rate&offset=%s", self.Link, (page - 1) * 70), file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
-	self:getManga(table, file.string)
+	self:getManga(dest_table, file.string)
 end
 
-function ReadManga:searchManga(data, page, table)
+function ReadManga:searchManga(data, page, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(string.format("%s/search", self.Link), file, "string", true, POST_METHOD, string.format("q=%s&offset=%s", data, (page - 1) * 50))
 	while file.string == nil do
 		coroutine.yield(false)
 	end
-	self:getManga(table, file.string)
+	self:getManga(dest_table, file.string)
 end
 
-function ReadManga:getChapters(manga, table)
+function ReadManga:getChapters(manga, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
 	while file.string == nil do
@@ -58,18 +58,18 @@ function ReadManga:getChapters(manga, table)
 		}
 	end
 	for i = #t, 1, -1 do
-		table[#table + 1] = t[i]
+		dest_table[#dest_table + 1] = t[i]
 	end
 end
 
-function ReadManga:prepareChapter(chapter, table)
+function ReadManga:prepareChapter(chapter, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link .. chapter.Manga.Link .. chapter.Link .. "?mtr=1", file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
 	local text = file.string:match("rm_h.init%( %[%[(.-)%]%]")
-	local t = table
+	local t = dest_table
 	if text ~= nil then
 		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
 		for i = 1, #list do
@@ -79,8 +79,8 @@ function ReadManga:prepareChapter(chapter, table)
 	end
 end
 
-function ReadManga:loadChapterPage(link, table)
-	table.Link = link
+function ReadManga:loadChapterPage(link, dest_table)
+	dest_table.Link = link
 end
 
 MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", 3)

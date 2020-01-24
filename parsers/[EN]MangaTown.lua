@@ -1,12 +1,12 @@
 MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", 8)
 
-function MangaTown:getManga(link, table)
+function MangaTown:getManga(link, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(link, file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
-	local t = table
+	local t = dest_table
 	local done = true
 	for Link, Name, ImageLink in file.string:gmatch('cover" href="([^"]-)" title="([^"]-)".-src="([^"]-)"') do
 		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
@@ -18,19 +18,19 @@ function MangaTown:getManga(link, table)
 	end
 end
 
-function MangaTown:getPopularManga(page, table)
-	self:getManga(string.format("%s/hot/%s.htm", self.Link, page), table)
+function MangaTown:getPopularManga(page, dest_table)
+	self:getManga(string.format("%s/hot/%s.htm", self.Link, page), dest_table)
 end
 
-function MangaTown:getLatestManga(page, table)
-	self:getManga(string.format("%s/new/%s.htm", self.Link, page), table)
+function MangaTown:getLatestManga(page, dest_table)
+	self:getManga(string.format("%s/new/%s.htm", self.Link, page), dest_table)
 end
 
-function MangaTown:searchManga(search, page, table)
-	self:getManga(string.format("%s/search?page=%s&name=%s", self.Link, page, search), table)
+function MangaTown:searchManga(search, page, dest_table)
+	self:getManga(string.format("%s/search?page=%s&name=%s", self.Link, page, search), dest_table)
 end
 
-function MangaTown:getChapters(manga, table)
+function MangaTown:getChapters(manga, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
 	while file.string == nil do
@@ -46,29 +46,29 @@ function MangaTown:getChapters(manga, table)
         }
     end
     for i = #t, 1, -1 do
-        table[#table+1] = t[i]
+        dest_table[#dest_table+1] = t[i]
     end
 end
 
-function MangaTown:prepareChapter(chapter, table)
+function MangaTown:prepareChapter(chapter, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(self.Link.. chapter.Link .. "/1.html", file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
 	local count = file.string:match("total_pages = (.-);") or 0
-	local t = table
+	local t = dest_table
 	for i = 1, count do
 		t[i] = string.format("%s%s/%s.html", self.Link, chapter.Link, i)
 		Console.write("Got " .. t[i])
 	end
 end
 
-function MangaTown:loadChapterPage(link, table)
+function MangaTown:loadChapterPage(link, dest_table)
 	local file = {}
 	Threads.DownloadStringAsync(link, file, "string", true)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
-	table.Link = file.string:match('img src="//([^"]-)"')
+	dest_table.Link = file.string:match('img src="//([^"]-)"')
 end

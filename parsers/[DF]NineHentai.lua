@@ -24,7 +24,7 @@ NineHentai.query = [[
 	}
 ]]
 
-function NineHentai:getManga(mode, page, table, search)
+function NineHentai:getManga(mode, page, dest_table, search)
 	local file = {}
 	if mode == 0 then
 		Threads.DownloadStringAsync(self.Link .. "/api/getBook", file, "string", true, POST_METHOD, string.format(self.query, "", page - 1, 0), JSON)
@@ -36,7 +36,7 @@ function NineHentai:getManga(mode, page, table, search)
 	while file.string == nil do
 		coroutine.yield(false)
 	end
-	local t = table
+	local t = dest_table
 	local done = true
 	for id, title, count, link in file.string:gmatch('"id":(%d-),"title":"(.-)",.-"total_page":(.-),.-"image_server":"(.-)"') do
 		local server = link:gsub("\\/", "/") .. id .. "/"
@@ -54,20 +54,20 @@ function NineHentai:getManga(mode, page, table, search)
 	end
 end
 
-function NineHentai:getLatestManga(page, table)
-	self:getManga(0, page, table)
+function NineHentai:getLatestManga(page, dest_table)
+	self:getManga(0, page, dest_table)
 end
 
-function NineHentai:getPopularManga(page, table)
-	self:getManga(1, page, table)
+function NineHentai:getPopularManga(page, dest_table)
+	self:getManga(1, page, dest_table)
 end
 
-function NineHentai:searchManga(search, page, table)
-	self:getManga(2, page, table, search)
+function NineHentai:searchManga(search, page, dest_table)
+	self:getManga(2, page, dest_table, search)
 end
 
-function NineHentai:getChapters(manga, table)
-	table[#table + 1] = {
+function NineHentai:getChapters(manga, dest_table)
+	dest_table[#dest_table + 1] = {
 		Name = manga.Name,
 		Link = manga.Link,
 		Pages = {},
@@ -75,14 +75,14 @@ function NineHentai:getChapters(manga, table)
 	}
 end
 
-function NineHentai:prepareChapter(chapter, table)
-	local t = table
+function NineHentai:prepareChapter(chapter, dest_table)
+	local t = dest_table
 	for i = 1, chapter.Manga.Count do
 		t[i] = chapter.Manga.NineHentaiServer .. i .. ".jpg"
 		Console.write("Got " .. t[i])
 	end
 end
 
-function NineHentai:loadChapterPage(link, table)
-	table.Link = link
+function NineHentai:loadChapterPage(link, dest_table)
+	dest_table.Link = link
 end
