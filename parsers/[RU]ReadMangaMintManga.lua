@@ -83,24 +83,4 @@ function ReadManga:loadChapterPage(link, table)
 	table.Link = link
 end
 
-function ReadManga:getMangaUrl(url, table)
-	local file = {}
-	Threads.DownloadStringAsync(self.Link .. url, file, "string", true)
-	while file.string == nil do
-		coroutine.yield(false)
-	end
-	table.Name = file.string:match("<span class%='name'>(.-)</span>")
-	table.ImageLink = file.string:match('<img class="" src%="(.-)"')
-	table.Link = url
-	table.ParserID = self.ID
-	table.RawLink = self.Link .. url
-	if table.Name == nil or table.ImageLink == nil then
-		table.Name = nil
-		table.ImageLink = nil
-		table.Link = nil
-		table.ParserID = nil
-		table.RawLink = nil
-	end
-end
-
 MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", 3)
