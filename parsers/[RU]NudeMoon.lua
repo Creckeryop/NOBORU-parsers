@@ -46,12 +46,32 @@ function NudeMoon:searchManga(data, page, table)
 end
 
 function NudeMoon:getChapters(manga, table)
-	table[#table + 1] = {
-		Name = manga.Name,
-		Link = manga.Link:gsub("^(/%d*)", "%1-online"),
-		Pages = {},
-		Manga = manga
-	}
+	local file = {}
+	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
+	while file.string == nil do
+		coroutine.yield(false)
+	end
+	local link = file.string:match('"(/vse_glavy/[^"]-)"')
+	if link then
+		local t = {}
+		self:getManga(self.Link .. link, t)
+		for i = #t, 1, -1 do
+			local m = t[i]
+			table[#table + 1] = {
+				Name = m.Name,
+				Link = m.Link:gsub("^(/%d*)", "%1-online"),
+				Pages = {},
+				Manga = m
+			}
+		end
+	else
+		table[#table + 1] = {
+			Name = manga.Name,
+			Link = manga.Link:gsub("^(/%d*)", "%1-online"),
+			Pages = {},
+			Manga = manga
+		}
+	end
 end
 
 function NudeMoon:prepareChapter(chapter, table)
