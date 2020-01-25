@@ -31,7 +31,6 @@ function NudeMoon:getPopularManga(page, dest_table)
 	self:getManga(string.format("%s/all_manga?views&rowstart=%s", self.Link, (page - 1) * 30), dest_table)
 end
 
-local concat = dest_table.concat
 function NudeMoon:searchManga(data, page, dest_table)
 	local stext = {}
 	for c in it_utf8(data) do
@@ -41,7 +40,7 @@ function NudeMoon:searchManga(data, page, dest_table)
 			stext[#stext + 1] = c
 		end
 	end
-	stext = concat(stext)
+	stext = table.concat(stext)
 	self:getManga(string.format("%s/search?stext=%s&rowstart=%s", self.Link, stext, (page - 1) * 30), dest_table)
 end
 

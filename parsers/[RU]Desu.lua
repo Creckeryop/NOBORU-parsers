@@ -1,4 +1,4 @@
-Desu = Parser:new("Desu", "https://desu.me/", "RUS", 9)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", 9)
 
 function Desu:getManga(is_search, link, dest_table)
     local file = {}
