@@ -11,6 +11,7 @@ English:
 * MangaHub
 * MangaReader
 * MangaPanda
+* MangaTown
 
 Different:
 * NineHentai (NSFW)
