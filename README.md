@@ -1,6 +1,6 @@
 # MangaAppName - Parsers
 This repo is created to store parsers for my future MangaApp for PS vita
-### Supported Parsers:
+## Supported Parsers:
 Russian:
 * ReadManga
 * MintManga
@@ -14,18 +14,18 @@ English:
 * MangaTown
 * NineHentai (NSFW)
 
-### Manual Installation
+## Manual Installation
   Throw `*.lua` file to `ux0:data/Moondayo/parsers/` and launch app
 
-### Tables
+## Tables
   ```Lua
   Manga = {
 	Name,      -- string Manga name
 	Link,      -- string Link to the manga format isn't important (variable for parser)
 	ImageLink, -- string Link to jpeg/png/bmp cover of manga
 	ParserID,  -- string Parser's Unique key (used in saves)
-  RawLink,   -- string Link for App (not important)
-  Data       -- table to store manga data (for parser or other) 
+	RawLink,   -- string Link for App (not important)
+	Data       -- table to store manga data (for parser or other) 
   }
   
 
@@ -36,7 +36,7 @@ English:
 	Manga       -- table to Manga
   }
   ```
-### Parser structure
+## Parser structure
   ```Lua
   ---@param name string
   ---@param link string
