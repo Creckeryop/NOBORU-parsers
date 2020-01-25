@@ -19,6 +19,15 @@ English:
 
 ### Tables
   ```Lua
+  ---@param Name string
+  ---@param Link string
+  ---@param ImageLink string
+  ---@param ParserID string
+  ---@param RawLink string
+  ---@return Manga table
+  ---This function gives Manga table(see info about Manga table below)
+  function CreateManga(Name, Link, ImageLink, ParserID, RawLink)
+
   Manga = {
 	Name,      -- string Manga name
 	Link,      -- string Link to the manga format isn't important (variable for parser)
@@ -28,7 +37,6 @@ English:
   Data       -- table to store manga data (for parser or other) 
   }
   
-
   Chapter = {
 	Name,       -- string Chapter name
 	Link,       -- var Link to the chapter format isn't important (variable for parser)
