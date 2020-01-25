@@ -1,4 +1,4 @@
-MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", 7)
+MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN")
 
 function MangaHub:getManga(link, dest_table)
 	local file = {}

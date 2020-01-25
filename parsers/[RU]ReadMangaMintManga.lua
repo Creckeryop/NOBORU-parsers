@@ -1,4 +1,4 @@
-ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", 2)
+ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", "READMANGARU")
 
 function ReadManga:getManga(dest_table, content)
 	local t = dest_table
@@ -83,4 +83,4 @@ function ReadManga:loadChapterPage(link, dest_table)
 	dest_table.Link = link
 end
 
-MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", 3)
+MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU")

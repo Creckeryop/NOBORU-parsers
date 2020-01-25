@@ -12,19 +12,23 @@ English:
 * MangaReader
 * MangaPanda
 * MangaTown
-
-Different:
 * NineHentai (NSFW)
+
+### Manual Installation
+  Throw `*.lua` file to `ux0:data/Moondayo/parsers/` and launch app
+
 ### Tables
   ```Lua
   Manga = {
 	Name,      -- string Manga name
-	Link,      -- var Link to the manga format isn't important (variable for parser)
+	Link,      -- string Link to the manga format isn't important (variable for parser)
 	ImageLink, -- string Link to jpeg/png/bmp cover of manga
-	ParserID,  -- integer UniqueID of parser
-	RawLink    -- string Link for App (not important)
+	ParserID,  -- string Parser's Unique key (used in saves)
+  RawLink,   -- string Link for App (not important)
+  Data       -- table to store manga data (for parser or other) 
   }
   
+
   Chapter = {
 	Name,       -- string Chapter name
 	Link,       -- var Link to the chapter format isn't important (variable for parser)
@@ -37,7 +41,7 @@ Different:
   ---@param name string
   ---@param link string
   ---@param language string
-  ---@param uniqueID integer
+  ---@param uniqueID string
   ---@return Parser
   ---Creates parser
   function Parser:new(name, link, language, uniqueID)

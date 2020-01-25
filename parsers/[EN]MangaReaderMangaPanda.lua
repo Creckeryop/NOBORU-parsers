@@ -1,4 +1,4 @@
-MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", 1)
+MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", "MANGAREADEREN")
 
 function MangaReader:getManga(link, dest_table)
 	local file = {}
@@ -62,4 +62,4 @@ function MangaReader:loadChapterPage(link, dest_table)
 	dest_table.Link = file.string:match('id="img".-src="(.-)"')
 end
 
-MangaPanda = MangaReader:new("MangaPanda", "https://www.mangapanda.com", "ENG", 4)
+MangaPanda = MangaReader:new("MangaPanda", "https://www.mangapanda.com", "ENG", "MANGAPANDAEN")

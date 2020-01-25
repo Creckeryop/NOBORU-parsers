@@ -1,4 +1,4 @@
-NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", 6)
+NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU")
 
 NudeMoon.NSFW = true
 

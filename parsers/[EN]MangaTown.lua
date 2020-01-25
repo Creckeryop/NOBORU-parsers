@@ -1,4 +1,4 @@
-MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", 8)
+MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", "MANGATOWNEN")
 
 function MangaTown:getManga(link, dest_table)
 	local file = {}

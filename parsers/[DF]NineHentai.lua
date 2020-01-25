@@ -1,4 +1,4 @@
-NineHentai = Parser:new("NineHentai", "https://9hentai.com", "DIF", 5)
+NineHentai = Parser:new("NineHentai", "https://9hentai.com", "DIF", "NINEHENTAIEN")
 
 NineHentai.NSFW = true
 
@@ -42,8 +42,8 @@ function NineHentai:getManga(mode, page, dest_table, search)
 		local server = link:gsub("\\/", "/") .. id .. "/"
 		local manga = CreateManga(title, id, server .. "cover-small.jpg", self.ID, self.Link .. "/g/" .. id)
 		if manga then
-			manga.Count = count
-			manga.NineHentaiServer = server
+			manga.Data.Count = count
+			manga.Data.NineHentaiServer = server
 			t[#t + 1] = manga
 			done = false
 		end
@@ -77,8 +77,8 @@ end
 
 function NineHentai:prepareChapter(chapter, dest_table)
 	local t = dest_table
-	for i = 1, chapter.Manga.Count do
-		t[i] = chapter.Manga.NineHentaiServer .. i .. ".jpg"
+	for i = 1, chapter.Manga.Data.Count do
+		t[i] = chapter.Manga.Data.NineHentaiServer .. i .. ".jpg"
 		Console.write("Got " .. t[i])
 	end
 end
