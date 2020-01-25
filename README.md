@@ -17,18 +17,18 @@ Different:
 ### Tables
   ```Lua
   Manga = {
-    Name,      -- string Manga name
-    Link,      -- var Link to the manga format isn't important (variable for parser)
-    ImageLink, -- string Link to jpeg/png/bmp cover of manga
-    ParserID,  -- integer UniqueID of parser
-    RawLink    -- string Link for App (not important)
+	Name,      -- string Manga name
+	Link,      -- var Link to the manga format isn't important (variable for parser)
+	ImageLink, -- string Link to jpeg/png/bmp cover of manga
+	ParserID,  -- integer UniqueID of parser
+	RawLink    -- string Link for App (not important)
   }
   
   Chapter = {
-		Name,       -- string Chapter name
-		Link,       -- var Link to the chapter format isn't important (variable for parser)
-		Pages = {}, -- table (don't touch)
-		Manga       -- table to Manga
+	Name,       -- string Chapter name
+	Link,       -- var Link to the chapter format isn't important (variable for parser)
+	Pages = {}, -- table (don't touch)
+	Manga       -- table to Manga
   }
   ```
 ### Parser structure
