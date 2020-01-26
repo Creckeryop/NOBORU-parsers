@@ -1,4 +1,4 @@
-# MangaAppName - Parsers
+# NOBORU - Parsers
 This repo is created to store parsers for my future MangaApp for PS vita
 ## Supported Parsers:
 Russian:
@@ -15,7 +15,7 @@ English:
 * NineHentai (NSFW)
 
 ## Manual Installation
-  Throw `*.lua` file to `ux0:data/Moondayo/parsers/` and launch app
+  Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
 
 ## Tables
   ```Lua
