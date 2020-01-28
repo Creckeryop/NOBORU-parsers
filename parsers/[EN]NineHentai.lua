@@ -26,13 +26,23 @@ NineHentai.query = [[
 
 function NineHentai:getManga(mode, page, dest_table, search)
 	local file = {}
+	local PostData = ""
 	if mode == 0 then
-		Threads.DownloadStringAsync(self.Link .. "/api/getBook", file, "string", true, POST_METHOD, string.format(self.query, "", page - 1, 0), JSON)
+		PostData = string.format(self.query, "", page - 1, 0)
 	elseif mode == 1 then
-		Threads.DownloadStringAsync(self.Link .. "/api/getBook", file, "string", true, POST_METHOD, string.format(self.query, "", page - 1, 1), JSON)
+		PostData = string.format(self.query, "", page - 1, 1)
 	elseif mode == 2 then
-		Threads.DownloadStringAsync(self.Link .. "/api/getBook", file, "string", true, POST_METHOD, string.format(self.query, search:gsub("%%", "%*"), page - 1, 0), JSON)
+		PostData = string.format(self.query, search:gsub("%%", "%*"), page - 1, 0)
 	end
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. "/api/getBook",
+		Table = file,
+		Index = "string",
+		HttpMethod = POST_METHOD,
+		PostData = PostData,
+		ContentType = JSON
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end

@@ -2,7 +2,12 @@ Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU")
 
 function Desu:getManga(is_search, link, dest_table)
     local file = {}
-	Threads.DownloadStringAsync(link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = link,
+		Table = file,
+		Index = "string"
+	})
     while file.string == nil do
         coroutine.yield(false)
     end
@@ -42,8 +47,13 @@ function Desu:searchManga(search, page, dest_table)
 end
 
 function Desu:getChapters(manga, dest_table)
-    local file = {}
-	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
+	local file = {}
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. manga.Link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -62,8 +72,13 @@ function Desu:getChapters(manga, dest_table)
 end
 
 function Desu:prepareChapter(chapter, dest_table)
-    local file = {}
-	Threads.DownloadStringAsync(self.Link .. chapter.Link, file, "string", true)
+	local file = {}
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. chapter.Link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
     end

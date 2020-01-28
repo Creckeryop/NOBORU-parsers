@@ -17,7 +17,12 @@ end
 
 function ReadManga:getLatestManga(page, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(string.format("%s/list?sortType=updated&offset=%s", self.Link, (page - 1) * 70), file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = string.format("%s/list?sortType=updated&offset=%s", self.Link, (page - 1) * 70),
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -26,7 +31,12 @@ end
 
 function ReadManga:getPopularManga(page, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(string.format("%s/list?sortType=rate&offset=%s", self.Link, (page - 1) * 70), file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = string.format("%s/list?sortType=rate&offset=%s", self.Link, (page - 1) * 70),
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -35,7 +45,14 @@ end
 
 function ReadManga:searchManga(data, page, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(string.format("%s/search", self.Link), file, "string", true, POST_METHOD, string.format("q=%s&offset=%s", data, (page - 1) * 50))
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = string.format("%s/search", self.Link),
+		Table = file,
+		Index = "string",
+		HttpMethod = POST_METHOD,
+		PostData = string.format("q=%s&offset=%s", data, (page - 1) * 50)
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -44,7 +61,12 @@ end
 
 function ReadManga:getChapters(manga, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. manga.Link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -64,7 +86,12 @@ end
 
 function ReadManga:prepareChapter(chapter, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link .. chapter.Manga.Link .. chapter.Link .. "?mtr=1", file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. chapter.Manga.Link .. chapter.Link .. "?mtr=1",
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end

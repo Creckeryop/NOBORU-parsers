@@ -2,7 +2,12 @@ MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN")
 
 function MangaHub:getManga(link, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -35,7 +40,12 @@ end
 
 function MangaHub:getChapters(manga, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(manga.Link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = manga.Link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -59,7 +69,15 @@ MangaHub.query = [[
 
 function MangaHub:prepareChapter(chapter, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync("https://api2.mangahub.io/graphql", file, "string", true, POST_METHOD, string.format(MangaHub.query, chapter.Link:match(".-/chapter/(.-)/chapter%-([^/]+)")), JSON)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = "https://api2.mangahub.io/graphql",
+		Table = file,
+		Index = "string",
+		HttpMethod = POST_METHOD,
+		PostData = string.format(MangaHub.query, chapter.Link:match(".-/chapter/(.-)/chapter%-([^/]+)")),
+		ContentType = JSON
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end

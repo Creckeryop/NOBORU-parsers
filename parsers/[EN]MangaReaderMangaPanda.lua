@@ -2,7 +2,12 @@ MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", "M
 
 function MangaReader:getManga(link, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -28,7 +33,12 @@ end
 
 function MangaReader:getChapters(manga, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link .. manga.Link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. manga.Link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -41,7 +51,12 @@ end
 
 function MangaReader:prepareChapter(chapter, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(self.Link .. chapter.Manga.Link .. chapter.Link .. "#", file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = self.Link .. chapter.Manga.Link .. chapter.Link .. "#",
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
@@ -55,7 +70,12 @@ end
 
 function MangaReader:loadChapterPage(link, dest_table)
 	local file = {}
-	Threads.DownloadStringAsync(link, file, "string", true)
+	Threads.insertTask(file, {
+		Type = "StringRequest",
+		Link = link,
+		Table = file,
+		Index = "string"
+	})
 	while file.string == nil do
 		coroutine.yield(false)
 	end
