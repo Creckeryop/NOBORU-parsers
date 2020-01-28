@@ -64,7 +64,7 @@ function MangaTown:prepareChapter(chapter, dest_table)
 	local file = {}
 	Threads.insertTask(file, {
 		Type = "StringRequest",
-		Link = self.Link.. chapter.Link .. "/1.html",
+		Link = self.Link.. chapter.Link .. "1.html",
 		Table = file,
 		Index = "string"
 	})
@@ -74,7 +74,7 @@ function MangaTown:prepareChapter(chapter, dest_table)
 	local count = file.string:match("total_pages = (.-);") or 0
 	local t = dest_table
 	for i = 1, count do
-		t[i] = string.format("%s%s/%s.html", self.Link, chapter.Link, i)
+		t[i] = string.format("%s%s%s.html", self.Link, chapter.Link, i)
 		Console.write("Got " .. t[i])
 	end
 end
