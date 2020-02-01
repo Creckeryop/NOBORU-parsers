@@ -23,10 +23,11 @@ function ReadManga:getLatestManga(page, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	self:getManga(dest_table, file.string)
+	local content = file.string or ""
+	self:getManga(dest_table, content)
 end
 
 function ReadManga:getPopularManga(page, dest_table)
@@ -37,10 +38,11 @@ function ReadManga:getPopularManga(page, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	self:getManga(dest_table, file.string)
+	local content = file.string or ""
+	self:getManga(dest_table, content)
 end
 
 function ReadManga:searchManga(data, page, dest_table)
@@ -53,10 +55,11 @@ function ReadManga:searchManga(data, page, dest_table)
 		HttpMethod = POST_METHOD,
 		PostData = string.format("q=%s&offset=%s", data, (page - 1) * 50)
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	self:getManga(dest_table, file.string)
+	local content = file.string or ""
+	self:getManga(dest_table, content)
 end
 
 function ReadManga:getChapters(manga, dest_table)
@@ -67,11 +70,12 @@ function ReadManga:getChapters(manga, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = {}
-	for Link, Name in file.string:gmatch('<td class%=.-<a href%="/.-(/vol%S-)".->%s*(.-)</a>') do
+	for Link, Name in content:gmatch('<td class%=.-<a href%="/.-(/vol%S-)".->%s*(.-)</a>') do
 		t[#t + 1] = {
 			Name = Name:gsub("%s+", " "):gsub("<sup>.-</sup>", ""):gsub("&quot;", '"'):gsub("&amp;", "&"):gsub("&#92;", "\\"):gsub("&#39;", "'"),
 			Link = Link,
@@ -92,10 +96,11 @@ function ReadManga:prepareChapter(chapter, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	local text = file.string:match("rm_h.init%( %[%[(.-)%]%]")
+	local content = file.string or ""
+	local text = content:match("rm_h.init%( %[%[(.-)%]%]") or ""
 	local t = dest_table
 	if text ~= nil then
 		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()

@@ -8,9 +8,10 @@ function Desu:getManga(is_search, link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-    while file.string == nil do
-        coroutine.yield(false)
-    end
+	while Threads.check(file) do
+		coroutine.yield(false)
+	end
+	local content = file.string or ""
     local t = dest_table
 	local done = true
 	local pattern
@@ -19,7 +20,7 @@ function Desu:getManga(is_search, link, dest_table)
 	else
 		pattern = 'memberListItem.-<a href="(manga/%S-)".-url%(\'([^\']-)\'%);.-title="([^"]-)"'
 	end
-	for Link, ImageLink, Name  in file.string:gmatch(pattern) do
+	for Link, ImageLink, Name  in content:gmatch(pattern) do
 		local manga = CreateManga(Name, "/"..Link, self.Link .. ImageLink, self.ID, self.Link .. "/" .. Link)
 		if manga then
 			t[#t + 1] = manga
@@ -54,11 +55,12 @@ function Desu:getChapters(manga, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = {}
-	for Link, Name in file.string:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
+	for Link, Name in content:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
 		t[#t + 1] = {
 			Name = Name,
 			Link = Link,
@@ -79,12 +81,13 @@ function Desu:prepareChapter(chapter, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-    end
+	end
+	local content = file.string or ""
     local t = dest_table
-    local dir = file.string:match('dir: "\\/\\/([^"]-)",'):gsub("\\/","/") or ""
-    local images = file.string:match('images: %[%[(.-)%]%],') or ""
+    local dir = content:match('dir: "\\/\\/([^"]-)",'):gsub("\\/","/") or ""
+    local images = content:match('images: %[%[(.-)%]%],') or ""
 	for link in images:gmatch('"(.-)"') do
 		t[#t + 1] = dir .. link
 		Console.write("Got " .. t[#t])

@@ -8,12 +8,13 @@ function MangaReader:getManga(link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-	end
+    end
+    local content = file.string or ""
 	local t = dest_table
 	local done = true
-	for ImageLink, Link, Name in file.string:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
+	for ImageLink, Link, Name in content:gmatch('image:url%(\'(%S-)\'.-<div class="manga_name">.-<a href="(%S-)">(.-)</a>') do
 		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
 		done = false
 		coroutine.yield(false)
@@ -39,12 +40,13 @@ function MangaReader:getChapters(manga, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-	end
-	file.string = file.string:match('id="chapterlist"(.+)$') or ""
+    end
+	local content = file.string or ""
+	content = content:match('id="chapterlist"(.+)$') or ""
 	local t = dest_table
-	for Link, Name, subName in file.string:gmatch('chico_manga.-<a href%="/.-(/%S-)">(.-)</a>(.-)</td>') do
+	for Link, Name, subName in content:gmatch('chico_manga.-<a href%="/.-(/%S-)">(.-)</a>(.-)</td>') do
 		t[#t + 1] = {Name = Name .. subName, Link = Link, Pages = {}, Manga = manga}
 	end
 end
@@ -57,10 +59,11 @@ function MangaReader:prepareChapter(chapter, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	local count = file.string:match("</select> of (.-)<")
+	local content = file.string or ""
+	local count = content:match("</select> of (.-)<") or 0
 	local t = dest_table
 	for i = 1, count do
 		t[i] = self.Link .. chapter.Manga.Link .. chapter.Link .. "/" .. i
@@ -76,9 +79,9 @@ function MangaReader:loadChapterPage(link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-	end
+    end
 	dest_table.Link = file.string:match('id="img".-src="(.-)"')
 end
 

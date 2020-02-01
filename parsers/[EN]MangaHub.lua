@@ -8,12 +8,13 @@ function MangaHub:getManga(link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-	end
+    end
+    local content = file.string or ""
 	local t = dest_table
 	local done = true
-	for Link, ImageLink, Name in file.string:gmatch('media%-left">.-<a href="([^"]-/manga/[^"]-)">.-src="([^"]-)" alt="(.-)"') do
+	for Link, ImageLink, Name in content:gmatch('media%-left">.-<a href="([^"]-/manga/[^"]-)">.-src="([^"]-)" alt="(.-)"') do
 		local manga = CreateManga(Name:gsub("&#x27;", "'"), Link, ImageLink, self.ID, Link)
 		if manga then
 			t[#t + 1] = manga
@@ -46,11 +47,12 @@ function MangaHub:getChapters(manga, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-	end
+    end
+    local content = file.string or ""
 	local t = {}
-	for Link, Name in file.string:gmatch('<li.-<a href="([^"]-/chapter.-chapter[^"]-)".-([^>]+)</span>') do
+	for Link, Name in content:gmatch('<li.-<a href="([^"]-/chapter.-chapter[^"]-)".-([^>]+)</span>') do
 		t[#t + 1] = {
 			Name = Name,
 			Link = Link,
@@ -78,11 +80,12 @@ function MangaHub:prepareChapter(chapter, dest_table)
 		PostData = string.format(MangaHub.query, chapter.Link:match(".-/chapter/(.-)/chapter%-([^/]+)")),
 		ContentType = JSON
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
-	end
+    end
+    local content = file.string or ""
 	local t = dest_table
-	local pages = file.string:match('"pages":"{(.-)}","noAd"')
+	local pages = content:match('"pages":"{(.-)}","noAd"') or ""
 	for link in pages:gmatch(':\\"(.-)\\"') do
 		t[#t + 1] = "https://img.mghubcdn.com/file/imghub/" .. link
 		Console.write("Got " .. t[#t])

@@ -10,12 +10,13 @@ function NudeMoon:getManga(link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = dest_table
 	local done = true
-	for Link, Name, ImageLink in file.string:gmatch('<td colspan.-<a href="(.-)".-title="(.-)".-src="(.-)"') do
+	for Link, Name, ImageLink in content:gmatch('<td colspan.-<a href="(.-)".-title="(.-)".-src="(.-)"') do
 		local manga = CreateManga(AnsiToUtf8(Name), Link, self.Link .. ImageLink, self.ID, self.Link .. Link)
 		if manga then
 			t[#t + 1] = manga
@@ -57,10 +58,11 @@ function NudeMoon:getChapters(manga, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	local link = file.string:match('"(/vse_glavy/[^"]-)"')
+	local content = file.string or ""
+	local link = content:match('"(/vse_glavy/[^"]-)"')
 	if link then
 		local t = {}
 		self:getManga(self.Link .. link, t)
@@ -91,11 +93,12 @@ function NudeMoon:prepareChapter(chapter, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = dest_table
-	for link in file.string:gmatch("images%[%d-%].src = '%.(.-)';") do
+	for link in content:gmatch("images%[%d-%].src = '%.(.-)';") do
 		t[#t + 1] = self.Link .. link
 		Console.write("Got " .. t[#t])
 	end

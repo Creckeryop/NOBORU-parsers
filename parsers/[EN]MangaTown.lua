@@ -8,12 +8,13 @@ function MangaTown:getManga(link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = dest_table
 	local done = true
-	for Link, Name, ImageLink in file.string:gmatch('cover" href="([^"]-)" title="([^"]-)".-src="([^"]-)"') do
+	for Link, Name, ImageLink in content:gmatch('cover" href="([^"]-)" title="([^"]-)".-src="([^"]-)"') do
 		t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
 		done = false
 		coroutine.yield(false)
@@ -43,11 +44,12 @@ function MangaTown:getChapters(manga, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = {}
-	for Link, Name in file.string:gmatch('href="([^"]-)" name=".-">%s-(.-)%s-</a') do
+	for Link, Name in content:gmatch('href="([^"]-)" name=".-">%s-(.-)%s-</a') do
 		t[#t + 1] = {
             Name = Name,
             Link = Link,
@@ -68,10 +70,11 @@ function MangaTown:prepareChapter(chapter, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	local count = file.string:match("total_pages = (.-);") or 0
+	local content = file.string or ""
+	local count = content:match("total_pages = (.-);") or 0
 	local t = dest_table
 	for i = 1, count do
 		t[i] = string.format("%s%s%s.html", self.Link, chapter.Link, i)
@@ -87,8 +90,9 @@ function MangaTown:loadChapterPage(link, dest_table)
 		Table = file,
 		Index = "string"
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	dest_table.Link = file.string:match('img src="//([^"]-)"')
+	local content = file.string or ""
+	dest_table.Link = content:match('img src="//([^"]-)"')
 end

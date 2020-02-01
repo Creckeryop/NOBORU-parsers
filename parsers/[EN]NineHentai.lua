@@ -43,12 +43,13 @@ function NineHentai:getManga(mode, page, dest_table, search)
 		PostData = PostData,
 		ContentType = JSON
 	})
-	while file.string == nil do
+	while Threads.check(file) do
 		coroutine.yield(false)
 	end
+	local content = file.string or ""
 	local t = dest_table
 	local done = true
-	for id, title, count, link in file.string:gmatch('"id":(%d-),"title":"(.-)",.-"total_page":(.-),.-"image_server":"(.-)"') do
+	for id, title, count, link in content:gmatch('"id":(%d-),"title":"(.-)",.-"total_page":(.-),.-"image_server":"(.-)"') do
 		local server = link:gsub("\\/", "/") .. id .. "/"
 		local manga = CreateManga(title, id, server .. "cover-small.jpg", self.ID, self.Link .. "/g/" .. id)
 		if manga then
