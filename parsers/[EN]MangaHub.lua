@@ -84,7 +84,7 @@ function MangaHub:prepareChapter(chapter, dest_table)
 	local t = dest_table
 	local pages = file.string:match('"pages":"{(.-)}","noAd"')
 	for link in pages:gmatch(':\\"(.-)\\"') do
-		t[#t + 1] = "https://cdn.mangahub.io/file/imghub/" .. link
+		t[#t + 1] = "https://img.mghubcdn.com/file/imghub/" .. link
 		Console.write("Got " .. t[#t])
 	end
 end
