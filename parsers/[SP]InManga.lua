@@ -18,7 +18,7 @@ function InManga:getManga(post, dest_table)
     local t = dest_table
     local done = true
     Console.write(content)
-	for Link,  Name, ImageLink in content:gmatch('href="(/ver/manga/[^"]-)".-</em>(.-)</h4>.-data%-src="([^"]-)"') do
+	for Link,  Name, ImageLink in content:gmatch('href="(/ver/manga/[^"]-)".-</em> (.-)</h4>.-data%-src="([^"]-)"') do
         local link, id = Link:match("(.+)/(.-)$")
         local manga = CreateManga(Name, link, self.Link..ImageLink, self.ID, self.Link..Link)
         if manga then
