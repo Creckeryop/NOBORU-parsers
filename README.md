@@ -17,6 +17,7 @@ English:
 
 Spanish:
 * LeoManga
+* InManga
 
 ## Manual Installation
   Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
