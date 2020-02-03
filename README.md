@@ -12,6 +12,7 @@ English:
 * MangaReader
 * MangaPanda
 * MangaTown
+* ReadComicsOnline
 * NineHentai (NSFW)
 
 ## Manual Installation
