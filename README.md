@@ -1,6 +1,9 @@
 # NOBORU - Parsers
 This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers:
+Different:
+* MangaDex
+
 Russian:
 * ReadManga
 * MintManga
