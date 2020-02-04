@@ -130,7 +130,7 @@ function MangaDex:getChapters(manga, dest_table)
         end
     end)
     if not u8c then
-        Notification.push("Download Latest version to support \\u chars")
+        Notifications.push("Download Latest version to support \\u chars")
     end
     for k = #t, 1,-1 do
         local new_title = t[k].Title:gsub('\\"','"')
