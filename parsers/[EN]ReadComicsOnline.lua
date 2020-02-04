@@ -29,15 +29,15 @@ function ReadComicsOnline:getManga(link, dest_table)
 end
 
 function ReadComicsOnline:getLatestManga(page, dest_table)
-    self:getManga(self.Link.."/filterList?sortBy=last_release&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?sortBy=last_release&asc=false&page="..page, dest_table)
 end
 
 function ReadComicsOnline:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/filterList?sortBy=views&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dest_table)
 end
 
 function ReadComicsOnline:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&asc=false&page="..page, dest_table)
 end
 
 function ReadComicsOnline:getChapters(manga, dest_table)

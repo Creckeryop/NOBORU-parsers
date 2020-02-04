@@ -74,11 +74,11 @@ function Animeregia:getManga(link, dest_table)
 end
 
 function Animeregia:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/filterList?sortBy=views&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dest_table)
 end
 
 function Animeregia:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&asc=false&page="..page, dest_table)
 end
 
 function Animeregia:getChapters(manga, dest_table)

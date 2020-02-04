@@ -28,11 +28,11 @@ function LeoManga:getManga(link, dest_table)
 end
 
 function LeoManga:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/filterList?sortBy=views&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dest_table)
 end
 
 function LeoManga:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&page="..page, dest_table)
+    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&asc=false&page="..page, dest_table)
 end
 
 function LeoManga:getChapters(manga, dest_table)
