@@ -21,6 +21,7 @@ Spanish:
 
 Portugal:
 * Animaregia
+* UnionMangas (i don't know if it works)
 
 ## Manual Installation
   Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
