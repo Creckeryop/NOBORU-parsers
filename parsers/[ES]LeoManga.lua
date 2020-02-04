@@ -1,4 +1,4 @@
-LeoManga = Parser:new("LeoManga", "https://leomanga.me", "SPA", "LEOMANGASPA")
+LeoManga = Parser:new("LeoManga", "https://leomanga.me", "ESP", "LEOMANGASPA")
 
 function LeoManga:getManga(link, dest_table)
     local file = {}

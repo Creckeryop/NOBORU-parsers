@@ -19,7 +19,7 @@ Spanish:
 * LeoManga
 * InManga
 
-Portugal:
+Portuguese:
 * Animaregia
 * UnionMangas (i don't know if it works)
 
