@@ -118,7 +118,13 @@ function MangaDex:getChapters(manga, dest_table)
     table.sort(t, function(a, b)
         if a.Lang == b.Lang then
             local c_a, c_b = tonumber(a.Count), tonumber(b.Count)
-            return c_a and c_b and c_a > c_b
+            if c_a and c_b then
+                return c_a > c_b
+            elseif c_a then
+                return true
+            elseif c_b then
+                return false
+            end
         else
             return a.Lang > b.Lang
         end
