@@ -117,17 +117,14 @@ function MangaDex:getChapters(manga, dest_table)
     end
     table.sort(t, function(a, b)
         if a.Lang == b.Lang then
-            return tonumber(a.Count) > tonumber(b.Count)
+            local c_a, c_b = tonumber(a.Count), tonumber(b.Count)
+            return c_a and c_b and c_a > c_b
         else
             return a.Lang > b.Lang
         end
     end)
-    local u8f = u8c
-    if not u8f then
+    if not u8c then
         Notification.push("Download Latest version to support \\u chars")
-        u8f = function(x)
-            return x
-        end
     end
     for k = #t, 1,-1 do
         local new_title = t[k].Title:gsub('\\"','"')
