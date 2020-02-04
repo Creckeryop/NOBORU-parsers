@@ -23,6 +23,9 @@ Portuguese:
 * Animaregia
 * UnionMangas (i don't know if it works)
 
+French:
+* ScanFR (https://scan-fr.co/)
+
 ## Manual Installation
   Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
 
