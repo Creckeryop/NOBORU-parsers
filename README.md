@@ -24,6 +24,7 @@ Portuguese:
 * UnionMangas (i don't know if it works)
 
 French:
+* LelScanVF
 * ScanFR (https://scan-fr.co/)
 
 ## Manual Installation
