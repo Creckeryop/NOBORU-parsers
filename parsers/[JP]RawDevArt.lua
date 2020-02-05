@@ -9,7 +9,7 @@ local notify = false
 ---@return string
 ---Transfers string with unicode codes to string with unicode chars (for parser use)
 local function stringify(string)
-    if Settings.Version < 1.5 then
+    if tonumber(Settings.Version) < 1.5 then
         if not notify then
             Notifications.push("Please update app, to see fixed titles")
             notify = true
@@ -97,7 +97,7 @@ end
 
 --[[
 ---if your parser don't support search you should write this
-if Settings.Version < 1.5 then
+if tonumber(Settings.Version) < 1.5 then
     function ParserName:searchManga(search, page, dest_table)
         Notifications.push("Parser don't support search feature")
         Notifications.push("Please update App")
