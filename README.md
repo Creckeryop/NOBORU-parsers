@@ -18,6 +18,9 @@ English:
 * ReadComicsOnline
 * NineHentai (NSFW)
 
+Japan:
+* RawDevArt
+
 Spanish:
 * LeoManga
 * InManga
@@ -35,6 +38,9 @@ French:
 
 ## Manual Installation
   Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
+
+## Creating parsers
+  For understanding how to create parser you can check `parsers/[JP]RawDevArt.lua`, there all functions described and you can see here how it all works
 
 ## Tables
   ```Lua
