@@ -30,6 +30,9 @@ French:
 * LelScanVF
 * ScanFR (https://scan-fr.co/)
 
+## Cloudflare-sites
+  Parsers in this folder will work if there will be the way to bypass cloudflare with cURL or sites will remove cloudflare thing (that will never happen).
+
 ## Manual Installation
   Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
 
