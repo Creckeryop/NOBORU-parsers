@@ -7,8 +7,8 @@ Different:
 Russian:
 * ReadManga
 * MintManga
-* Nude-Moon (NSFW)
 * Desu
+* Nude-Moon (NSFW)
 
 English:
 * MangaHub
@@ -17,6 +17,7 @@ English:
 * MangaTown
 * ReadComicsOnline
 * NineHentai (NSFW)
+* HentaiCafe (NSFW)
 
 Japan:
 * RawDevArt
