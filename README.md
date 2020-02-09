@@ -16,6 +16,8 @@ English:
 * MangaPanda
 * MangaTown
 * ReadComicsOnline
+* MangaKakalot
+* MangaNelo
 * NineHentai (NSFW)
 * HentaiCafe (NSFW)
 
