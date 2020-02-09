@@ -2,22 +2,44 @@ NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU")
 
 NudeMoon.NSFW = true
 
+
+local notify = false
+
+local function stringify(string)
+    if not u8c then
+        if not notify then
+            Notifications.push("Please update app, to see fixed titles")
+            notify = true
+        end
+        return string
+    end
+    return string:gsub("&#([^;]-);", function(a)
+        local number = tonumber("0" .. a) or tonumber(a)
+        return number and u8c(number) or "&#" .. a .. ";"
+    end)
+end
+
+local function downloadContent(link)
+    local file = {}
+    Threads.insertTask(file, {
+        Type = "StringRequest",
+        Link = link,
+        Table = file,
+        Index = "string"
+    })
+    while Threads.check(file) do
+        coroutine.yield(false)
+    end
+    return file.string or ""
+end
+
+
 function NudeMoon:getManga(link, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
+	local content = downloadContent(link)
 	local t = dest_table
 	local done = true
 	for Link, Name, ImageLink in content:gmatch('<td colspan.-<a href="(.-)".-title="(.-)".-src="(.-)"') do
-		local manga = CreateManga(AnsiToUtf8(Name), Link, self.Link .. ImageLink, self.ID, self.Link .. Link)
+		local manga = CreateManga(stringify(AnsiToUtf8(Name)), Link, self.Link .. ImageLink, self.ID, self.Link .. Link)
 		if manga then
 			t[#t + 1] = manga
 			done = false
@@ -51,17 +73,7 @@ function NudeMoon:searchManga(data, page, dest_table)
 end
 
 function NudeMoon:getChapters(manga, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link .. manga.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
+	local content = downloadContent(self.Link .. manga.Link)
 	local link = content:match('"(/vse_glavy/[^"]-)"')
 	if link then
 		local t = {}
@@ -69,15 +81,15 @@ function NudeMoon:getChapters(manga, dest_table)
 		for i = #t, 1, -1 do
 			local m = t[i]
 			dest_table[#dest_table + 1] = {
-				Name = m.Name,
+				Name = stringify(m.Name),
 				Link = m.Link:gsub("^(/%d*)", "%1-online"),
 				Pages = {},
-				Manga = m
+				Manga = manga
 			}
 		end
 	else
 		dest_table[#dest_table + 1] = {
-			Name = manga.Name,
+			Name = stringify(manga.Name),
 			Link = manga.Link:gsub("^(/%d*)", "%1-online"),
 			Pages = {},
 			Manga = manga
@@ -86,17 +98,7 @@ function NudeMoon:getChapters(manga, dest_table)
 end
 
 function NudeMoon:prepareChapter(chapter, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link .. chapter.Link .. "?page=1",
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
+	local content = downloadContent(self.Link .. chapter.Link .. "?page=1")
 	local t = dest_table
 	for link in content:gmatch("images%[%d-%].src = '%.(.-)';") do
 		t[#t + 1] = self.Link .. link
