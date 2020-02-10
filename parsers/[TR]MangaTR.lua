@@ -87,7 +87,7 @@ if Settings.Version > 0.32 then
             local continue = true
             for Link, Name in content:gmatch('class="table%-bordered">.-href=\'(%S-)\'><b>(.-)<') do
                 t[#t + 1] = {
-                    Name = Name,
+                    Name = stringify(Name),
                     Link = Link,
                     Pages = {},
                     Manga = manga
@@ -103,18 +103,18 @@ if Settings.Version > 0.32 then
 
     function MangaTR:prepareChapter(chapter, dest_table)
         local content = downloadContent(self.Link.."/"..chapter.Link)
-        local max_page = 0
-        for num in content:gmatch('option value="[^"]-">(%d-)</option>') do
-            max_page = math.max(tonumber(num), max_page)
-        end
-        local t = dest_table
-        for i = 1, max_page do
-            t[#t + 1] = chapter.Link:gsub(".html","-page-"..i..".html")
+        content = content:match('class="label.-</select')
+        if content then
+            local t = dest_table
+            for link in content:gmatch('value="(%S-)"[^>]->%d') do
+                t[#t + 1] = link
+                Console.write("Got "..t[#t])
+            end
         end
     end
 
     function MangaTR:loadChapterPage(link, dest_table)
         local content = downloadContent(self.Link.."/"..link)
-        dest_table.Link = self.Link.."/"..(content:match("<img src='(%S-)' class='chapter%-img'>") or "")
+        dest_table.Link = self.Link.."/"..(content:match("<img src='([^']-)' class='chapter%-img'>"):match("%S+") or "")
     end
 end
