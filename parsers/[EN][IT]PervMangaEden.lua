@@ -75,9 +75,9 @@ end
 function MangaEdenIt:getChapters(manga, dest_table)
     local content = downloadContent(self.Link.."/api/manga/"..manga.Link):match('"chapters"(.-)"chapters_len"') or ""
     local t = {}
-    for num, title, id in content:gmatch('%[%s-(%S-),[^,%]]-,[^%]]-([^,]-),[^%]]-"([^"]-)"[^%]]-%]') do
+    for num, title, id in content:gmatch('%[%s-(%S-),[^,%]]-,([^,]-),[^%]]-"([^"]-)"[^%]]-%]') do
         t[#t + 1] = {
-            Name = num.." : "..stringify(title:match("\"(%S-)\"") or manga.Name),
+            Name = num.." : "..stringify(title:match('"([^"]-)"') or manga.Name),
             Link = id,
             Pages = {},
             Manga = manga
