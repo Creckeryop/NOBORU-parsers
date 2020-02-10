@@ -18,6 +18,7 @@ English:
 * ReadComicsOnline
 * MangaKakalot
 * MangaNelo
+* VLComic
 * NineHentai (NSFW)
 * HentaiCafe (NSFW)
 
