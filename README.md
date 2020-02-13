@@ -26,6 +26,8 @@ English:
 
 Japan:
 * RawDevArt
+* SenManga (slow)
+*
 
 Spanish:
 * LeoManga
