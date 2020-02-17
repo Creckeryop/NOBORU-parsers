@@ -1,20 +1,21 @@
 # NOBORU - Parsers
 This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers:
-Different:
+**Different:**
 * MangaDex
 
-Russian:
+**Russian:**
 * ReadManga
 * MintManga
 * Desu
 * Nude-Moon (NSFW)
 
-English:
+**English:**
 * MangaHub
 * MangaReader
 * MangaPanda
 * MangaTown
+* MangaOwl
 * ReadComicsOnline
 * MangaKakalot
 * MangaNelo
@@ -24,28 +25,27 @@ English:
 * NineHentai (NSFW)
 * HentaiCafe (NSFW)
 
-Japan:
+**Japan:**
 * RawDevArt
 * SenManga (slow)
-*
 
-Spanish:
+**Spanish:**
 * LeoManga
 * InManga
 
-Portuguese:
+**Portuguese:**
 * Animaregia
 * UnionMangas (i don't know if it works)
 
-French:
+**French:**
 * LelScanVF
 * ScanFR (https://scan-fr.co/)
 
-Turkish:
+**Turkish:**
 * Mabushimajo
 * MangaTR (0.33+)
 
-Italian:
+**Italian:**
 * MangaEden
 * PervEden (NSFW)
 
