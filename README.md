@@ -6,6 +6,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Russian:**
 * ReadManga
+* MangaPoisk
 * MintManga
 * Desu
 * Nude-Moon (NSFW)
