@@ -116,3 +116,5 @@ function ReadManga:loadChapterPage(link, dest_table)
 end
 
 MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU")
+
+SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU")
