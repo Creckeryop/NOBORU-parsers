@@ -46,7 +46,7 @@ function MangaKakalot:getManga(link, page, dest_table)
         end
         coroutine.yield(false)
     end
-    local pages = content:match("Last%((.-)%)")
+    local pages = content:match("Last%((.-)%)") or content:match("LAST%((.-)%)")
     t.NoPages = pages == nil or pages == page
 end
 
@@ -116,7 +116,7 @@ function MangaNelo:getManga(link, page, dest_table)
         end
         coroutine.yield(false)
     end
-    local pages = content:match("Last%((.-)%)")
+    local pages = content:match("Last%((.-)%)") or content:match("LAST%((.-)%)")
     t.NoPages = pages == nil or pages == page
 end
 
@@ -139,6 +139,6 @@ function MangaNelo:searchManga(search, page, dest_table)
         end
         coroutine.yield(false)
     end
-    local pages = content:match("Last%((.-)%)")
+    local pages = content:match("Last%((.-)%)") or content:match("LAST%((.-)%)")
     t.NoPages = pages == nil or pages == page
 end
