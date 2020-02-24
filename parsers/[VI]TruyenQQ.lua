@@ -72,7 +72,7 @@ if Settings.Version > 0.35 then
 	function TruyenQQ:loadChapterPage(link, dest_table)
 		dest_table.Link = {
 			Link = link:match("^(.-)\n") or "",
-			Header1 = "Referer: "..link:match("\n(.-)$") or ""
+			Header1 = "Referer: "..(link:match("\n(.-)$") or "")
 		}
 	end
 end
