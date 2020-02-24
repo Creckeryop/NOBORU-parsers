@@ -51,6 +51,9 @@ This repo is created to store parsers for NOBORU app on PS vita
 * MangaEden
 * PervEden (NSFW)
 
+**Vietnamese:**
+* TruyenQQ (0.4+)
+
 ## Cloudflare-sites
   Parsers in this folder will work if there will be the way to bypass cloudflare with cURL or sites will remove cloudflare thing (that will never happen).
 
