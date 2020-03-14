@@ -3,6 +3,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers:
 **Different:**
 * MangaDex
+* nhentai
 
 **Russian:**
 * ReadManga
@@ -37,7 +38,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Portuguese:**
 * Animaregia
-* UnionMangas (i don't know if it works)
+* UnionMangas
 
 **French:**
 * LelScanVF
