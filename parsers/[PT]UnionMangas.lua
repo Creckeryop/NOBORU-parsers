@@ -1,4 +1,4 @@
-UnionMangas = Parser:new("UnionMangas (may not work)", "https://unionleitor.top", "PRT", "UNIONMANGASPT")
+UnionMangas = Parser:new("UnionMangas", "https://unionleitor.top", "PRT", "UNIONMANGASPT")
 
 function UnionMangas:getManga(link, dest_table)
 	local file = {}
