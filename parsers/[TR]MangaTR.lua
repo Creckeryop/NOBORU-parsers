@@ -115,6 +115,11 @@ if Settings.Version > 0.32 then
 
     function MangaTR:loadChapterPage(link, dest_table)
         local content = downloadContent(self.Link.."/"..link)
-        dest_table.Link = self.Link.."/"..(content:match("<img src='([^']-)' class='chapter%-img'>"):match("%S+") or "")
+        local new_link = content:match("<img src='([^']-)' class='chapter%-img'>"):match("%S+") or ""
+        if new_link:match("^http") then
+            dest_table.Link = new_link
+        else
+            dest_table.Link = self.Link.."/"..new_link
+        end
     end
 end
