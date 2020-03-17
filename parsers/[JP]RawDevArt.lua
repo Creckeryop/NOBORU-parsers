@@ -129,8 +129,8 @@ function RawDevArt:prepareChapter(chapter, dest_table)
     local content = downloadContent(self.Link .. chapter.Link)
     local t = dest_table
     ---Parsing page image links
-    local pages = content:match("const pages = %[([^%]]-)%]") or ""
-    for link in pages:gmatch('"(%S-)"') do
+    
+    for link in content:gmatch('not%-lazy"[^>]-data%-src="([^"]-)"') do
         t[#t + 1] = link
     end
 end
