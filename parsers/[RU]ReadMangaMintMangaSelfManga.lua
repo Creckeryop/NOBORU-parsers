@@ -105,7 +105,7 @@ function ReadManga:prepareChapter(chapter, dest_table)
 	if text ~= nil then
 		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
 		for i = 1, #list do
-			t[i] = list[i][2] .. list[i][3]
+			t[i] = list[i][1] .. list[i][3]
 			Console.write("Got " .. t[i])
 		end
 	end
