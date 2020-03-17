@@ -67,7 +67,7 @@ end
 function MangaOwl:getChapters(manga, dest_table)
     local content = downloadContent(self.Link.."/single/"..manga.Link)
     local t = {}
-    for Link, Name in content:gmatch('chapter_list">.-href="(%S-)">[\n%s]-(%S[^<]-)[\n%s]-</a>') do
+    for Link, Name in content:gmatch('chapter_list">.-href="([^"]-)".-label>[\n%s]-(%S[^<]-)[\n%s]-</label>') do
         t[#t + 1] = {
 			Name = stringify(Name),
 			Link = Link,
