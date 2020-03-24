@@ -11,6 +11,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 * MintManga
 * SelfManga
 * Desu
+* NineManga
 * Nude-Moon (NSFW)
 
 **English:**
@@ -24,6 +25,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 * MangaNelo
 * VLComic
 * MangaEden
+* NineManga
 * PervEden (NSFW)
 * NineHentai (NSFW)
 * HentaiCafe (NSFW)
@@ -36,6 +38,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 * LeoManga
 * InManga
 * Submanga
+* NineManga
 
 **Portuguese:**
 * Animaregia
@@ -44,6 +47,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 **French:**
 * LelScanVF
 * ScanFR (https://scan-fr.co/)
+* NineManga
 
 **Turkish:**
 * Mabushimajo
@@ -51,6 +55,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Italian:**
 * MangaEden
+* NineManga
 * PervEden (NSFW)
 
 **Vietnamese:**
@@ -58,6 +63,12 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Polish**
 * Phoenix-Scans
+
+**German**
+* NineManga
+
+**Brazil**
+* NineManga
 
 ## Cloudflare-sites
   Parsers in this folder will work if there will be the way to bypass cloudflare with cURL or sites will remove cloudflare thing (that will never happen).
