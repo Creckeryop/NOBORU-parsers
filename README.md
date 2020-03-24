@@ -35,6 +35,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 **Spanish:**
 * LeoManga
 * InManga
+* Submanga
 
 **Portuguese:**
 * Animaregia
