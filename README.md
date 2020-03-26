@@ -112,9 +112,10 @@ This repo is created to store parsers for NOBORU app on PS vita
   ---@param link string
   ---@param language string
   ---@param uniqueID string
+  ---@param version string
   ---@return Parser
   ---Creates parser
-  function Parser:new(name, link, language, uniqueID)
+  function Parser:new(name, link, language, uniqueID, version)
   
   ---@param page integer
   ---@param dest_table table
