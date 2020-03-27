@@ -1,4 +1,4 @@
-NineHentai = Parser:new("NineHentai", "https://9hentai.com", "ENG", "NINEHENTAIEN")
+NineHentai = Parser:new("NineHentai", "https://9hentai.com", "ENG", "NINEHENTAIEN", 1)
 
 NineHentai.NSFW = true
 
@@ -23,6 +23,22 @@ NineHentai.query = [[
 		}
 	}
 ]]
+
+local notify = false
+
+local function stringify(string)
+    if not u8c then
+        if not notify then
+            Notifications.push("Please update app, to see fixed titles")
+            notify = true
+        end
+        return string
+    end
+    return string:gsub("\\u(....)", function(a)
+        local number = tonumber("0" .. a) or tonumber(a) or tonumber("0x"..a)
+		return number and u8c(number) or "\\" .. a
+    end):gsub("\\","")
+end
 
 function NineHentai:getManga(mode, page, dest_table, search)
 	local file = {}
@@ -51,7 +67,7 @@ function NineHentai:getManga(mode, page, dest_table, search)
 	local done = true
 	for id, title, count, link in content:gmatch('"id":(%d-),"title":"(.-)",.-"total_page":(.-),.-"image_server":"(.-)"') do
 		local server = link:gsub("\\/", "/") .. id .. "/"
-		local manga = CreateManga(title, id, server .. "cover-small.jpg", self.ID, self.Link .. "/g/" .. id)
+		local manga = CreateManga(stringify(title), id, server .. "cover-small.jpg", self.ID, self.Link .. "/g/" .. id)
 		if manga then
 			manga.Data.Count = count
 			manga.Data.NineHentaiServer = server
@@ -79,7 +95,7 @@ end
 
 function NineHentai:getChapters(manga, dest_table)
 	dest_table[#dest_table + 1] = {
-		Name = manga.Name,
+		Name = "Read chapter",
 		Link = manga.Link,
 		Pages = {},
 		Manga = manga
