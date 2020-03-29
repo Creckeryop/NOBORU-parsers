@@ -1,4 +1,4 @@
-ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", "READMANGARU")
+ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", "READMANGARU", 1)
 
 function ReadManga:getManga(dest_table, content)
 	local t = dest_table
@@ -100,9 +100,9 @@ function ReadManga:prepareChapter(chapter, dest_table)
 		coroutine.yield(false)
 	end
 	local content = file.string or ""
-	local text = content:match("rm_h.init%( %[%[(.-)%]%]") or ""
+	local text = content:match("rm_h.init%( %[%[(.-)%]%]")
 	local t = dest_table
-	if text ~= nil then
+	if text then
 		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
 		for i = 1, #list do
 			t[i] = list[i][1] .. list[i][3]
