@@ -1,4 +1,4 @@
-Desu = Parser:new("desu", "https://desu.me", "RUS", "DESURU", 0)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 1)
 
 function Desu:getManga(is_search, link, dest_table)
     local file = {}
@@ -89,8 +89,12 @@ function Desu:prepareChapter(chapter, dest_table)
     local dir = content:match('dir: "\\/\\/([^"]-)",'):gsub("\\/","/") or ""
     local images = content:match('images: %[%[(.-)%]%],') or ""
 	for link in images:gmatch('"(.-)"') do
-		t[#t + 1] = dir .. link
-		Console.write("Got " .. t[#t])
+		if not link:find("%.gif") then
+			t[#t + 1] = dir .. link
+			Console.write("Got " .. t[#t])
+		else
+			Console.write("Skipping " .. link)
+		end
 	end
 end
 
