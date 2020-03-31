@@ -1,21 +1,38 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX")
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 1)
 local api_manga = "/api/manga/"
 local api_chapters = "/api/chapter/"
 local Lang_codes = {
-    ["bg"] = "Balgar",
+    ["bg"] = "Bulgaria",
     ["br"] = "Brazil",
     ["ct"] = "Catalan",
     ["de"] = "German",
     ["es"] = "Spanish",
     ["fr"] = "French",
-    ["gb"] = "British",
+    ["gb"] = "English",
     ["id"] = "Indonesian",
     ["it"] = "Italian",
     ["mx"] = "Mexican",
     ["pl"] = "PL",
     ["ru"] = "Russian",
     ["sa"] = "SA",
-    ["vn"] = "VN"
+    ["vn"] = "Vietnamese"
+}
+
+local LtoL = {
+    ["bg"] = "BGR",
+    ["br"] = "BRA",
+    ["ct"] = "CAT",
+    ["de"] = "DEU",
+    ["es"] = "SPA",
+    ["fr"] = "FRA",
+    ["gb"] = "ENG",
+    ["id"] = "IND",
+    ["it"] = "ITA",
+    ["mx"] = "MEX",
+    ["pl"] = "PL",
+    ["ru"] = "RUS",
+    ["sa"] = "SA",
+    ["vn"] = "VIE"
 }
 function MangaDex:getPopularManga(page, dest_table)
     local file = {}
@@ -106,14 +123,25 @@ function MangaDex:getChapters(manga, dest_table)
     local content = file.string or ""
     local t = {}
     local i = 0
+    local prefLang = false
+    if Settings.ParserLanguage and Settings.ParserLanguage ~= "DIF" then
+        prefLang = Settings.ParserLanguage
+    end
+    local found = false
     for Id, Count, Title, Lang in content:gmatch('"(%d-)":{[^}]-"chapter":"(.-)","title":"(.-)","lang_code":"([^,]-)",.-}') do
-        t[#t + 1] = {Id = Id, Count = Count, Title = Title, Lang = Lang}
-        if i > 100 then
-            coroutine.yield(false)
-            i = 0
-        else
-            i = i + 1
+        if prefLang and LtoL[Lang] == prefLang or not prefLang then
+            t[#t + 1] = {Id = Id, Count = Count, Title = Title, Lang = Lang}
+            if i > 100 then
+                coroutine.yield(false)
+                i = 0
+            else
+                i = i + 1
+            end
         end
+        found = true
+    end
+    if found and #t == 0 and prefLang then
+        Notifications.push("No chapters for preferred Language")
     end
     table.sort(t, function(a, b)
         if a.Lang == b.Lang then
