@@ -1,4 +1,4 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 1)
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 2)
 local api_manga = "/api/manga/"
 local api_chapters = "/api/chapter/"
 local Lang_codes = {
@@ -15,7 +15,8 @@ local Lang_codes = {
     ["pl"] = "PL",
     ["ru"] = "Russian",
     ["sa"] = "SA",
-    ["vn"] = "Vietnamese"
+    ["vn"] = "Vietnamese",
+    ["tr"] = "Turkish"
 }
 
 local LtoL = {
@@ -32,7 +33,8 @@ local LtoL = {
     ["pl"] = "PL",
     ["ru"] = "RUS",
     ["sa"] = "SA",
-    ["vn"] = "VIE"
+    ["vn"] = "VIE",
+    ["tr"] = "TUR"
 }
 function MangaDex:getPopularManga(page, dest_table)
     local file = {}
