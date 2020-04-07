@@ -51,6 +51,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Turkish:**
 * Mabushimajo
+* Puzzmos
 * MangaTR (0.33+)
 
 **Italian:**
