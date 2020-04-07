@@ -35,7 +35,7 @@ local function stringify(string)
         return string
     end
     return string:gsub("\\u(....)", function(a)
-        local number = tonumber(a) or tonumber("0x"..a)
+        local number = tonumber("0x"..a)
 		return number and u8c(number) or "\\" .. a
     end):gsub("\\","")
 end
