@@ -1,4 +1,4 @@
-NineHentai = Parser:new("NineHentai", "https://9hentai.com", "ENG", "NINEHENTAIEN", 2)
+NineHentai = Parser:new("NineHentai", "https://9hentai.com", "DIF", "NINEHENTAIEN", 3)
 
 NineHentai.NSFW = true
 
