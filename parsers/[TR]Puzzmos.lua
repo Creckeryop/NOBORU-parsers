@@ -14,6 +14,8 @@ local function downloadContent(link)
     return file.string or ""
 end
 
+local notify = false
+
 local function stringify(string)
     if not u8c then
         if not notify then
