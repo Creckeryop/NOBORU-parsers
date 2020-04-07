@@ -5,6 +5,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 * MangaDex
 * nhentai (NSFW)
 * HentaiRead (NSFW)
+* NineHentai (NSFW)
 
 **Russian:**
 * ReadManga
@@ -14,7 +15,6 @@ This repo is created to store parsers for NOBORU app on PS vita
 * Desu
 * NineManga
 * Nude-Moon (NSFW)
-* NineHentai (NSFW)
 
 **English:**
 * MangaHub
