@@ -1,4 +1,4 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 1)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 2)
 
 function Desu:getManga(is_search, link, dest_table)
     local file = {}
@@ -21,7 +21,8 @@ function Desu:getManga(is_search, link, dest_table)
 		pattern = 'memberListItem.-<a href="(manga/%S-)".-url%(\'([^\']-)\'%);.-title="([^"]-)"'
 	end
 	for Link, ImageLink, Name  in content:gmatch(pattern) do
-		local manga = CreateManga(Name, "/"..Link, self.Link .. ImageLink, self.ID, self.Link .. "/" .. Link)
+		ImageLink = "https://desu.me/data/manga/covers/x225/"..(Link:match("%.([^%.]-)/?$") or "")..".jpg"
+		local manga = CreateManga(Name, "/"..Link, ImageLink, self.ID, self.Link .. "/" .. Link)
 		if manga then
 			t[#t + 1] = manga
 			if not is_search then
