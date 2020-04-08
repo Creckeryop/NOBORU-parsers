@@ -6,10 +6,11 @@ This repo is created to store parsers for NOBORU app on PS vita
 * nhentai (NSFW)
 * HentaiRead (NSFW)
 * NineHentai (NSFW)
+* HentaiShark (NSFW)
 
 **Russian:**
 * ReadManga
-* MangaPoisk
+* МангаПоиск
 * MintManga
 * SelfManga
 * Desu
