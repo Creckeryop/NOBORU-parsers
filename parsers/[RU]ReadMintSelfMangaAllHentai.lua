@@ -118,3 +118,6 @@ end
 MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU")
 
 SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU")
+
+AllHentai = ReadManga:new("AllHentai", "http://allhentai.ru", "RUS", "ALLHENTAIRU", 1)
+AllHentai.NSFW = true
