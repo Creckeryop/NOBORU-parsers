@@ -3,6 +3,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers:
 **Different:**
 * MangaDex
+* BATO.TO
 * nhentai (NSFW)
 * HentaiRead (NSFW)
 * NineHentai (NSFW)
