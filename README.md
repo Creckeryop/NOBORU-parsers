@@ -1,79 +1,34 @@
 # NOBORU - Parsers
 This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers:
-**Different:**
-* MangaDex
-* BATO.TO
-* nhentai (NSFW)
-* HentaiRead (NSFW)
-* NineHentai (NSFW)
-* HentaiShark (NSFW)
+| Different    | Russian    | English          | Japan     | Spanish   | Portuguese  | French    |
+|:------------:|:----------:|:----------------:|:---------:|:---------:|:-----------:|:---------:|
+| MangaDex*    | ReadManga  | MangaHub         | RawDevArt | LeoManga  | Animaregia  | LelScanVF |
+| Bato.to*     | МангаПоиск | MangaReader      | SenManga  | InManga   | UnionMangas | ScanFR    |
+|              | MintManga  | MangaPanda       |           | Submanga  |             | NineManga |
+|              | SelfManga  | MangaTown        |           | NineManga |             |           |
+|              | Desu       | MangaOwl         |           |           |             |           |
+|              | NineManga  | ReadComicsOnline |           |           |             |           |
+|              |            | MangaKakalot     |           |           |             |           |
+|              |            | MangaNelo        |           |           |             |           |
+|              |            | VLComic          |           |           |             |           |
+|              |            | MangaEden        |           |           |             |           |
+|              |            | NineManga        |           |           |             |           |
+| **NSFW**     | **NSFW**   | **NSFW**         | **NSFW**  | **NSFW**  | **NSFW**    | **NSFW**  |
+| nhentai      | Nude-Moon  | PervEden         |           |           |             |           |
+| HentaiRead   | AllHentai  | HentaiCafe       |           |           |             |           |
+| 9hentai      |            |                  |           |           |             |           |
+| Hentai Shark |            |                  |           |           |             |           |
 
-**Russian:**
-* ReadManga
-* МангаПоиск
-* MintManga
-* SelfManga
-* Desu
-* NineManga
-* Nude-Moon (NSFW)
-* AllHentai (NSFW)
+**Catalog works with option Preferred Language and deletes extra manga from it* 
 
-**English:**
-* MangaHub
-* MangaReader
-* MangaPanda
-* MangaTown
-* MangaOwl
-* ReadComicsOnline
-* MangaKakalot
-* MangaNelo
-* VLComic
-* MangaEden
-* NineManga
-* PervEden (NSFW)
-* HentaiCafe (NSFW)
-
-**Japan:**
-* RawDevArt
-* SenManga (slow)
-
-**Spanish:**
-* LeoManga
-* InManga
-* Submanga
-* NineManga
-
-**Portuguese:**
-* Animaregia
-* UnionMangas
-
-**French:**
-* LelScanVF
-* ScanFR (https://scan-fr.co/)
-* NineManga
-
-**Turkish:**
-* Mabushimajo
-* Puzzmos
-* MangaTR (0.33+)
-
-**Italian:**
-* MangaEden
-* NineManga
-* PervEden (NSFW)
-
-**Vietnamese:**
-* TruyenQQ (0.4+)
-
-**Polish**
-* Phoenix-Scans
-
-**German**
-* NineManga
-
-**Brazil**
-* NineManga
+| Turkish     | Italian   | Vietnamese | Polish        | German    | Brazil    |
+|:-----------:|:---------:|:----------:|:-------------:|:---------:|:---------:|
+| Mabushimajo | MangaEden | TruyenQQ   | Phoenix-Scans | NineManga | NineManga |
+| Puzzmos     | NineManga |            |               |           |           |
+| MangaTR     |           |            |               |           |           |
+| **NSFW**    | **NSFW**  | **NSFW**   | **NSFW**      | **NSFW**  | **NSFW**  |
+|             | PervEden  |            |               |           |           |
 
 ## Cloudflare-sites
   Parsers in this folder will work if there will be the way to bypass cloudflare with cURL or sites will remove cloudflare thing (that will never happen).
@@ -117,7 +72,7 @@ This repo is created to store parsers for NOBORU app on PS vita
   ---@param link string
   ---@param language string
   ---@param uniqueID string
-  ---@param version string
+  ---@param version number
   ---@return Parser
   ---Creates parser
   function Parser:new(name, link, language, uniqueID, version)
