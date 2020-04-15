@@ -1,5 +1,5 @@
 if Settings.Version > 0.35 then
-    ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA")
+    ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA",1)
 
     local pt = {
         ["&Agrave;"] = "À",
@@ -87,7 +87,7 @@ if Settings.Version > 0.35 then
     end
 
     function ESNineManga:getChapters(manga, dest_table)
-        local content = downloadContent(manga.Link)
+        local content = downloadContent(manga.Link.."?waring=1")
         local t = {}
         for Link, Name in content:gmatch('chapter_list_a" href="([^"]-)"[^>]->([^<]-)</a>') do
             t[#t + 1] = {
@@ -127,9 +127,9 @@ if Settings.Version > 0.35 then
         local content = file.string or ""
         dest_table.Link = content:match('.+img src="([^"]-)".-$'):gsub("%%","%%%%") or ""
     end
-    ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG")
-    RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS")
-    DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 1)
-    ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA")
-    BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA")
+    ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG",1)
+    RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS",1)
+    DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 2)
+    ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA",1)
+    BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA",1)
 end
