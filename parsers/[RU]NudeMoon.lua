@@ -1,4 +1,4 @@
-NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU")
+NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU",1)
 
 NudeMoon.NSFW = true
 
@@ -39,7 +39,7 @@ function NudeMoon:getManga(link, dest_table)
 	local t = dest_table
 	local done = true
 	for Link, Name, ImageLink in content:gmatch('<td colspan.-<a href="(.-)".-title="(.-)".-src="(.-)"') do
-		local manga = CreateManga(stringify(AnsiToUtf8(Name)), Link, self.Link .. ImageLink, self.ID, self.Link .. Link)
+		local manga = CreateManga(stringify(AnsiToUtf8(Name)), Link, ImageLink:find("^https") and ImageLink or (self.Link .. ImageLink), self.ID, self.Link .. Link)
 		if manga then
 			t[#t + 1] = manga
 			done = false
@@ -100,8 +100,12 @@ end
 function NudeMoon:prepareChapter(chapter, dest_table)
 	local content = downloadContent(self.Link .. chapter.Link .. "?page=1")
 	local t = dest_table
-	for link in content:gmatch("images%[%d-%].src = '%.(.-)';") do
-		t[#t + 1] = self.Link .. link
+	for link in content:gmatch("images%[%d-%].src = '(.-)';") do
+		if link:find("^https") then
+			t[#t + 1] = link
+		else
+			t[#t + 1] = self.Link .. link
+		end
 		Console.write("Got " .. t[#t])
 	end
 end
