@@ -1,4 +1,4 @@
-MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN")
+MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN",1)
 
 function MangaHub:getManga(link, dest_table)
 	local file = {}
@@ -73,7 +73,7 @@ function MangaHub:prepareChapter(chapter, dest_table)
 	local file = {}
 	Threads.insertTask(file, {
 		Type = "StringRequest",
-		Link = "https://api2.mangahub.io/graphql",
+		Link = "https://api.mghubcdn.com/graphql",
 		Table = file,
 		Index = "string",
 		HttpMethod = POST_METHOD,
