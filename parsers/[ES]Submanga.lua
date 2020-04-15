@@ -1,4 +1,4 @@
-Submanga = Parser:new("Submanga", "https://submangas.net", "ESP", "SUBMANGASPA")
+Submanga = Parser:new("Submanga", "https://submangas.net", "ESP", "SUBMANGASPA",1)
 
 local function downloadContent(link)
     local file = {}
@@ -42,7 +42,7 @@ end
 function Submanga:getChapters(manga, dest_table)
     local content = downloadContent(manga.Link)
     local t = {}
-    for Link, Name in content:gmatch("chapter%-title%-rtl\">[^<]-<a href=\"([^\"]-)\">([^<]-)</a>") do
+    for Link, Name in content:gmatch("fa fa%-eye\"></i>[^<]-<a href=\"([^\"]-)\">([^<]-)</a>") do
         t[#t + 1] = {
 			Name = Name,
 			Link = Link,
