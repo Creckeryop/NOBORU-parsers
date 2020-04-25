@@ -1,4 +1,4 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 3)
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 4)
 local api_manga = "/api/manga/"
 local api_chapters = "/api/chapter/"
 local Lang_codes = {
@@ -134,6 +134,7 @@ function MangaDex:getChapters(manga, dest_table)
     local t = {}
     local i = 0
     local prefLang = false
+    manga.Name = stringify(content:match('<span class="mx%-1">(.-)</span>') or manga.Name)
     if Settings.ParserLanguage and Settings.ParserLanguage ~= "DIF" then
         prefLang = Settings.ParserLanguage
     end
