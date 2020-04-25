@@ -1,4 +1,4 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 2)
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 3)
 local api_manga = "/api/manga/"
 local api_chapters = "/api/chapter/"
 local Lang_codes = {
@@ -36,6 +36,14 @@ local LtoL = {
     ["vn"] = "VIE",
     ["tr"] = "TUR"
 }
+
+local function stringify(string)
+    return string:gsub("&#([^;]-);", function(a)
+        local number = tonumber("0" .. a) or tonumber(a)
+        return number and u8c(number) or "&#" .. a .. ";"
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
+end
+
 function MangaDex:getPopularManga(page, dest_table)
     local file = {}
 	Threads.insertTask(file, {
@@ -51,7 +59,7 @@ function MangaDex:getPopularManga(page, dest_table)
 	local t = dest_table
     local done = true
     for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)"><img.-src="([^"]-)".-class.->([^>]-)</a>') do
-        t[#t + 1] = CreateManga(Name, Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
+        t[#t + 1] = CreateManga(stringify(Name), Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
 		done = false
 		coroutine.yield(false)
 	end
@@ -75,7 +83,7 @@ function MangaDex:getLatestManga(page, dest_table)
 	local t = dest_table
     local done = true
     for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)"><img.-src="([^"]-)".-class.->([^>]-)</a>') do
-        t[#t + 1] = CreateManga(Name, Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
+        t[#t + 1] = CreateManga(stringify(Name), Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
 		done = false
 		coroutine.yield(false)
 	end
@@ -103,7 +111,7 @@ function MangaDex:searchManga(search, page, dest_table)
     content = content:gsub("\\/","/")
     local manga_imgurl, title = content:match('"cover_url":"(.-)",.-"title":"(.-)",')
     if title then
-        local manga = CreateManga(title, search, self.Link..manga_imgurl, self.ID, self.Link .. "/title/"..search)
+        local manga = CreateManga(stringify(title), search, self.Link..manga_imgurl, self.ID, self.Link .. "/title/"..search)
         if manga then
             dest_table[#dest_table+1] = manga
         end
@@ -167,7 +175,7 @@ function MangaDex:getChapters(manga, dest_table)
         if u8c then
             new_title = new_title:gsub("\\u(....)",function(a) return u8c(tonumber(string.format("0x%s",a))) end)
         end
-        dest_table[#dest_table + 1] = {Name = "["..(Lang_codes[t[k].Lang] or t[k].Lang).."] "..t[k].Count..": "..new_title, Link = t[k].Id, Pages = {}, Manga = manga}
+        dest_table[#dest_table + 1] = {Name = stringify("["..(Lang_codes[t[k].Lang] or t[k].Lang).."] "..t[k].Count..": "..new_title), Link = t[k].Id, Pages = {}, Manga = manga}
     end
 end
 
