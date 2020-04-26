@@ -83,7 +83,7 @@ function MangaDex:searchManga(search, page, dest_table)
     local id = search:match("^id%+?:%+?(%d-)$")
     if Browser == nil or id then
         if Browser == nil and not id then
-            Notifications.push("Search isn't supported in your NOBORU version\nbut you can write and id to search type ('id:12345')", 2000)
+            Notifications.push("Search isn't supported in your NOBORU version\nbut you can write and id to search type 'id:12345'", 2000)
             dest_table.NoPages = true
         end
         if id then
