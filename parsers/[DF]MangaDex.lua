@@ -1,4 +1,4 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 4)
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 5)
 local api_manga = "/api/manga/"
 local api_chapters = "/api/chapter/"
 local Lang_codes = {
@@ -44,93 +44,85 @@ local function stringify(string)
     end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
 end
 
-function MangaDex:getPopularManga(page, dest_table)
+local function downloadContent(link)
     local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link.."/titles/7/"..page.."/",
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
+    Threads.insertTask(file, {
+        Type = "StringRequest",
+        Link = link,
+        Table = file,
+        Index = "string"
+    })
+    while Threads.check(file) do
+        coroutine.yield(false)
     end
-    local content = file.string or ""
-	local t = dest_table
-    local done = true
+    return file.string or ""
+end
+
+function MangaDex:getManga(link, dest_table)
+    local content = downloadContent(link)
+    local t = dest_table
+    t.NoPages = true
     for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)"><img.-src="([^"]-)".-class.->([^>]-)</a>') do
         t[#t + 1] = CreateManga(stringify(Name), Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
-		done = false
+        t.NoPages = false
 		coroutine.yield(false)
 	end
-	if done then
-		t.NoPages = true
-	end
+end
+
+function MangaDex:getPopularManga(page, dest_table)
+    self:getManga(self.Link.."/titles/7/"..page.."/", dest_table)
 end
 
 function MangaDex:getLatestManga(page, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link.."/titles/0/"..page.."/",
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-	local t = dest_table
-    local done = true
-    for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)"><img.-src="([^"]-)".-class.->([^>]-)</a>') do
-        t[#t + 1] = CreateManga(stringify(Name), Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
-		done = false
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
+    self:getManga(self.Link.."/titles/0/"..page.."/", dest_table)
 end
 
+local cookies = {}
+
 function MangaDex:searchManga(search, page, dest_table)
-    if tonumber(search)== nil then
-        Notifications.push("Search in this parser is unavailable\nbut you can write id (number value) of manga")
-		dest_table.NoPages = true
-    end
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link..api_manga..search,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-    content = content:gsub("\\/","/")
-    local manga_imgurl, title = content:match('"cover_url":"(.-)",.-"title":"(.-)",')
-    if title then
-        local manga = CreateManga(stringify(title), search, self.Link..manga_imgurl, self.ID, self.Link .. "/title/"..search)
-        if manga then
-            dest_table[#dest_table+1] = manga
+    local id = search:match("^id%+?:%+?(%d-)$")
+    if Browser == nil or id then
+        if Browser == nil and not id then
+            Notifications.push("Search isn't supported in your NOBORU version\nbut you can write and id to search type ('id:12345')", 2000)
+            dest_table.NoPages = true
+        end
+        if id then
+            local content = downloadContent(self.Link..api_manga..id):gsub("\\/","/")
+            local manga_imgurl, title = content:match('"cover_url":"(.-)",.-"title":"(.-)",')
+            if title and manga_imgurl then
+                dest_table[#dest_table + 1] = CreateManga(stringify(title), id, self.Link..manga_imgurl, self.ID, self.Link .. "/title/"..search)
+            end
+        end
+        dest_table.NoPages = true
+    else
+        cookies = Browser.getCookies("mangadex.org")
+        if downloadContent({
+            Link = self.Link.."/search?p=0&title=ABADBEEFISMAGIC",
+            Cookie = cookies['@'],
+            Header1 = "User-Agent: "..Browser.getUserAgent()
+        }):find('id="login_button".-id="forgot_button"') then
+            cookies = {}
+        end
+        if #cookies == 0 then
+            Browser.open(self.Link.."/login")
+            coroutine.yield(false)
+        end
+        cookies = Browser.getCookies("mangadex.org")
+        if #cookies ~= 0 then
+            Console.write(Browser.getUserAgent())
+            self:getManga({
+                Link = self.Link.."/search?p="..page.."&title="..search,
+                Cookie = cookies['@'],
+                Header1 = "User-Agent: "..Browser.getUserAgent()
+            }, dest_table)
+        else
+            dest_table.NoPages = true
         end
     end
-    dest_table.NoPages = true
 end
 
 function MangaDex:getChapters(manga, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link..api_manga..manga.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
+    local content = downloadContent(self.Link..api_manga..manga.Link)
     local t = {}
     local i = 0
     local prefLang = false
@@ -176,22 +168,17 @@ function MangaDex:getChapters(manga, dest_table)
         if u8c then
             new_title = new_title:gsub("\\u(....)",function(a) return u8c(tonumber(string.format("0x%s",a))) end)
         end
-        dest_table[#dest_table + 1] = {Name = stringify("["..(Lang_codes[t[k].Lang] or t[k].Lang).."] "..t[k].Count..": "..new_title), Link = t[k].Id, Pages = {}, Manga = manga}
+        dest_table[#dest_table + 1] = {
+            Name = stringify("["..(Lang_codes[t[k].Lang] or t[k].Lang).."] "..t[k].Count..": "..new_title),
+            Link = t[k].Id,
+            Pages = {},
+            Manga = manga
+        }
     end
 end
 
 function MangaDex:prepareChapter(chapter, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link..api_chapters..chapter.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
+    local content = downloadContent(self.Link..api_chapters..chapter.Link)
     local t = dest_table
     for hash, server, array in content:gmatch('"hash":"(.-)",.-"server":"(.-)","page_array":%[(.-)%]') do
         server = server:gsub("\\/","/")
