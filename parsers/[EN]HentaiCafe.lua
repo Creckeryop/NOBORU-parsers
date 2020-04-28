@@ -7,7 +7,7 @@ local function stringify(string)
         return string:gsub("&#([^;]-);", function(a)
             local number = tonumber("0" .. a) or tonumber(a)
             return number and u8c(number) or "&#" .. a .. ";"
-        end):gsub("&([^;]-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
+        end):gsub("&([^;]-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
     else
         return string
     end
@@ -31,22 +31,22 @@ function HentaiCafe:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch('article.-href=".-/(%d-)".-src="(%S-)".-entry%-title">.-<a href.->(.-)</a>') do
-        dt[#dt + 1] = CreateManga(stringify(Name:gsub("<[^>]->","")), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .."/hc.fyi/".. Link)
-        dt.NoPages  = false
+        dt[#dt + 1] = CreateManga(stringify(Name:gsub("<[^>]->", "")), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/hc.fyi/" .. Link)
+        dt.NoPages = false
         coroutine.yield(false)
     end
 end
 
 function HentaiCafe:getPopularManga(page, dt)
-    self:getManga(self.Link.."/page/"..page, dt)
+    self:getManga(self.Link .. "/page/" .. page, dt)
 end
 
 function HentaiCafe:searchManga(search, page, dt)
-    self:getManga(self.Link.."/page/"..page.."?s=" .. search, dt)
+    self:getManga(self.Link .. "/page/" .. page .. "?s=" .. search, dt)
 end
 
 function HentaiCafe:getChapters(manga, dt)
-    local content = downloadContent(self.Link .."/hc.fyi/".. manga.Link)
+    local content = downloadContent(self.Link .. "/hc.fyi/" .. manga.Link)
     manga.Name = stringify(content:match('<h1 class="entry-title">(.-)</h1>') or manga.Name)
     local link, name = content:match('/manga/read/(.-)"'), "Read chapter"
     if link then
@@ -60,9 +60,9 @@ function HentaiCafe:getChapters(manga, dt)
 end
 
 function HentaiCafe:prepareChapter(chapter, dt)
-    local content = downloadContent(self.Link .. "/manga/read/"..chapter.Link)
+    local content = downloadContent(self.Link .. "/manga/read/" .. chapter.Link)
     for link in content:gmatch('"url"%s?:%s?"(%S-)"') do
-        dt[#dt + 1] = link:gsub("\\/","/"):gsub("%%","%%%%")
+        dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
         Console.write("Got " .. dt[#dt])
     end
 end
