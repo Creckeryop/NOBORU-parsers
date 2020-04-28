@@ -41,7 +41,7 @@ local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)
         return number and u8c(number) or "&#" .. a .. ";"
-    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
 end
 
 local function downloadContent(link)
@@ -58,71 +58,70 @@ local function downloadContent(link)
     return file.string or ""
 end
 
-function MangaDex:getManga(link, dest_table)
+function MangaDex:getManga(link, dt)
     local content = downloadContent(link)
-    local t = dest_table
-    t.NoPages = true
+    dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)"><img.-src="([^"]-)".-class.->([^>]-)</a>') do
-        t[#t + 1] = CreateManga(stringify(Name), Link:match("/(%d-)/"), self.Link..ImageLink, self.ID, self.Link .. Link)
-        t.NoPages = false
-		coroutine.yield(false)
-	end
+        dt[#dt + 1] = CreateManga(stringify(Name), Link:match("/(%d-)/"), self.Link .. ImageLink, self.ID, self.Link .. Link)
+        dt.NoPages = false
+        coroutine.yield(false)
+    end
 end
 
-function MangaDex:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/titles/7/"..page.."/", dest_table)
+function MangaDex:getPopularManga(page, dt)
+    self:getManga(self.Link .. "/titles/7/" .. page .. "/", dt)
 end
 
-function MangaDex:getLatestManga(page, dest_table)
-    self:getManga(self.Link.."/titles/0/"..page.."/", dest_table)
+function MangaDex:getLatestManga(page, dt)
+    self:getManga(self.Link .. "/titles/0/" .. page .. "/", dt)
 end
 
 local cookies = {}
 
-function MangaDex:searchManga(search, page, dest_table)
+function MangaDex:searchManga(search, page, dt)
     local id = search:match("^id%+?:%+?(%d-)$")
     if Browser == nil or id then
         if Browser == nil and not id then
             Notifications.push("Search isn't supported in your NOBORU version\nbut you can write and id to search type 'id:12345'", 2000)
-            dest_table.NoPages = true
+            dt.NoPages = true
         end
         if id then
-            local content = downloadContent(self.Link..api_manga..id):gsub("\\/","/")
+            local content = downloadContent(self.Link .. api_manga .. id):gsub("\\/", "/")
             local manga_imgurl, title = content:match('"cover_url":"(.-)",.-"title":"(.-)",')
             if title and manga_imgurl then
-                dest_table[#dest_table + 1] = CreateManga(stringify(title), id, self.Link..manga_imgurl, self.ID, self.Link .. "/title/"..search)
+                dt[#dt + 1] = CreateManga(stringify(title), id, self.Link .. manga_imgurl, self.ID, self.Link .. "/title/" .. search)
             end
         end
-        dest_table.NoPages = true
+        dt.NoPages = true
     else
         cookies = Browser.getCookies("mangadex.org")
         if downloadContent({
-            Link = self.Link.."/search?p=0&title=ABADBEEFISMAGIC",
+            Link = self.Link .. "/search?p=0&title=ABADBEEFISMAGIC",
             Cookie = cookies['@'],
-            Header1 = "User-Agent: "..Browser.getUserAgent()
+            Header1 = "User-Agent: " .. Browser.getUserAgent()
         }):find('id="login_button".-id="forgot_button"') then
             cookies = {}
         end
         if #cookies == 0 then
-            Browser.open(self.Link.."/login")
+            Browser.open(self.Link .. "/login")
             coroutine.yield(false)
         end
         cookies = Browser.getCookies("mangadex.org")
         if #cookies ~= 0 then
             Console.write(Browser.getUserAgent())
             self:getManga({
-                Link = self.Link.."/search?p="..page.."&title="..search,
+                Link = self.Link .. "/search?p=" .. page .. "&title=" .. search,
                 Cookie = cookies['@'],
-                Header1 = "User-Agent: "..Browser.getUserAgent()
-            }, dest_table)
+                Header1 = "User-Agent: " .. Browser.getUserAgent()
+            }, dt)
         else
-            dest_table.NoPages = true
+            dt.NoPages = true
         end
     end
 end
 
-function MangaDex:getChapters(manga, dest_table)
-    local content = downloadContent(self.Link..api_manga..manga.Link)
+function MangaDex:getChapters(manga, dt)
+    local content = downloadContent(self.Link .. api_manga .. manga.Link)
     local t = {}
     local i = 0
     local prefLang = false
@@ -163,13 +162,13 @@ function MangaDex:getChapters(manga, dest_table)
     if not u8c then
         Notifications.push("Download Latest version to support \\u chars")
     end
-    for k = #t, 1,-1 do
-        local new_title = t[k].Title:gsub('\\"','"')
+    for k = #t, 1, -1 do
+        local new_title = t[k].Title:gsub('\\"', '"')
         if u8c then
-            new_title = new_title:gsub("\\u(....)",function(a) return u8c(tonumber(string.format("0x%s",a))) end)
+            new_title = new_title:gsub("\\u(....)", function(a) return u8c(tonumber(string.format("0x%s", a))) end)
         end
-        dest_table[#dest_table + 1] = {
-            Name = stringify("["..(Lang_codes[t[k].Lang] or t[k].Lang).."] "..t[k].Count..": "..new_title),
+        dt[#dt + 1] = {
+            Name = stringify("[" .. (Lang_codes[t[k].Lang] or t[k].Lang) .. "] " .. t[k].Count .. ": " .. new_title),
             Link = t[k].Id,
             Pages = {},
             Manga = manga
@@ -177,18 +176,17 @@ function MangaDex:getChapters(manga, dest_table)
     end
 end
 
-function MangaDex:prepareChapter(chapter, dest_table)
-    local content = downloadContent(self.Link..api_chapters..chapter.Link)
-    local t = dest_table
+function MangaDex:prepareChapter(chapter, dt)
+    local content = downloadContent(self.Link .. api_chapters .. chapter.Link)
     for hash, server, array in content:gmatch('"hash":"(.-)",.-"server":"(.-)","page_array":%[(.-)%]') do
-        server = server:gsub("\\/","/")
+        server = server:gsub("\\/", "/")
         for pic in array:gmatch('"(.-)"') do
-            t[#t + 1] = server..hash.."/"..pic
-            Console.write("Got " .. t[#t])
+            dt[#dt + 1] = server .. hash .. "/" .. pic
+            Console.write("Got " .. dt[#dt])
         end
     end
 end
 
-function MangaDex:loadChapterPage(link, dest_table)
-    dest_table.Link = link
+function MangaDex:loadChapterPage(link, dt)
+    dt.Link = link
 end
