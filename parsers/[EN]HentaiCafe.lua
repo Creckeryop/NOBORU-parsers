@@ -1,21 +1,16 @@
-HentaiCafe = Parser:new("HentaiCafe", "https://hentai.cafe", "ENG", "HENCAFENG")
+HentaiCafe = Parser:new("HentaiCafe", "https://hentai.cafe", "ENG", "HENCAFENG", 1)
 
 HentaiCafe.NSFW = true
 
-local notify = false
-
 local function stringify(string)
-    if not u8c then
-        if not notify then
-            Notifications.push("Please update app, to see fixed titles")
-            notify = true
-        end
+    if u8c then
+        return string:gsub("&#([^;]-);", function(a)
+            local number = tonumber("0" .. a) or tonumber(a)
+            return number and u8c(number) or "&#" .. a .. ";"
+        end):gsub("&([^;]-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
+    else
         return string
     end
-    return string:gsub("&#([^;]-);", function(a)
-        local number = tonumber("0" .. a) or tonumber(a)
-        return number and u8c(number) or "&#" .. a .. ";"
-    end)
 end
 
 local function downloadContent(link)
@@ -32,34 +27,30 @@ local function downloadContent(link)
     return file.string or ""
 end
 
-function HentaiCafe:getManga(link, dest_table)
+function HentaiCafe:getManga(link, dt)
     local content = downloadContent(link)
-    local t = dest_table
-    local done = true
-    for Link, ImageLink, Name in content:gmatch('article.-href=".-/(%d-)".-src="(%S-)".-entry%-title">.-<a href.->([^<]-)<') do
-        done = false
-        t[#t + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .."/hc.fyi/".. Link)
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch('article.-href=".-/(%d-)".-src="(%S-)".-entry%-title">.-<a href.->(.-)</a>') do
+        dt[#dt + 1] = CreateManga(stringify(Name:gsub("<[^>]->","")), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .."/hc.fyi/".. Link)
+        dt.NoPages  = false
         coroutine.yield(false)
     end
-    if done then
-        t.NoPages = true
-    end
 end
 
-function HentaiCafe:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/page/"..page, dest_table)
+function HentaiCafe:getPopularManga(page, dt)
+    self:getManga(self.Link.."/page/"..page, dt)
 end
 
-function HentaiCafe:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/page/"..page.."?s=" .. search, dest_table)
+function HentaiCafe:searchManga(search, page, dt)
+    self:getManga(self.Link.."/page/"..page.."?s=" .. search, dt)
 end
 
-function HentaiCafe:getChapters(manga, dest_table)
+function HentaiCafe:getChapters(manga, dt)
     local content = downloadContent(self.Link .."/hc.fyi/".. manga.Link)
-    local t = dest_table
+    manga.Name = stringify(content:match('<h1 class="entry-title">(.-)</h1>') or manga.Name)
     local link, name = content:match('/manga/read/(.-)"'), "Read chapter"
     if link then
-        t[#t + 1] = {
+        dt[#dt + 1] = {
             Name = name,
             Link = link,
             Pages = {},
@@ -68,15 +59,14 @@ function HentaiCafe:getChapters(manga, dest_table)
     end
 end
 
-function HentaiCafe:prepareChapter(chapter, dest_table)
+function HentaiCafe:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. "/manga/read/"..chapter.Link)
-    local t = dest_table
     for link in content:gmatch('"url"%s?:%s?"(%S-)"') do
-        t[#t + 1] = link:gsub("\\/","/"):gsub("%%","%%%%")
-		Console.write("Got " .. t[#t])
+        dt[#dt + 1] = link:gsub("\\/","/"):gsub("%%","%%%%")
+        Console.write("Got " .. dt[#dt])
     end
 end
 
-function HentaiCafe:loadChapterPage(link, dest_table)
-    dest_table.Link = link
+function HentaiCafe:loadChapterPage(link, dt)
+    dt.Link = link
 end
