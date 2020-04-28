@@ -54,7 +54,9 @@ end
 function Desu:getChapters(manga, dt)
     local content = downloadContent(self.Link .. manga.Link)
 	local t = {}
-	manga.Name = stringify(content:match('property="og:title" content="(.-)"') or manga.Name)
+	local rus_name = content:match('<span class="rus%-name"[^>]->(.-)</span>') or ""
+	local org_name = content:match('<span class="name"[^>]->(.-)</span>') or manga.Name
+	manga.Name = stringify(org_name..(rus_name=="" and "" or " ("..rus_name..")"))
     for Link, Name in content:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
         t[#t + 1] = {
             Name = stringify(Name),
