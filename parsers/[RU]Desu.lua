@@ -1,104 +1,87 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 2)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 3)
 
-function Desu:getManga(is_search, link, dest_table)
+local function downloadContent(link)
     local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-    local t = dest_table
-	local done = true
-	local pattern
-	if is_search then
-		pattern = '<a href="(manga/%S-)".-src="(.-)".-SubTitle">(.-)</div>'
-	else
-		pattern = 'memberListItem.-<a href="(manga/%S-)".-url%(\'([^\']-)\'%);.-title="([^"]-)"'
-	end
-	for Link, ImageLink, Name  in content:gmatch(pattern) do
-		ImageLink = "https://desu.me/data/manga/covers/x225/"..(Link:match("%.([^%.]-)/?$") or "")..".jpg"
-		local manga = CreateManga(Name, "/"..Link, ImageLink, self.ID, self.Link .. "/" .. Link)
-		if manga then
-			t[#t + 1] = manga
-			if not is_search then
-				done = false
-			end
-		end
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
+    Threads.insertTask(file, {
+        Type = "StringRequest",
+        Link = link,
+        Table = file,
+        Index = "string"
+    })
+    while Threads.check(file) do
+        coroutine.yield(false)
+    end
+    return file.string or ""
 end
 
-function Desu:getPopularManga(page, dest_table)
-    Desu:getManga(false, string.format("%s/manga/?order_by=popular&page=%s", self.Link, page), dest_table)
+local function stringify(string)
+    if u8c then
+        return string:gsub("&#([^;]-);", function(a)
+            local number = tonumber("0" .. a) or tonumber(a)
+            return number and u8c(number) or "&#" .. a .. ";"
+        end):gsub("&([^;]-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
+    else
+        return string
+    end
 end
 
-function Desu:getLatestManga(page, dest_table)
-    Desu:getManga(false, string.format("%s/manga/?page=%s", self.Link, page), dest_table)
+function Desu:getManga(link, dt, is_search)
+    local content = downloadContent(link)
+    local pattern = is_search and '<a href="(manga/%S-)".-src="(.-)".-SubTitle">(.-)</div>' or 'memberListItem.-<a href="(manga/%S-)".-url%(\'([^\']-)\'%);.-title="([^"]-)"'
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch(pattern) do
+        ImageLink = "https://desu.me/data/manga/covers/x225/" .. (Link:match("%.([^%.]-)/?$") or "") .. ".jpg"
+        dt[#dt + 1] = CreateManga(stringify(Name), "/" .. Link, ImageLink, self.ID, self.Link .. "/" .. Link)
+        if not is_search then
+            dt.NoPages = false
+        end
+        coroutine.yield(false)
+    end
 end
 
-function Desu:searchManga(search, page, dest_table)
-    Desu:getManga(true, string.format("%s/manga/search?q=%s", self.Link, search, page), dest_table)
+function Desu:getPopularManga(page, dt)
+    Desu:getManga(self.Link.."/manga/?order_by=popular&page="..page, dt)
 end
 
-function Desu:getChapters(manga, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link .. manga.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
+function Desu:getLatestManga(page, dt)
+    Desu:getManga(self.Link .. "/manga/?page=" .. page, dt)
+end
+
+function Desu:searchManga(search, _, dt)
+    Desu:getManga(self.Link .. "/manga/search?q=" .. search, dt, true)
+end
+
+function Desu:getChapters(manga, dt)
+    local content = downloadContent(self.Link .. manga.Link)
 	local t = {}
-	for Link, Name in content:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
-		t[#t + 1] = {
-			Name = Name,
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
-	end
-	for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
-	end
+	manga.Name = stringify(content:match('property="og:title" content="(.-)"') or manga.Name)
+    for Link, Name in content:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
+        t[#t + 1] = {
+            Name = stringify(Name),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
+    end
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
+    end
 end
 
-function Desu:prepareChapter(chapter, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link .. chapter.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-    local t = dest_table
-    local dir = content:match('dir: "\\/\\/([^"]-)",'):gsub("\\/","/") or ""
+function Desu:prepareChapter(chapter, dt)
+    local content = downloadContent(self.Link .. chapter.Link)
+    local dir = content:match('dir: "\\/\\/([^"]-)",'):gsub("\\/", "/") or ""
     local images = content:match('images: %[%[(.-)%]%],') or ""
-	for link in images:gmatch('"(.-)"') do
-		if not link:find("%.gif") then
-			t[#t + 1] = dir .. link
-			Console.write("Got " .. t[#t])
-		else
-			Console.write("Skipping " .. link)
-		end
-	end
+    for link in images:gmatch('"(.-)"') do
+        if not link:find("%.gif") then
+            dt[#dt + 1] = dir .. link
+            Console.write("Got " .. dt[#dt])
+        else
+            Console.write("Skipping " .. link)
+        end
+    end
 end
 
-function Desu:loadChapterPage(link, dest_table)
-    dest_table.Link = link
+function Desu:loadChapterPage(link, dt)
+    dt.Link = link
 end
