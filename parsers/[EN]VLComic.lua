@@ -1,87 +1,73 @@
-VLComic = Parser:new("VLComic", "http://vlcomic.com", "ENG", "VLCOMIC")
-
-local notify = false
+VLComic = Parser:new("VLComic", "http://vlcomic.com", "ENG", "VLCOMIC", 1)
 
 local function stringify(string)
-    if not u8c then
-        if not notify then
-            Notifications.push("Please update app, to see fixed titles")
-            notify = true
-        end
-        return string
-    end
     return string:gsub("&#([^;]-);", function(a)
-        local number = tonumber("0" .. a) or tonumber(a)
-        return number and u8c(number) or "&#" .. a .. ";"
-    end)
+        local x = tonumber("0" .. a) or tonumber(a)
+        return x and u8c(x) or "&#" .. a .. ";"
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
 end
 
 local function downloadContent(link)
-    local file = {}
-    Threads.insertTask(file, {
+    local f = {}
+    Threads.insertTask(f, {
         Type = "StringRequest",
         Link = link,
-        Table = file,
-        Index = "string"
+        Table = f,
+        Index = "text"
     })
-    while Threads.check(file) do
+    while Threads.check(f) do
         coroutine.yield(false)
     end
-    return file.string or ""
+    return f.text or ""
 end
 
-function VLComic:getManga(link, dest_table)
+function VLComic:getManga(link, dt)
     local content = downloadContent(link)
-    local t = dest_table
-    local done = true
+    dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch('class="ig%-grid">.-href="(%S-)".-src="(%S-)".-title="[^"]-">(.-)</a>') do
-        done = false
-        t[#t + 1] = CreateManga(stringify(Name), Link, self.Link..ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. Link)
-		coroutine.yield(false)
-    end
-    if done then
-        t.NoPages = true
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. Link)
+        dt.NoPages = false
+        coroutine.yield(false)
     end
 end
 
-function VLComic:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/popular-comics/"..page, dest_table)
+function VLComic:getPopularManga(page, dt)
+    self:getManga(self.Link .. "/popular-comics/" .. page, dt)
 end
 
-function VLComic:getLatestManga(page, dest_table)
-    self:getManga(self.Link.."/new-comics/"..page, dest_table)
+function VLComic:getLatestManga(page, dt)
+    self:getManga(self.Link .. "/new-comics/" .. page, dt)
 end
 
-function VLComic:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/comic-collection/"..search, dest_table)
-    dest_table.NoPages = true
+function VLComic:searchManga(search, _, dt)
+    self:getManga(self.Link .. "/comic-collection/" .. search, dt)
+    dt.NoPages = true
 end
 
-function VLComic:getChapters(manga, dest_table)
+function VLComic:getChapters(manga, dt)
     local content = downloadContent(self.Link .. manga.Link)
     local t = {}
     for Link, Name in content:gmatch('class="ch%-name" href="(%S-)">(.-)</a>') do
         t[#t + 1] = {
-            Name = Name,
+            Name = stringify(Name),
             Link = Link,
             Pages = {},
             Manga = manga
         }
     end
     for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
-	end
-end
-
-function VLComic:prepareChapter(chapter, dest_table)
-    local content = downloadContent(self.Link .. chapter.Link)
-    local t = dest_table
-    for link in content:gmatch('<img src="(%S-)" title') do
-        t[#t + 1] = link:gsub("%%","%%%%")
-		Console.write("Got " .. t[#t])
+        dt[#dt + 1] = t[i]
     end
 end
 
-function VLComic:loadChapterPage(link, dest_table)
-    dest_table.Link = link
+function VLComic:prepareChapter(chapter, dt)
+    local content = downloadContent(self.Link .. chapter.Link)
+    for link in content:gmatch('<img src="(%S-)" title') do
+        dt[#dt + 1] = link:gsub("%%", "%%%%")
+        Console.write("Got " .. dt[#dt])
+    end
+end
+
+function VLComic:loadChapterPage(link, dt)
+    dt.Link = link
 end
