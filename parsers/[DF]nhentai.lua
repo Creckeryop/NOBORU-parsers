@@ -1,94 +1,63 @@
-nhentai = Parser:new("nhentai", "https://nhentai.net", "DIF", "NHENTAI")
+nhentai = Parser:new("nhentai", "https://nhentai.net", "DIF", "NHENTAI", 1)
 
 nhentai.NSFW = true
 
-function nhentai:getPopularManga(page, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link.."/?page="..page,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-	local t = dest_table
-    local done = true
-    for Link, ImageLink, Name in content:gmatch('class="gallery".-href="(%S-)".-data%-src="(%S-)".->([^<]-)</div>') do
-        t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
-		done = false
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
+local function stringify(string)
+    return string:gsub("&#([^;]-);", function(a)
+        local number = tonumber("0" .. a) or tonumber(a)
+        return number and u8c(number) or "&#" .. a .. ";"
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
 end
 
-function nhentai:searchManga(search, page, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link.."/search/?q="..search.."&page="..page,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
+local function downloadContent(link)
+    local f = {}
+    Threads.insertTask(f, {
+        Type = "StringRequest",
+        Link = link,
+        Table = f,
+        Index = "text"
+    })
+    while Threads.check(f) do
+        coroutine.yield(false)
     end
-    local content = file.string or ""
-	local t = dest_table
-    local done = true
-    for Link, ImageLink, Name in content:gmatch('class="gallery".-href="(%S-)".-data%-src="(%S-)".->([^<]-)</div>') do
-        t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
-		done = false
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
+    return f.text or ""
 end
 
-function nhentai:getChapters(manga, dest_table)
-    dest_table[#dest_table+1] = {
-        Name = manga.Name,
+function nhentai:getManga(link, dt)
+    local content = downloadContent(link)
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch('class="gallery".-href="(%S-)".-data%-src="(%S-)".->([^<]-)</div>') do
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
+        dt.NoPages = false
+        coroutine.yield(false)
+    end
+end
+
+function nhentai:getPopularManga(page, dt)
+    self:getManga(self.Link .. "/?page=" .. page, dt)
+end
+
+function nhentai:searchManga(search, page, dt)
+    self:getManga(self.Link .. "/search/?q=" .. search .. "&page=" .. page, dt)
+end
+
+function nhentai:getChapters(manga, dt)
+    dt[#dt + 1] = {
+        Name = "Read chapter",
         Link = manga.Link,
         Pages = {},
         Manga = manga
     }
 end
 
-function nhentai:prepareChapter(chapter, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link..chapter.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-    local t = dest_table
+function nhentai:prepareChapter(chapter, dt)
+    local content = downloadContent(self.Link .. chapter.Link)
     for link in content:gmatch('class="gallerythumb".-href="(%S-)"') do
-        t[#t+1] = self.Link..link
-        Console.write("Got " .. t[#t])
+        dt[#dt + 1] = self.Link .. link
+        Console.write("Got " .. dt[#dt])
     end
 end
 
-function nhentai:loadChapterPage(link, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-    dest_table.Link = content:match('image%-container">.-src="(%S-)"')
+function nhentai:loadChapterPage(link, dt)
+    dt.Link = downloadContent(link):match('image%-container">.-src="(%S-)"')
 end
