@@ -1,131 +1,79 @@
-Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG")
+Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG", 1)
 
-local pt = {
-    ["&Agrave;"] = "À",
-    ["&Aacute;"] = "Á",
-    ["&Acirc;"] = "Â",
-    ["&Atilde;"] = "Ã",
-    ["&Ccedil;"] = "Ç",
-    ["&Egrave;"] = "È",
-    ["&Eacute;"] = "É",
-    ["&Ecirc;"] = "Ê",
-    ["&Igrave;"] = "Ì",
-    ["&Iacute;"] = "Í",
-    ["&Iuml;"] = "Ï",
-    ["&Ograve;"] = "Ò",
-    ["&Oacute;"] = "Ó",
-    ["&Otilde;"] = "Õ",
-    ["&Ugrave;"] = "Ù",
-    ["&Uacute;"] = "Ú",
-    ["&Uuml;"] = "Ü",
-    ["&agrave;"] = "à",
-    ["&aacute;"] = "á",
-    ["&acirc;"] = "â",
-    ["&atilde;"] = "ã",
-    ["&ccedil;"] = "ç",
-    ["&egrave;"] = "è",
-    ["&eacute;"] = "é",
-    ["&ecirc;"] = "ê",
-    ["&igrave;"] = "ì",
-    ["&iacute;"] = "í",
-    ["&iuml;"] = "ï",
-    ["&ograve;"] = "ò",
-    ["&oacute;"] = "ó",
-    ["&otilde;"] = "õ",
-    ["&ugrave;"] = "ù",
-    ["&uacute;"] = "ú",
-    ["&uuml;"] = "ü",
-    ["&ordf;"] = "ª",
-    ["&ordm;"] = "º",
+local function stringify(string)
+    return string:gsub("&#([^;]-);", function(a)
+        local number = tonumber("0" .. a) or tonumber(a)
+        return number and u8c(number) or "&#" .. a .. ";"
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
+end
 
-}
-local function stringify(str)
-    for k, v in pairs(pt) do
-        str = str:gsub(k, v)
+local function downloadContent(link)
+    local f = {}
+    Threads.insertTask(f, {
+        Type = "StringRequest",
+        Link = link,
+        Table = f,
+        Index = "text"
+    })
+    while Threads.check(f) do
+        coroutine.yield(false)
     end
-    return str
+    return f.text or ""
 end
 
-function Animeregia:getManga(link, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
+function Animeregia:getManga(link, dt)
+    local content = downloadContent(link)
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)'>[^<]-</a>") do
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. ImageLink, self.ID, Link)
+        dt.NoPages = false
+        coroutine.yield(false)
     end
-    local content = file.string or ""
-    local t = dest_table
-    local done = true
-	for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)'>[^<]-</a>") do
-		local manga = CreateManga(Name, Link, self.Link..ImageLink, self.ID, Link)
-		if manga then
-			t[#t + 1] = manga
-			done = false
-		end
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
 end
 
-function Animeregia:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dest_table)
+function Animeregia:getPopularManga(page, dt)
+    self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
 end
 
-function Animeregia:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&asc=false&page="..page, dest_table)
-end
-
-function Animeregia:getChapters(manga, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = manga.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
+function Animeregia:getLatestManga(page, dt)
+    local content = downloadContent(self.Link .. "/latest-release?page=" .. page)
+    dt.NoPages = true
+    for Link, Name in content:gmatch('manga%-item.-href="([^"]-)">(.-)</a>') do
+        local key = Link:match("manga/(.*)/?") or ""
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. "/uploads/manga/"..key.."/cover/cover_250x350.jpg", self.ID, Link)
+        dt.NoPages = false
+        coroutine.yield(false)
     end
-    local content = file.string or ""
+end
+
+function Animeregia:searchManga(search, page, dt)
+    self:getManga(self.Link .. "/filterList?alpha=" .. search .. "&sortBy=views&asc=false&page=" .. page, dt)
+end
+
+function Animeregia:getChapters(manga, dt)
+    local content = downloadContent(manga.Link)
     local t = {}
     for Link, Name in content:gmatch("chapter%-title%-rtl\">[^<]-<a href=\"([^\"]-)\">([^<]-)</a>") do
         t[#t + 1] = {
-			Name = stringify(Name),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
+            Name = stringify(Name),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
     end
-	for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
-	end
-end
-
-function Animeregia:prepareChapter(chapter, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = chapter.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-	local t = dest_table
-	for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
-        t[#t + 1] = Link
-		Console.write("Got " .. t[#t])
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
     end
 end
 
-function Animeregia:loadChapterPage(link, dest_table)
-	dest_table.Link = link
+function Animeregia:prepareChapter(chapter, dt)
+    local content = downloadContent(chapter.Link)
+    for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
+        dt[#dt + 1] = Link
+        Console.write("Got " .. dt[#dt])
+    end
+end
+
+function Animeregia:loadChapterPage(link, dt)
+    dt.Link = link
 end
