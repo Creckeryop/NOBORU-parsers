@@ -19,7 +19,7 @@ local function stringify(string)
         return string:gsub("&#([^;]-);", function(a)
             local number = tonumber("0" .. a) or tonumber(a)
             return number and u8c(number) or "&#" .. a .. ";"
-        end):gsub("&([^;]-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&"..a..";" end)
+        end):gsub("&([^;]-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
     else
         return string
     end
@@ -40,7 +40,7 @@ function Desu:getManga(link, dt, is_search)
 end
 
 function Desu:getPopularManga(page, dt)
-    Desu:getManga(self.Link.."/manga/?order_by=popular&page="..page, dt)
+    Desu:getManga(self.Link .. "/manga/?order_by=popular&page=" .. page, dt)
 end
 
 function Desu:getLatestManga(page, dt)
@@ -53,10 +53,10 @@ end
 
 function Desu:getChapters(manga, dt)
     local content = downloadContent(self.Link .. manga.Link)
-	local t = {}
-	local rus_name = content:match('<span class="rus%-name"[^>]->(.-)</span>') or ""
-	local org_name = content:match('<span class="name"[^>]->(.-)</span>') or manga.Name
-	manga.Name = stringify(org_name..(rus_name=="" and "" or " ("..rus_name..")"))
+    local t = {}
+    local rus_name = content:match('<span class="rus%-name"[^>]->(.-)</span>') or ""
+    local org_name = content:match('<span class="name"[^>]->(.-)</span>') or manga.Name
+    manga.Name = stringify(org_name .. (rus_name == "" and "" or " (" .. rus_name .. ")"))
     for Link, Name in content:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
         t[#t + 1] = {
             Name = stringify(Name),
