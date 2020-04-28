@@ -1,5 +1,5 @@
 if Settings.Version > 0.35 then
-    ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA",1)
+    ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA", 2)
 
     local pt = {
         ["&Agrave;"] = "À",
@@ -53,7 +53,8 @@ if Settings.Version > 0.35 then
             Type = "StringRequest",
             Link = link,
             Table = file,
-            Index = "string"
+            Index = "string",
+            Header1 = "Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
         })
         while Threads.check(file) do
             coroutine.yield(false)
@@ -127,9 +128,9 @@ if Settings.Version > 0.35 then
         local content = file.string or ""
         dest_table.Link = content:match('.+img src="([^"]-)".-$'):gsub("%%","%%%%") or ""
     end
-    ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG",1)
-    RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS",1)
-    DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 2)
-    ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA",1)
-    BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA",1)
+    ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG",2)
+    RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS",2)
+    DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 3)
+    ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA",2)
+    BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA",2)
 end
