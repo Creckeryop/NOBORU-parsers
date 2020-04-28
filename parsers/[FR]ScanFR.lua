@@ -1,85 +1,68 @@
-ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA")
+ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA", 1)
 
-function ScanFR:getManga(link, dest_table)
-    local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
+local function stringify(string)
+    return string:gsub("&#([^;]-);", function(a)
+        local x = tonumber("0" .. a) or tonumber(a)
+        return x and u8c(x) or "&#" .. a .. ";"
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
+end
+
+local function downloadContent(link)
+    local f = {}
+    Threads.insertTask(f, {
+        Type = "StringRequest",
+        Link = link,
+        Table = f,
+        Index = "text"
+    })
+    while Threads.check(f) do
+        coroutine.yield(false)
     end
-    local content = file.string or ""
-    local t = dest_table
-    local done = true
-	for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)' />[^<]-</a>") do
-		local manga = CreateManga(Name, Link, ImageLink, self.ID, Link)
-		if manga then
-			t[#t + 1] = manga
-			done = false
-		end
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
+    return f.text or ""
 end
 
-function ScanFR:getPopularManga(page, dest_table)
-    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dest_table)
-end
-
-function ScanFR:searchManga(search, page, dest_table)
-    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&asc=false&page="..page, dest_table)
-end
-
-function ScanFR:getChapters(manga, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = manga.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
+function ScanFR:getManga(link, dt)
+    local content = downloadContent(link)
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)' />[^<]-</a>") do
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
+        dt.NoPages = false
+        coroutine.yield(false)
     end
-    local content = file.string or ""
+end
+
+function ScanFR:getPopularManga(page, dt)
+    self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
+end
+
+function ScanFR:searchManga(search, page, dt)
+    self:getManga(self.Link .. "/filterList?alpha=" .. search .. "&sortBy=views&asc=false&page=" .. page, dt)
+end
+
+function ScanFR:getChapters(manga, dt)
+    local content = downloadContent(manga.Link)
     local t = {}
     for Link, Name, SubName in content:gmatch("chapter%-title%-rtlrr\">[^<]-<a href=\"([^\"]-)\">([^<]-)</a>.-<em>(.-)</em>") do
         t[#t + 1] = {
-			Name = Name..":"..SubName,
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
+            Name = stringify(Name .. (SubName ~= "" and (":" .. SubName) or "")),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
     end
-	for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
-	end
-end
-
-function ScanFR:prepareChapter(chapter, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = chapter.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-    end
-    local content = file.string or ""
-	local t = dest_table
-	for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
-        t[#t + 1] = Link
-		Console.write("Got " .. t[#t])
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
     end
 end
 
-function ScanFR:loadChapterPage(link, dest_table)
-	dest_table.Link = link
+function ScanFR:prepareChapter(chapter, dt)
+    local content = downloadContent(chapter.Link)
+    for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
+        dt[#dt + 1] = Link
+        Console.write("Got " .. dt[#dt])
+    end
+end
+
+function ScanFR:loadChapterPage(link, dt)
+    dt.Link = link
 end
