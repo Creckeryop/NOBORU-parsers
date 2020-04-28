@@ -22,32 +22,32 @@ local function stringify(string)
 end
 
 local function stringify2(string)
-    return string:gsub("\\u(....)",function(a) return u8c(tonumber("0x"..a)) end)
+    return string:gsub("\\u(....)", function(a) return u8c(tonumber("0x" .. a)) end)
 end
 
 function PhoenixScansPoland:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
-	for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)'>[^<]-</a>") do
-    	dt[#dt + 1] = CreateManga(stringify(Name), Link:gsub("%%","%%%%"), ImageLink:gsub(" ","%%20"):gsub("%%","%%%%"), self.ID, Link)
+    for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)'>[^<]-</a>") do
+        dt[#dt + 1] = CreateManga(stringify(Name), Link:gsub("%%", "%%%%"), ImageLink:gsub(" ", "%%20"):gsub("%%", "%%%%"), self.ID, Link)
         dt.NoPages = false
-		coroutine.yield(false)
-	end
+        coroutine.yield(false)
+    end
 end
 
 function PhoenixScansPoland:getPopularManga(page, dt)
-    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dt)
+    self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
 end
 
 function PhoenixScansPoland:getLatestManga(page, dt)
-    local content = downloadContent(self.Link.."/latest-release?page="..page)
+    local content = downloadContent(self.Link .. "/latest-release?page=" .. page)
     dt.NoPages = true
     for Link, Name in content:gmatch('"manga%-item">.-href="(%S-)">([^<]-)</a>') do
         local l = Link:match("/([^/]-)$") or ""
-        dt[#dt + 1] = CreateManga(stringify(Name), self.Link.."/manga/"..l:gsub(" ","%%20"):gsub("%%","%%%%"), self.Link.."//uploads/manga/"..l:gsub("%%","%%%%").."/cover/cover_250x350.jpg", self.ID, Link)
+        dt[#dt + 1] = CreateManga(stringify(Name), self.Link .. "/manga/" .. l:gsub(" ", "%%20"):gsub("%%", "%%%%"), self.Link .. "//uploads/manga/" .. l:gsub("%%", "%%%%") .. "/cover/cover_250x350.jpg", self.ID, Link)
         dt.NoPages = false
-		coroutine.yield(false)
-	end
+        coroutine.yield(false)
+    end
 end
 
 function PhoenixScansPoland:searchManga(search, _, dt)
@@ -58,13 +58,13 @@ function PhoenixScansPoland:searchManga(search, _, dt)
     search = search:gsub("!", "%%%%21"):gsub("#", "%%%%23"):gsub("%$", "%%%%24"):gsub("&", "%%%%26"):gsub("'", "%%%%27"):gsub("%(", "%%%%28"):gsub("%)", "%%%%29"):gsub("%*", "%%%%2A"):gsub("%+", "%%%%2B"):gsub(",", "%%%%2C"):gsub("%.", "%%%%2E"):gsub("/", "%%%%2F"):gsub(" ", "%+"):gsub("%%", "%%%%25")
     Console.write(search)
     string.gsub = old_gsub
-    local searchLink = self.Link.."/search?query="..search
+    local searchLink = self.Link .. "/search?query=" .. search
     local content = downloadContent(searchLink)
     for Name, Link in content:gmatch('"value":"([^"]-)","data":"([^"]-)"') do
-		local manga = CreateManga(stringify2(Name), self.Link.."/manga/"..stringify2(Link):gsub(" ","%%20"):gsub("%%","%%%%"), self.Link.."//uploads/manga/"..stringify2(Link):gsub(" ","%%20"):gsub("%%","%%%%").."/cover/cover_250x350.jpg", self.ID, self.Link.."/manga/"..stringify2(Link))
+        local manga = CreateManga(stringify2(Name), self.Link .. "/manga/" .. stringify2(Link):gsub(" ", "%%20"):gsub("%%", "%%%%"), self.Link .. "//uploads/manga/" .. stringify2(Link):gsub(" ", "%%20"):gsub("%%", "%%%%") .. "/cover/cover_250x350.jpg", self.ID, self.Link .. "/manga/" .. stringify2(Link))
         dt[#dt + 1] = manga
-		coroutine.yield(false)
-	end
+        coroutine.yield(false)
+    end
     dt.NoPages = true
 end
 
@@ -73,25 +73,25 @@ function PhoenixScansPoland:getChapters(manga, dt)
     local t = {}
     for Link, Name in content:gmatch("chapter%-title%-rtl\">[^<]-<a href=\"([^\"]-)\">([^<]-)</a>") do
         t[#t + 1] = {
-			Name = stringify(Name),
-			Link = Link:gsub(" ","%%20"):gsub("%%","%%%%"),
-			Pages = {},
-			Manga = manga
-		}
+            Name = stringify(Name),
+            Link = Link:gsub(" ", "%%20"):gsub("%%", "%%%%"),
+            Pages = {},
+            Manga = manga
+        }
     end
-	for i = #t, 1, -1 do
-		dt[#dt + 1] = t[i]
-	end
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
+    end
 end
 
 function PhoenixScansPoland:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
-	for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
-        dt[#dt + 1] = Link:gsub(" ","%%20"):gsub("%%","%%%%")
-		Console.write("Got " .. dt[#dt])
+    for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
+        dt[#dt + 1] = Link:gsub(" ", "%%20"):gsub("%%", "%%%%")
+        Console.write("Got " .. dt[#dt])
     end
 end
 
 function PhoenixScansPoland:loadChapterPage(link, dt)
-	dt.Link = link
+    dt.Link = link
 end
