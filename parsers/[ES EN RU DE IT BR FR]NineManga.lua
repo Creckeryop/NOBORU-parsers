@@ -1,136 +1,76 @@
 if Settings.Version > 0.35 then
-    ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA", 2)
-
-    local pt = {
-        ["&Agrave;"] = "À",
-        ["&Aacute;"] = "Á",
-        ["&Acirc;"] = "Â",
-        ["&Atilde;"] = "Ã",
-        ["&Ccedil;"] = "Ç",
-        ["&Egrave;"] = "È",
-        ["&Eacute;"] = "É",
-        ["&Ecirc;"] = "Ê",
-        ["&Igrave;"] = "Ì",
-        ["&Iacute;"] = "Í",
-        ["&Iuml;"] = "Ï",
-        ["&Ograve;"] = "Ò",
-        ["&Oacute;"] = "Ó",
-        ["&Otilde;"] = "Õ",
-        ["&Ugrave;"] = "Ù",
-        ["&Uacute;"] = "Ú",
-        ["&Uuml;"] = "Ü",
-        ["&agrave;"] = "à",
-        ["&aacute;"] = "á",
-        ["&acirc;"] = "â",
-        ["&atilde;"] = "ã",
-        ["&ccedil;"] = "ç",
-        ["&egrave;"] = "è",
-        ["&eacute;"] = "é",
-        ["&ecirc;"] = "ê",
-        ["&igrave;"] = "ì",
-        ["&iacute;"] = "í",
-        ["&iuml;"] = "ï",
-        ["&ograve;"] = "ò",
-        ["&oacute;"] = "ó",
-        ["&otilde;"] = "õ",
-        ["&ugrave;"] = "ù",
-        ["&uacute;"] = "ú",
-        ["&uuml;"] = "ü",
-        ["&ordf;"] = "ª",
-        ["&ordm;"] = "º",
-
-    }
-    local function stringify(str)
-        for k, v in pairs(pt) do
-            str = str:gsub(k, v)
-        end
-        return str
+    ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA", 3)
+    
+    local function stringify(string)
+        return string:gsub("&#([^;]-);", function(a)
+            local number = tonumber("0" .. a) or tonumber(a)
+            return number and u8c(number) or "&#" .. a .. ";"
+        end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
     end
-
+    
     local function downloadContent(link)
-        local file = {}
-        Threads.insertTask(file, {
+        local f = {}
+        Threads.insertTask(f, {
             Type = "StringRequest",
             Link = link,
-            Table = file,
-            Index = "string",
+            Table = f,
+            Index = "text",
             Header1 = "Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
         })
-        while Threads.check(file) do
+        while Threads.check(f) do
             coroutine.yield(false)
         end
-        return file.string or ""
+        return f.text or ""
     end
-
-    function ESNineManga:getManga(link, dest_table)
+    
+    function ESNineManga:getManga(link, dt)
         local content = downloadContent(link)
-        local t = dest_table
-        local done = true
-        for Link,ImageLink,Name in content:gmatch('bookinfo.-href="([^"]-)".-src="([^"]-)".-bookname"[^>]->([^<]-)</a>') do
-            local manga = CreateManga(stringify(Name), Link:gsub("%%","%%%%"), ImageLink:gsub("%%","%%%%"), self.ID, Link)
-            if manga then
-                t[#t + 1] = manga
-                done = false
-            end
+        dt.NoPages = true
+        for Link, ImageLink, Name in content:gmatch('bookinfo.-href="([^"]-)".-src="([^"]-)".-bookname"[^>]->([^<]-)</a>') do
+            dt[#dt + 1] = CreateManga(stringify(Name), Link:gsub("%%", "%%%%"), ImageLink:gsub("%%", "%%%%"), self.ID, Link)
+            dt.NoPages = false
             coroutine.yield(false)
         end
-        if done then
-            t.NoPages = true
-        end
     end
-
-    function ESNineManga:getPopularManga(page, dest_table)
-        self:getManga(self.Link.."/category/index_"..page..".html", dest_table)
+    
+    function ESNineManga:getPopularManga(page, dt)
+        self:getManga(self.Link .. "/category/index_" .. page .. ".html", dt)
     end
-
-    function ESNineManga:searchManga(search, page, dest_table)
-        self:getManga(self.Link.."/search/?name_sel=&wd="..search.."&page="..page..".html", dest_table)
+    
+    function ESNineManga:searchManga(search, page, dt)
+        self:getManga(self.Link .. "/search/?name_sel=&wd=" .. search .. "&page=" .. page .. ".html", dt)
     end
-
-    function ESNineManga:getChapters(manga, dest_table)
-        local content = downloadContent(manga.Link.."?waring=1")
+    
+    function ESNineManga:getChapters(manga, dt)
+        local content = downloadContent(manga.Link .. "?waring=1")
         local t = {}
         for Link, Name in content:gmatch('chapter_list_a" href="([^"]-)"[^>]->([^<]-)</a>') do
             t[#t + 1] = {
                 Name = stringify(Name),
-                Link = Link:gsub("%%","%%%%"),
+                Link = Link:gsub("%%", "%%%%"),
                 Pages = {},
                 Manga = manga
             }
         end
         for i = #t, 1, -1 do
-            dest_table[#dest_table + 1] = t[i]
+            dt[#dt + 1] = t[i]
         end
     end
-
-    function ESNineManga:prepareChapter(chapter, dest_table)
-        local content = downloadContent(chapter.Link)
-        local t = dest_table
-        content = content:match("changepage(.-)</div>") or ""
+    
+    function ESNineManga:prepareChapter(chapter, dt)
+        local content = downloadContent(chapter.Link):match("changepage(.-)</div>") or ""
         for Link in content:gmatch('value="([^"]-)"[^>]->') do
-            t[#t + 1] = Link:gsub("%%","%%%%")
-            Console.write("Got " .. t[#t])
+            dt[#dt + 1] = Link:gsub("%%", "%%%%")
+            Console.write("Got " .. dt[#dt])
         end
     end
-
-    function ESNineManga:loadChapterPage(link, dest_table)
-        local file = {}
-        Threads.insertTask(file, {
-            Type = "StringRequest",
-            Link = self.Link..link,
-            Table = file,
-            Index = "string",
-            Header1 = "Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
-        })
-        while Threads.check(file) do
-            coroutine.yield(false)
-        end
-        local content = file.string or ""
-        dest_table.Link = content:match('.+img src="([^"]-)".-$'):gsub("%%","%%%%") or ""
+    
+    function ESNineManga:loadChapterPage(link, dt)
+        dt.Link = downloadContent(self.Link .. link):match('.+img src="([^"]-)".-$'):gsub("%%", "%%%%") or ""
     end
-    ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG",2)
-    RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS",2)
-    DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 3)
-    ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA",2)
-    BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA",2)
+    ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG", 3)
+    RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS", 3)
+    DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 4)
+    ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA", 3)
+    BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA", 3)
 end
