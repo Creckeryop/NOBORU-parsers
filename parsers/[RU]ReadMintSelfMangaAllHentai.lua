@@ -1,123 +1,89 @@
-ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", "READMANGARU", 1)
+ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", "READMANGARU", 2)
 
-function ReadManga:getManga(dest_table, content)
-	local t = dest_table
-	local done = true
-	for Link, ImageLink, Name in content:gmatch('<a href="(/%S-)" class="non%-hover".-original=\'(%S-)\' title=\'(.-)\' alt') do
-		if Link:match("^/") then
-			t[#t + 1] = CreateManga(Name, Link, ImageLink, self.ID, self.Link .. Link)
-			done = false
-		end
-		coroutine.yield(false)
-	end
-	if done then
-		t.NoPages = true
-	end
+local function stringify(string)
+    return string:gsub("&#([^;]-);", function(a)
+        local number = tonumber("0" .. a) or tonumber(a)
+        return number and u8c(number) or "&#" .. a .. ";"
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
 end
 
-function ReadManga:getLatestManga(page, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = string.format("%s/list?sortType=updated&offset=%s", self.Link, (page - 1) * 70),
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-	self:getManga(dest_table, content)
+local function downloadContent(link)
+    local f = {}
+    Threads.insertTask(f, {
+        Type = "StringRequest",
+        Link = link,
+        Table = f,
+        Index = "text"
+    })
+    while Threads.check(f) do
+        coroutine.yield(false)
+    end
+    return f.text or ""
 end
 
-function ReadManga:getPopularManga(page, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = string.format("%s/list?sortType=rate&offset=%s", self.Link, (page - 1) * 70),
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-	self:getManga(dest_table, content)
+function ReadManga:getManga(link, dt)
+    local content = downloadContent(link)
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch('<a href="(/%S-)" class="non%-hover".-original=\'(%S-)\' title=\'(.-)\' alt') do
+        if Link:find("^/[^/]-$") then
+            dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
+        end
+        dt.NoPages = false
+        coroutine.yield(false)
+    end
 end
 
-function ReadManga:searchManga(data, page, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = string.format("%s/search", self.Link),
-		Table = file,
-		Index = "string",
-		HttpMethod = POST_METHOD,
-		PostData = string.format("q=%s&offset=%s", data, (page - 1) * 50)
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-	self:getManga(dest_table, content)
+function ReadManga:getLatestManga(page, dt)
+    self:getManga(self.Link .. "/list?sortType=updated&offset=" .. ((page - 1) * 70), dt)
 end
 
-function ReadManga:getChapters(manga, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link .. manga.Link,
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-	local t = {}
-	for Link, Name in content:gmatch('<td class%=.-<a href%="/.-(/vol%S-)".->%s*(.-)</a>') do
-		t[#t + 1] = {
-			Name = Name:gsub("%s+", " "):gsub("<sup>.-</sup>", ""):gsub("&quot;", '"'):gsub("&amp;", "&"):gsub("&#92;", "\\"):gsub("&#39;", "'"),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
-	end
-	for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
-	end
+function ReadManga:getPopularManga(page, dt)
+    self:getManga(self.Link .. "/list?sortType=rate&offset=" .. ((page - 1) * 70), dt)
 end
 
-function ReadManga:prepareChapter(chapter, dest_table)
-	local file = {}
-	Threads.insertTask(file, {
-		Type = "StringRequest",
-		Link = self.Link .. chapter.Manga.Link .. chapter.Link .. "?mtr=1",
-		Table = file,
-		Index = "string"
-	})
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
-	local text = content:match("rm_h.init%( %[%[(.-)%]%]")
-	local t = dest_table
-	if text then
-		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
-		for i = 1, #list do
-			t[i] = list[i][1] .. list[i][3]
-			Console.write("Got " .. t[i])
-		end
-	end
+function ReadManga:searchManga(data, page, dt)
+    self:getManga({
+        Link = self.Link .. "/search",
+        HttpMethod = POST_METHOD,
+        PostData = "q=" .. data .. "&offset=" .. ((page - 1) * 50)
+    }, dt)
 end
 
-function ReadManga:loadChapterPage(link, dest_table)
-	dest_table.Link = link
+function ReadManga:getChapters(manga, dt)
+    local content = downloadContent(self.Link .. manga.Link)
+    local t = {}
+    for Link, Name in content:gmatch('<td class%=.-<a href%="/.-(/vol%S-)".->%s*(.-)</a>') do
+        t[#t + 1] = {
+            Name = stringify(Name:gsub("%s+", " "):gsub("<sup>.-</sup>", "")),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
+    end
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
+    end
 end
 
-MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU")
+function ReadManga:prepareChapter(chapter, dt)
+    local content = downloadContent(self.Link .. chapter.Manga.Link .. chapter.Link .. "?mtr=1")
+    local text = content:match("rm_h.init%( %[%[(.-)%]%]")
+    if text then
+        local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
+        for i = 1, #list do
+            dt[i] = list[i][1] .. list[i][3]
+            Console.write("Got " .. dt[i])
+        end
+    end
+end
 
-SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU")
+function ReadManga:loadChapterPage(link, dt)
+    dt.Link = link
+end
 
-AllHentai = ReadManga:new("AllHentai", "http://allhentai.ru", "RUS", "ALLHENTAIRU", 1)
+MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU", 1)
+
+SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU", 1)
+
+AllHentai = ReadManga:new("AllHentai", "http://allhentai.ru", "RUS", "ALLHENTAIRU", 2)
 AllHentai.NSFW = true
