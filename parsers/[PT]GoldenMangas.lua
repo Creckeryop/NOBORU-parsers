@@ -24,8 +24,8 @@ end
 function GoldenMangas:getManga(link, key, dt)
     local content = downloadContent(link)
     dt.NoPages = true
-    for Link, ImageLink, Name in content:gmatch(key..'.-href="([^"]-)".-src="(.-)".-<h3.->(.-)</h3>') do
-        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link..ImageLink, self.ID, self.Link .. Link)
+    for Link, ImageLink, Name in content:gmatch(key .. '.-href="([^"]-)".-src="(.-)".-<h3.->(.-)</h3>') do
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. ImageLink, self.ID, self.Link .. Link)
         dt.NoPages = false
         coroutine.yield(false)
     end

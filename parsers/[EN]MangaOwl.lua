@@ -32,41 +32,41 @@ function MangaOwl:getManga(link, dt)
 end
 
 function MangaOwl:getPopularManga(page, dt)
-    self:getManga(self.Link.."/popular/"..page, dt)
+    self:getManga(self.Link .. "/popular/" .. page, dt)
 end
 
 function MangaOwl:getLatestManga(page, dt)
-    self:getManga(self.Link.."/lastest/"..page, dt)
+    self:getManga(self.Link .. "/lastest/" .. page, dt)
 end
 
 function MangaOwl:searchManga(search, page, dt)
-    self:getManga(self.Link.."/search/"..search.."/"..page, dt)
+    self:getManga(self.Link .. "/search/" .. search .. "/" .. page, dt)
 end
 
 function MangaOwl:getChapters(manga, dt)
-    local content = downloadContent(self.Link.."/single/"..manga.Link)
+    local content = downloadContent(self.Link .. "/single/" .. manga.Link)
     local t = {}
     for Link, Name in content:gmatch('chapter_list">.-href="([^"]-)".-label>[\n%s]-(%S[^<]-)[\n%s]-</label>') do
         t[#t + 1] = {
-			Name = stringify(Name),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
+            Name = stringify(Name),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
     end
-	for i = #t, 1, -1 do
-		dt[#dt + 1] = t[i]
-	end
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
+    end
 end
 
 function MangaOwl:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
     for Link in content:gmatch('owl%-lazy" data%-src="(%S-)"') do
         dt[#dt + 1] = Link
-		Console.write("Got " .. dt[#dt])
+        Console.write("Got " .. dt[#dt])
     end
 end
 
 function MangaOwl:loadChapterPage(link, dt)
-	dt.Link = link
+    dt.Link = link
 end
