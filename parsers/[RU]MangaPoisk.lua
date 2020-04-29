@@ -1,45 +1,33 @@
-MangaPoisk = Parser:new("МангаПоиск", "https://mangapoisk.ru", "RUS", "MANGAPOISK")
-
-local notify = false
+MangaPoisk = Parser:new("МангаПоиск", "https://mangapoisk.ru", "RUS", "MANGAPOISK", 1)
 
 local function stringify(string)
-    if not u8c then
-        if not notify then
-            Notifications.push("Please update app, to see fixed titles")
-            notify = true
-        end
-        return string
-    end
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)
         return number and u8c(number) or "&#" .. a .. ";"
-    end)
+    end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
 end
 
 local function downloadContent(link)
-    local file = {}
-    Threads.insertTask(file, {
+    local f = {}
+    Threads.insertTask(f, {
         Type = "StringRequest",
         Link = link,
-        Table = file,
-        Index = "string"
+        Table = f,
+        Index = "text"
     })
-    while Threads.check(file) do
+    while Threads.check(f) do
         coroutine.yield(false)
     end
-    return file.string or ""
+    return f.text or ""
 end
 
-function MangaPoisk:getManga(link, t)
+function MangaPoisk:getManga(link, dt)
     local content = downloadContent(link)
-    local done = true
+    dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch('rounded">.-href="(%S-)".-src="(%S-)" class.-title pl%-1 h3">([^<]-)</h2>') do
-        t[#t + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
         coroutine.yield(false)
-        done = false
-    end
-    if done then
-        t.NoPages = true
+        dt.NoPages = false
     end
 end
 
@@ -55,31 +43,31 @@ function MangaPoisk:searchManga(search, page, dest_table)
     self:getManga(self.Link .. "/search?q="..search.."&page=" .. page, dest_table)
 end
 
-function MangaPoisk:getChapters(manga, dest_table)
+function MangaPoisk:getChapters(manga, dt)
     local content = downloadContent(self.Link..manga.Link.."/chaptersList")
     local t = {}
     for Link, Name, subName in content:gmatch('d%-none.-href="(%S-)".-class="chapter%-title">\n(.-)</span>\n(.-)\n') do
+        local sub_n = subName:gsub("%s+"," "):match("^%s*(.-)%s*$")
         t[#t + 1] = {
-			Name = stringify(Name:gsub("%s+"," "):match("^%s*(.-)%s*$"))..": "..subName:gsub("%s+"," "):match("^%s*(.-)%s*$"),
+			Name = stringify(Name:gsub("%s+"," "):match("^%s*(.-)%s*$"))..(sub_n~="" and (": "..sub_n) or ""),
 			Link = Link,
 			Pages = {},
 			Manga = manga
 		}
     end
 	for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
+		dt[#dt + 1] = t[i]
 	end
 end
 
-function MangaPoisk:prepareChapter(chapter, dest_table)
+function MangaPoisk:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link..chapter.Link)
-	local t = dest_table
     for Link in content:gmatch('data%-alternative="(%S-)"') do
-        t[#t + 1] = Link
-		Console.write("Got " .. t[#t])
+        dt[#dt + 1] = Link
+		Console.write("Got " .. dt[#dt])
     end
 end
 
-function MangaPoisk:loadChapterPage(link, dest_table)
-	dest_table.Link = link
+function MangaPoisk:loadChapterPage(link, dt)
+	dt.Link = link
 end
