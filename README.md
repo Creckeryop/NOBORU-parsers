@@ -1,24 +1,24 @@
 # NOBORU - Parsers
 This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers:
-| Different    | Russian    | English          | Japan     | Spanish   | Portuguese  | French    |
-|:------------:|:----------:|:----------------:|:---------:|:---------:|:-----------:|:---------:|
-| MangaDex*    | ReadManga  | MangaHub         | RawDevArt | LeoManga  | Animaregia  | LelScanVF |
-| Bato.to*     | МангаПоиск | MangaReader      | SenManga  | InManga   | UnionMangas | ScanFR    |
-|              | MintManga  | MangaPanda       | Manga1000 | Submanga  |             | NineManga |
-|              | SelfManga  | MangaTown        |           | NineManga |             |           |
-|              | Desu       | MangaOwl         |           |           |             |           |
-|              | NineManga  | ReadComicsOnline |           |           |             |           |
-|              |            | MangaKakalot     |           |           |             |           |
-|              |            | MangaNelo        |           |           |             |           |
-|              |            | VLComic          |           |           |             |           |
-|              |            | MangaEden        |           |           |             |           |
-|              |            | NineManga        |           |           |             |           |
-| **NSFW**     | **NSFW**   | **NSFW**         | **NSFW**  | **NSFW**  | **NSFW**    | **NSFW**  |
-| nhentai      | Nude-Moon  | PervEden         |           |           |             |           |
-| HentaiRead   | AllHentai  | HentaiCafe       |           |           |             |           |
-| 9hentai      |            |                  |           |           |             |           |
-| Hentai Shark |            |                  |           |           |             |           |
+| Different    | Russian    | English          | Japan     | Spanish      | Portuguese  | French    |
+|:------------:|:----------:|:----------------:|:---------:|:------------:|:-----------:|:---------:|
+| MangaDex*    | ReadManga  | MangaHub         | RawDevArt | LeoManga     | Animaregia  | LelScanVF |
+| Bato.to*     | МангаПоиск | MangaReader      | SenManga  | InManga      | UnionMangas | ScanFR    |
+|              | MintManga  | MangaPanda       | Manga1000 | Submanga     | GoldenMangas| NineManga |
+|              | SelfManga  | MangaTown        |           | NineManga    |             |           |
+|              | Desu       | MangaOwl         |           |              |             |           |
+|              | NineManga  | ReadComicsOnline |           |              |             |           |
+|              |            | MangaKakalot     |           |              |             |           |
+|              |            | MangaNelo        |           |              |             |           |
+|              |            | VLComic          |           |              |             |           |
+|              |            | MangaEden        |           |              |             |           |
+|              |            | NineManga        |           |              |             |           |
+| **NSFW**     | **NSFW**   | **NSFW**         | **NSFW**  | **NSFW**     | **NSFW**    | **NSFW**  |
+| nhentai      | Nude-Moon  | PervEden         |           |              |             |           |
+| HentaiRead   | AllHentai  | HentaiCafe       |           |              |             |           |
+| 9hentai      |            |                  |           |              |             |           |
+| Hentai Shark |            |                  |           |              |             |           |
 
 **Catalog works with option Preferred Language and deletes extra manga from it* 
 
