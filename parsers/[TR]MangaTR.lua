@@ -1,8 +1,10 @@
 if Settings.Version > 0.32 then
     MangaTR = Parser:new("MangaTR", "https://manga-tr.com", "TUR", "MANGATRTR")
+    
+    MangaTR.Disabled = true
 
     local notify = false
-
+    
     local function stringify(string)
         if not u8c then
             if not notify then
@@ -16,7 +18,7 @@ if Settings.Version > 0.32 then
             return number and u8c(number) or "&#" .. a .. ";"
         end)
     end
-
+    
     local function downloadContent(link)
         local file = {}
         Threads.insertTask(file, {
@@ -30,13 +32,13 @@ if Settings.Version > 0.32 then
         end
         return file.string or ""
     end
-
+    
     function MangaTR:getManga(link, dest_table)
         local content = downloadContent(link)
         local t = dest_table
         local done = true
         for ImageLink, Link, Name in content:gmatch('media%-object img.-src="(%S-)".-href="(%S-)">([^<]-)<') do
-            local manga = CreateManga(stringify(Name), Link, ImageLink:find("^http") and ImageLink or self.Link.."/"..ImageLink, self.ID, self.Link.."/".. Link)
+            local manga = CreateManga(stringify(Name), Link, ImageLink:find("^http") and ImageLink or self.Link .. "/" .. ImageLink, self.ID, self.Link .. "/" .. Link)
             if manga then
                 t[#t + 1] = manga
                 done = false
@@ -47,24 +49,24 @@ if Settings.Version > 0.32 then
             t.NoPages = true
         end
     end
-
+    
     function MangaTR:getPopularManga(page, dest_table)
-        self:getManga(self.Link.."/manga-list.html?listType=pagination&page="..page.."&durum=&ceviri=&yas=&icerik=&artist=&author=&name=&tur=&sort=views&sort_type=DESC", dest_table)
+        self:getManga(self.Link .. "/manga-list.html?listType=pagination&page=" .. page .. "&durum=&ceviri=&yas=&icerik=&artist=&author=&name=&tur=&sort=views&sort_type=DESC", dest_table)
     end
-
+    
     function MangaTR:getLatestManga(page, dest_table)
-        self:getManga(self.Link.."/manga-list.html?listType=pagination&page="..page.."&durum=&ceviri=&yas=&icerik=&artist=&author=&name=&tur=&sort=last_update&sort_type=DESC", dest_table)
+        self:getManga(self.Link .. "/manga-list.html?listType=pagination&page=" .. page .. "&durum=&ceviri=&yas=&icerik=&artist=&author=&name=&tur=&sort=last_update&sort_type=DESC", dest_table)
     end
-
+    
     if not u8c then
         function MangaTR:searchManga(search, page, dest_table)
             Notifications.push("Parser don't support search feature")
             Notifications.push("Please update App")
         end
     end
-
+    
     function MangaTR:getChapters(manga, dest_table)
-        local content = downloadContent(self.Link.."/"..manga.Link)
+        local content = downloadContent(self.Link .. "/" .. manga.Link)
         local fetch_link = content:match('(/cek/fetch_pages_manga%.php%?manga_cek=.-)"')
         local t = {}
         local page = 1
@@ -72,10 +74,10 @@ if Settings.Version > 0.32 then
             local file = {}
             Threads.insertTask(file, {
                 Type = "StringRequest",
-                Link = self.Link..fetch_link,
+                Link = self.Link .. fetch_link,
                 Table = file,
                 Index = "string",
-                PostData = "page="..page,
+                PostData = "page=" .. page,
                 HttpMethod = POST_METHOD,
                 Header1 = "X-Requested-With:XMLHttpRequest",
             })
@@ -100,26 +102,26 @@ if Settings.Version > 0.32 then
             dest_table[#dest_table + 1] = t[i]
         end
     end
-
+    
     function MangaTR:prepareChapter(chapter, dest_table)
-        local content = downloadContent(self.Link.."/"..chapter.Link)
+        local content = downloadContent(self.Link .. "/" .. chapter.Link)
         content = content:match('class="label.-</select')
         if content then
             local t = dest_table
             for link in content:gmatch('value="(%S-)"[^>]->%d') do
                 t[#t + 1] = link
-                Console.write("Got "..t[#t])
+                Console.write("Got " .. t[#t])
             end
         end
     end
-
+    
     function MangaTR:loadChapterPage(link, dest_table)
-        local content = downloadContent(self.Link.."/"..link)
+        local content = downloadContent(self.Link .. "/" .. link)
         local new_link = content:match("<img src='([^']-)' class='chapter%-img'>"):match("%S+") or ""
         if new_link:match("^http") then
             dest_table.Link = new_link
         else
-            dest_table.Link = self.Link.."/"..new_link
+            dest_table.Link = self.Link .. "/" .. new_link
         end
     end
 end

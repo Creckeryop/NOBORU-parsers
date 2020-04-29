@@ -1,5 +1,7 @@
 BatoTo = Parser:new("Bato.TO", "https://bato.to", "DIF", "BATODIF", 2)
 
+BatoTo.Disabled = true
+
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)

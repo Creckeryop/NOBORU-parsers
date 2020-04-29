@@ -40,34 +40,34 @@ function MangaPoisk:getLatestManga(page, dest_table)
 end
 
 function MangaPoisk:searchManga(search, page, dest_table)
-    self:getManga(self.Link .. "/search?q="..search.."&page=" .. page, dest_table)
+    self:getManga(self.Link .. "/search?q=" .. search .. "&page=" .. page, dest_table)
 end
 
 function MangaPoisk:getChapters(manga, dt)
-    local content = downloadContent(self.Link..manga.Link.."/chaptersList")
+    local content = downloadContent(self.Link .. manga.Link .. "/chaptersList")
     local t = {}
     for Link, Name, subName in content:gmatch('d%-none.-href="(%S-)".-class="chapter%-title">\n(.-)</span>\n(.-)\n') do
-        local sub_n = subName:gsub("%s+"," "):match("^%s*(.-)%s*$")
+        local sub_n = subName:gsub("%s+", " "):match("^%s*(.-)%s*$")
         t[#t + 1] = {
-			Name = stringify(Name:gsub("%s+"," "):match("^%s*(.-)%s*$"))..(sub_n~="" and (": "..sub_n) or ""),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
+            Name = stringify(Name:gsub("%s+", " "):match("^%s*(.-)%s*$")) .. (sub_n ~= "" and (": " .. sub_n) or ""),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
     end
-	for i = #t, 1, -1 do
-		dt[#dt + 1] = t[i]
-	end
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
+    end
 end
 
 function MangaPoisk:prepareChapter(chapter, dt)
-    local content = downloadContent(self.Link..chapter.Link)
+    local content = downloadContent(self.Link .. chapter.Link)
     for Link in content:gmatch('data%-alternative="(%S-)"') do
         dt[#dt + 1] = Link
-		Console.write("Got " .. dt[#dt])
+        Console.write("Got " .. dt[#dt])
     end
 end
 
 function MangaPoisk:loadChapterPage(link, dt)
-	dt.Link = link
+    dt.Link = link
 end

@@ -40,7 +40,7 @@ function Animeregia:getLatestManga(page, dt)
     dt.NoPages = true
     for Link, Name in content:gmatch('manga%-item.-href="([^"]-)">(.-)</a>') do
         local key = Link:match("manga/(.*)/?") or ""
-        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. "/uploads/manga/"..key.."/cover/cover_250x350.jpg", self.ID, Link)
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. "/uploads/manga/" .. key .. "/cover/cover_250x350.jpg", self.ID, Link)
         dt.NoPages = false
         coroutine.yield(false)
     end

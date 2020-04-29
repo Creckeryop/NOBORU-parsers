@@ -24,24 +24,24 @@ end
 
 function ReadComicsOnline:getManga(link, dt)
     local content = downloadContent(link)
-	dt.NoPages = true
-	for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\">[^>]-src='//([^']-)' alt='([^']-)'>[^<]-</a>") do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
-		dt.NoPages = false
-		coroutine.yield(false)
-	end
+    dt.NoPages = true
+    for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\">[^>]-src='//([^']-)' alt='([^']-)'>[^<]-</a>") do
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
+        dt.NoPages = false
+        coroutine.yield(false)
+    end
 end
 
 function ReadComicsOnline:getLatestManga(page, dt)
-    self:getManga(self.Link.."/filterList?sortBy=last_release&asc=false&page="..page, dt)
+    self:getManga(self.Link .. "/filterList?sortBy=last_release&asc=false&page=" .. page, dt)
 end
 
 function ReadComicsOnline:getPopularManga(page, dt)
-    self:getManga(self.Link.."/filterList?sortBy=views&asc=false&page="..page, dt)
+    self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
 end
 
 function ReadComicsOnline:searchManga(search, page, dt)
-    self:getManga(self.Link.."/filterList?alpha="..search.."&sortBy=views&asc=false&page="..page, dt)
+    self:getManga(self.Link .. "/filterList?alpha=" .. search .. "&sortBy=views&asc=false&page=" .. page, dt)
 end
 
 function ReadComicsOnline:getChapters(manga, dt)
@@ -49,25 +49,25 @@ function ReadComicsOnline:getChapters(manga, dt)
     local t = {}
     for Link, Name in content:gmatch("chapter%-title%-rtl\">[^<]-<a href=\"([^\"]-)\">([^<]-)</a>") do
         t[#t + 1] = {
-			Name = stringify(Name),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
+            Name = stringify(Name),
+            Link = Link,
+            Pages = {},
+            Manga = manga
+        }
     end
-	for i = #t, 1, -1 do
-		dt[#dt + 1] = t[i]
-	end
+    for i = #t, 1, -1 do
+        dt[#dt + 1] = t[i]
+    end
 end
 
 function ReadComicsOnline:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
-	for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
+    for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
         dt[#dt + 1] = Link
-		Console.write("Got " .. dt[#dt])
+        Console.write("Got " .. dt[#dt])
     end
 end
 
 function ReadComicsOnline:loadChapterPage(link, dt)
-	dt.Link = link
+    dt.Link = link
 end
