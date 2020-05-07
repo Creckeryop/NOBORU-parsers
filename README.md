@@ -14,6 +14,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 |              |            | VLComic          |           |              |             |           |
 |              |            | MangaEden        |           |              |             |           |
 |              |            | NineManga        |           |              |             |           |
+|              |            | MangaSee         |           |              |             |           |
 | **NSFW**     | **NSFW**   | **NSFW**         | **NSFW**  | **NSFW**     | **NSFW**    | **NSFW**  |
 | nhentai      | Nude-Moon  | PervEden         |           |              |             |           |
 | HentaiRead   | AllHentai  | HentaiCafe       |           |              |             |           |
