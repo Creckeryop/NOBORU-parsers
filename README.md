@@ -23,13 +23,14 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Catalog works with option Preferred Language and deletes extra manga from it* 
 
-| Turkish     | Italian   | Vietnamese | Polish        | German    | Brazil    |
-|:-----------:|:---------:|:----------:|:-------------:|:---------:|:---------:|
-| Mabushimajo | MangaEden | TruyenQQ   | Phoenix-Scans | NineManga | NineManga |
-| Puzzmos     | NineManga |            |               |           |           |
-| MangaTR     |           |            |               |           |           |
-| **NSFW**    | **NSFW**  | **NSFW**   | **NSFW**      | **NSFW**  | **NSFW**  |
-|             | PervEden  |            |               |           |           |
+| Turkish           | Italian   | Vietnamese | Polish        | German    | Brazil    |
+|:-----------------:|:---------:|:----------:|:-------------:|:---------:|:---------:|
+| Mabushimajo       | MangaEden | TruyenQQ   | Phoenix-Scans | NineManga | NineManga |
+| Puzzmos           | NineManga |            |               |           |           |
+| MangaTR(disabled) |           |            |               |           |           |
+| SeriManga         |           |            |               |           |           |
+| **NSFW**          | **NSFW**  | **NSFW**   | **NSFW**      | **NSFW**  | **NSFW**  |
+|                   | PervEden  |            |               |           |           |
 
 ## Cloudflare-sites
   Parsers in this folder will work if there will be the way to bypass cloudflare with cURL or sites will remove cloudflare thing (that will never happen).
