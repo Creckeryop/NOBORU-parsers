@@ -1,4 +1,4 @@
-MangaOwl = Parser:new("MangaOwl", "https://mangaowl.net", "ENG", "MANGAOWLEN", 1)
+MangaOwl = Parser:new("MangaOwl", "https://mangaowl.net", "ENG", "MANGAOWLEN", 2)
 
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
@@ -46,7 +46,7 @@ end
 function MangaOwl:getChapters(manga, dt)
     local content = downloadContent(self.Link .. "/single/" .. manga.Link)
     local t = {}
-    for Link, Name in content:gmatch('chapter_list">.-href="([^"]-)".-label>[\n%s]-(%S[^<]-)[\n%s]-</label>') do
+    for Link, Name in content:gmatch('chapter_list">.-href="([^"]-)".-chapter%-title">[ \n\r]+(.-)[ \n\r]-</label>') do
         t[#t + 1] = {
             Name = stringify(Name),
             Link = Link,
