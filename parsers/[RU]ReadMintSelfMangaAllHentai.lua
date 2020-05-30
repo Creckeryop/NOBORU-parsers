@@ -181,7 +181,7 @@ function ReadManga:getManga(link, dt)
     dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch('<a href="(/%S-)" class="non%-hover".-original=\'(%S-)\' title=\'(.-)\' alt') do
         if Link:find("^/[^/]-$") then
-            dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
+            dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link, self.Link .. Link)
         end
         dt.NoPages = false
         coroutine.yield(false)
