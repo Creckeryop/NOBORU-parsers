@@ -54,7 +54,6 @@ function Mabushimajo:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. "/onlineokuma/read/" .. chapter.Link .. "/page/1")
     for Link in content:gmatch('"url" ?: ?"(%S-)"') do
         dt[#dt + 1] = Link:gsub("\\/", "/")
-        Console.write("Got " .. dt[#dt])
     end
 end
 

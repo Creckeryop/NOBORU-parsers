@@ -63,7 +63,6 @@ function HentaiCafe:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. "/manga/read/" .. chapter.Link)
     for link in content:gmatch('"url"%s?:%s?"(%S-)"') do
         dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
-        Console.write("Got " .. dt[#dt])
     end
 end
 

@@ -1,4 +1,42 @@
-Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG", 1)
+Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG", 2)
+
+Animeregia.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+Animeregia.Tags = {"Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports", "Supernatural", "Tragedy", "Yaoi", "Yuri", }
+
+Animeregia.TagValues = {
+    ["Action"] = "1",
+    ["Adventure"] = "2",
+    ["Comedy"] = "3",
+    ["Doujinshi"] = "4",
+    ["Drama"] = "5",
+    ["Ecchi"] = "6",
+    ["Fantasy"] = "7",
+    ["Gender Bender"] = "8",
+    ["Harem"] = "9",
+    ["Historical"] = "10",
+    ["Horror"] = "11",
+    ["Josei"] = "12",
+    ["Martial Arts"] = "13",
+    ["Mature"] = "14",
+    ["Mecha"] = "15",
+    ["Mystery"] = "16",
+    ["One Shot"] = "17",
+    ["Psychological"] = "18",
+    ["Romance"] = "19",
+    ["School Life"] = "20",
+    ["Sci-fi"] = "21",
+    ["Seinen"] = "22",
+    ["Shoujo"] = "23",
+    ["Shoujo Ai"] = "24",
+    ["Shounen"] = "25",
+    ["Shounen Ai"] = "26",
+    ["Slice of Life"] = "27",
+    ["Sports"] = "28",
+    ["Supernatural"] = "29",
+    ["Tragedy"] = "30",
+    ["Yaoi"] = "31",
+    ["Yuri"] = "32"
+}
 
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
@@ -33,6 +71,14 @@ end
 
 function Animeregia:getPopularManga(page, dt)
     self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
+end
+
+function Animeregia:getLetterManga(page, dt, letter)
+    self:getManga(self.Link .. "/filterList?alpha=" .. letter:gsub("#", "Other") .. "&sortBy=name&asc=true&page=" .. page, dt)
+end
+
+function Animeregia:getTagManga(page, dt, tag)
+    self:getManga(self.Link .. "/filterList?alpha=&cat=" .. (self.TagValues[tag] or "0") .. "&sortBy=name&asc=true&page=" .. page, dt)
 end
 
 function Animeregia:getLatestManga(page, dt)
@@ -70,7 +116,6 @@ function Animeregia:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
     for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
         dt[#dt + 1] = Link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

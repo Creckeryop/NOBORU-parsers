@@ -63,7 +63,6 @@ function MangaOwl:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
     for Link in content:gmatch('owl%-lazy" data%-src="(%S-)"') do
         dt[#dt + 1] = Link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

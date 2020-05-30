@@ -64,7 +64,6 @@ function GoldenMangas:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. chapter.Link)
     for link in content:gmatch('img src="([^"]-)" class="img%-responsive img%-manga') do
         dt[#dt + 1] = self.Link .. link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

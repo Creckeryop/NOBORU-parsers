@@ -64,7 +64,6 @@ function ReadComicsOnline:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
     for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
         dt[#dt + 1] = Link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

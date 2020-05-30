@@ -65,8 +65,7 @@ if Settings.Version > 0.35 then
         local t = dest_table
         for Link in content:gmatch('<img class="lazy".-src="([^"]-)"') do
             t[#t + 1] = Link .. "\n" .. chapter.Link
-            Console.write("Got " .. t[#t])
-        end
+                    end
     end
     
     function TruyenQQ:loadChapterPage(link, dest_table)

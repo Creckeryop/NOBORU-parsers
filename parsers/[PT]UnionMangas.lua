@@ -94,7 +94,6 @@ function UnionMangas:prepareChapter(chapter, dest_table)
     local t = dest_table
     for Link, Name in content:gmatch('img src="([^"]-/leitor/[^"]-)"') do
         t[#t + 1] = Link:gsub("%s", "%%%%20")
-        Console.write("Got " .. t[#t])
     end
 end
 

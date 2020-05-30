@@ -82,7 +82,6 @@ function MangaKakalot:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Manga.Data.Source .. "/chapter/" .. chapter.Manga.Link .. "/" .. chapter.Link):match(Patterns[chapter.Manga.Data.Source][2]) or ""
     for Link in content:gmatch('img src="(%S-)" alt') do
         dt[#dt + 1] = Link:gsub("%%", "%%%%")
-        Console.write("Got " .. dt[#dt])
     end
 end
 

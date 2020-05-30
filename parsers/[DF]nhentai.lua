@@ -54,7 +54,6 @@ function nhentai:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. chapter.Link)
     for link in content:gmatch('class="gallerythumb".-href="(%S-)"') do
         dt[#dt + 1] = self.Link .. link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

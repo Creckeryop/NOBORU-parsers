@@ -1,6 +1,6 @@
-LelScanVF = Parser:new("LELSCAN-VF", "https://www.lelscan-vf.com", "FRA", "LELSCANFRA", 2)
+MangaDenizi = Parser:new("MangaDenizi", "https://mangadenizi.com", "TUR", "MANGADENIZI", 1)
 
-LelScanVF.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+MangaDenizi.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
@@ -23,29 +23,29 @@ local function downloadContent(link)
     return f.text or ""
 end
 
-function LelScanVF:getManga(link, dt)
+function MangaDenizi:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
-    for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='([^']-)' alt='([^']-)'>[^<]-</a>") do
+    for Link, ImageLink, Name in content:gmatch("<a href=\"([^\"]-)\" class=\"thumbnail\">[^>]-src='//([^']-)' alt='([^']-)'>[^<]-</a>") do
         dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
         dt.NoPages = false
         coroutine.yield(false)
     end
 end
 
-function LelScanVF:getPopularManga(page, dt)
+function MangaDenizi:getPopularManga(page, dt)
     self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
 end
 
-function LelScanVF:getLetterManga(page, dt, letter)
+function MangaDenizi:getLetterManga(page, dt, letter)
     self:getManga(self.Link .. "/filterList?alpha=" .. letter:gsub("#", "Other") .. "&sortBy=name&asc=true&page=" .. page, dt)
 end
 
-function LelScanVF:searchManga(search, page, dt)
+function MangaDenizi:searchManga(search, page, dt)
     self:getManga(self.Link .. "/filterList?alpha=" .. search .. "&sortBy=views&asc=false&page=" .. page, dt)
 end
 
-function LelScanVF:getChapters(manga, dt)
+function MangaDenizi:getChapters(manga, dt)
     local content = downloadContent(manga.Link)
     local t = {}
     for Link, Name, SubName in content:gmatch("chapter%-title%-rtl\">[^<]-<a href=\"([^\"]-)\">([^<]-)</a>.-<em>(.-)</em>") do
@@ -61,13 +61,13 @@ function LelScanVF:getChapters(manga, dt)
     end
 end
 
-function LelScanVF:prepareChapter(chapter, dt)
+function MangaDenizi:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
-    for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
+    for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' //([^']-) '") do
         dt[#dt + 1] = Link
     end
 end
 
-function LelScanVF:loadChapterPage(link, dt)
+function MangaDenizi:loadChapterPage(link, dt)
     dt.Link = link
 end

@@ -64,7 +64,6 @@ function MangaPoisk:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. chapter.Link)
     for Link in content:gmatch('data%-alternative="(%S-)"') do
         dt[#dt + 1] = Link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

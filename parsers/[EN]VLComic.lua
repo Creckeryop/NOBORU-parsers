@@ -64,7 +64,6 @@ function VLComic:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. chapter.Link)
     for link in content:gmatch('<img src="(%S-)" title') do
         dt[#dt + 1] = link:gsub("%%", "%%%%")
-        Console.write("Got " .. dt[#dt])
     end
 end
 

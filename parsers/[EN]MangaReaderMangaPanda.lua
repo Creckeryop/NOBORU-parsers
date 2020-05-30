@@ -1,5 +1,46 @@
 MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", "MANGAREADEREN", 1)
 
+MangaReader.Tags = {"Action", "Adventure", "Comedy", "Demons", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Magic", "Martial Arts", "Mature", "Mecha", "Military", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-Fi", "Seinen", "Shoujo", "Shoujoai", "Shounen", "Shounenai", "Slice of Life", "Smut", "Sports", "Super Power", "Supernatural", "Tragedy", "Vampire", "Yaoi", "Yuri"}
+MangaReader.TagValues = {
+    ["Action"] = "action",
+    ["Adventure"] = "adventure",
+    ["Comedy"] = "comedy",
+    ["Demons"] = "demons",
+    ["Drama"] = "drama",
+    ["Ecchi"] = "ecchi",
+    ["Fantasy"] = "fantasy",
+    ["Gender Bender"] = "gender-bender",
+    ["Harem"] = "harem",
+    ["Historical"] = "historical",
+    ["Horror"] = "horror",
+    ["Josei"] = "josei",
+    ["Magic"] = "magic",
+    ["Martial Arts"] = "martial-arts",
+    ["Mature"] = "mature",
+    ["Mecha"] = "mecha",
+    ["Military"] = "military",
+    ["Mystery"] = "mystery",
+    ["One Shot"] = "one-shot",
+    ["Psychological"] = "psychological",
+    ["Romance"] = "romance",
+    ["School Life"] = "school-life",
+    ["Sci-Fi"] = "sci-fi",
+    ["Seinen"] = "seinen",
+    ["Shoujo"] = "shoujo",
+    ["Shoujoai"] = "shoujoai",
+    ["Shounen"] = "shounen",
+    ["Shounenai"] = "shounenai",
+    ["Slice of Life"] = "slice-of-life",
+    ["Smut"] = "smut",
+    ["Sports"] = "sports",
+    ["Super Power"] = "super-power",
+    ["Supernatural"] = "supernatural",
+    ["Tragedy"] = "tragedy",
+    ["Vampire"] = "vampire",
+    ["Yaoi"] = "yaoi",
+    ["Yuri"] = "yuri",
+}
+
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)
@@ -35,6 +76,10 @@ function MangaReader:getPopularManga(page, dt)
     self:getManga(self.Link .. "/popular/" .. ((page - 1) * 30), dt)
 end
 
+function MangaReader:getTagManga(page, dt, tag)
+    self:getManga(self.Link .. "/popular/" .. (self.TagValues[tag] or "") .. "/" .. ((page - 1) * 30), dt)
+end
+
 function MangaReader:searchManga(search, page, dt)
     self:getManga(self.Link .. "/search/?w=" .. search .. "&rd=&status=&order=&genre=&p=" .. ((page - 1) * 30), dt)
 end
@@ -55,7 +100,6 @@ function MangaReader:prepareChapter(chapter, dt)
     local count = downloadContent(self.Link .. chapter.Manga.Link .. chapter.Link .. "#"):match("</select> of (.-)<") or 0
     for i = 1, count do
         dt[i] = self.Link .. chapter.Manga.Link .. chapter.Link .. "/" .. i
-        Console.write("Got " .. dt[i])
     end
 end
 

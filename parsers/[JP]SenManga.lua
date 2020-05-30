@@ -1,5 +1,76 @@
 SenManga = Parser:new("SenManga", "https://raw.senmanga.com", "JAP", "SENGMANGAJAP", 1)
 
+SenManga.Filters = {
+    {
+        Name = "Sort By",
+        Type = "radio",
+        Tags = {
+            "Title",
+            "Total Views",
+            "Rank",
+            "Last Update"
+        }
+    },
+    {
+        Name = "Genre",
+        Type = "checkcross",
+        Tags = {
+            "Action",
+            "Adult",
+            "Adventure",
+            "Comedy",
+            "Cooking",
+            "Drama",
+            "Ecchi",
+            "Fantasy",
+            "Gender Bender",
+            "Harem",
+            "Historical",
+            "Horror",
+            "Josei",
+            "Light Novel",
+            "Magazine",
+            "Martial Arts",
+            "Mature",
+            "Music",
+            "Mystery",
+            "Psychological",
+            "Romance",
+            "School Life",
+            "Sci-Fi",
+            "Seinen",
+            "Shoujo",
+            "Shoujo Ai",
+            "Shounen",
+            "Shounen Ai",
+            "Slice of Life",
+            "Smut",
+            "Sports",
+            "Supernatural",
+            "Tragedy",
+            "Webtoons",
+            "Yaoi",
+            "Yuri"
+        }
+    },
+    {
+        Name = "Completed",
+        Type = "radio",
+        Tags = {
+            "Yes",
+            "No"
+        },
+        Default = "No"
+    }
+}
+
+SenManga.Sorts = {
+    ["Title"] = "title",
+    ["Total Views"] = "total_views",
+    ["Rank"] = "rank",
+    ["Last Update"] = "last_update"
+}
+
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)
@@ -43,8 +114,18 @@ function SenManga:getLatestManga(page, dt)
     self:getManga(self.Link .. "/directory/last_update?page=" .. page, dt, page)
 end
 
-function SenManga:searchManga(search, page, dt)
-    self:getManga(self.Link .. "/search?s=" .. search .. "&author=&artist=&genre=&nogenre=&completed=0&released=&page=" .. page, dt, page, true)
+function SenManga:searchManga(search, page, dt, tags)
+    local include = ""
+    local exclude = ""
+    local completed = 0
+    local sort = "title"
+    if tags then
+        sort = self.Sorts[tags["Sort By"]]
+        include = table.concat(tags["Genre"].include, "%%2C"):gsub(" ", "+")
+        exclude = table.concat(tags["Genre"].exclude, "%%2C"):gsub(" ", "+")
+        completed = tags["Completed"] == "Yes" and 1 or 0
+    end
+    self:getManga(self.Link .. "/search?s=" .. search .. "&author=&artist=&genre=" .. include .. "&nogenre=" .. exclude .. "&completed=" .. completed .. "&released=&page=" .. page .. "&sort=" .. sort, dt, page, true)
 end
 
 function SenManga:getChapters(manga, dt)
@@ -67,7 +148,6 @@ function SenManga:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. "/" .. chapter.Link)
     for i = 1, tonumber(content:match(" of (%d*)") or 0) do
         dt[#dt + 1] = self.Link .. "/viewer/" .. chapter.Link .. "/" .. i
-        Console.write("Got " .. dt[#dt])
     end
 end
 

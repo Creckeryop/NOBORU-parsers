@@ -29,6 +29,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 | Puzzmos           | NineManga |            |               |           |           |
 | MangaTR(disabled) |           |            |               |           |           |
 | SeriManga         |           |            |               |           |           |
+| MangaDenizi       |           |            |               |           |           |
 | **NSFW**          | **NSFW**  | **NSFW**   | **NSFW**      | **NSFW**  | **NSFW**  |
 |                   | PervEden  |            |               |           |           |
 

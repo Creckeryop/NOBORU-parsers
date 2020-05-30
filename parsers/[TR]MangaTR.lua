@@ -2,7 +2,7 @@ if Settings.Version > 0.32 then
     MangaTR = Parser:new("MangaTR", "https://manga-tr.com", "TUR", "MANGATRTR")
     
     MangaTR.Disabled = true
-
+    
     local notify = false
     
     local function stringify(string)
@@ -110,7 +110,6 @@ if Settings.Version > 0.32 then
             local t = dest_table
             for link in content:gmatch('value="(%S-)"[^>]->%d') do
                 t[#t + 1] = link
-                Console.write("Got " .. t[#t])
             end
         end
     end

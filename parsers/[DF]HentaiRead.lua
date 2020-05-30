@@ -65,7 +65,6 @@ function HentaiRead:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. "/hentai/" .. chapter.Link .. "/english"):match("var chapter_preloaded_images = %[(.-)%]") or ""
     for Link in content:gmatch('"([^"]-)"') do
         dt[#dt + 1] = Link:gsub("\\/", "/")
-        Console.write("Got " .. dt[#dt])
     end
 end
 

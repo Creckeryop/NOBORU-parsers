@@ -60,7 +60,6 @@ function Submanga:prepareChapter(chapter, dest_table)
     local t = dest_table
     for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
         t[#t + 1] = Link
-        Console.write("Got " .. t[#t])
     end
 end
 

@@ -1,5 +1,138 @@
 Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 3)
 
+Desu.Filters = {
+    {
+        Name = "Сортировка",
+        Type = "radio",
+        Tags = {
+            "По алфавиту",
+            "По популярности",
+            "По обновлению"
+        },
+        Default = "По популярности"
+    },
+    {
+        Name = "Тип манги",
+        Type = "check",
+        Tags = {
+            "Манга",
+            "Манхва",
+            "Маньхуа",
+            "Ваншот",
+            "Комикс"
+        }
+    },
+    {
+        Name = "Жанры",
+        Type = "check",
+        Tags = {
+            "Безумие",
+            "Боевые искусства",
+            "Вампиры",
+            "Военное",
+            "Гарем",
+            "Демоны",
+            "Детектив",
+            "Детское",
+            "Дзёсей",
+            "Додзинси",
+            "Драма",
+            "Игры",
+            "Исторический",
+            "Комедия",
+            "Космос",
+            "Магия",
+            "Машины",
+            "Меха",
+            "Музыка",
+            "Пародия",
+            "Повседневность",
+            "Полиция",
+            "Приключения",
+            "Психологическое",
+            "Романтика",
+            "Самураи",
+            "Сверхъестественное",
+            "Сёдзе",
+            "Сёдзе Ай",
+            "Сейнен",
+            "Сёнен",
+            "Сёнен Ай",
+            "Смена пола",
+            "Спорт",
+            "Супер сила",
+            "Триллер",
+            "Ужасы",
+            "Фантастика",
+            "Фэнтези",
+            "Хентай",
+            "Школа",
+            "Экшен",
+            "Этти",
+            "Юри",
+            "Яой"
+        }
+    }
+}
+
+Desu.Keys = {
+    ["По алфавиту"] = "name",
+    ["По популярности"] = "popular",
+    ["По обновлению"] = "update",
+    ["Манга"] = "manga",
+    ["Манхва"] = "manhwa",
+    ["Маньхуа"] = "manhua",
+    ["Ваншот"] = "one_shot",
+    ["Комикс"] = "comics",
+    ["Безумие"] = "Dementia",
+    ["Боевые искусства"] = "Martial Arts",
+    ["Вампиры"] = "Vampire",
+    ["Военное"] = "Military",
+    ["Гарем"] = "Harem",
+    ["Демоны"] = "Demons",
+    ["Детектив"] = "Mystery",
+    ["Детское"] = "Kids",
+    ["Дзёсей"] = "Josei",
+    ["Додзинси"] = "Doujinshi",
+    ["Драма"] = "Drama",
+    ["Игры"] = "Game",
+    ["Исторический"] = "Historical",
+    ["Комедия"] = "Comedy",
+    ["Космос"] = "Space",
+    ["Магия"] = "Magic",
+    ["Машины"] = "Cars",
+    ["Меха"] = "Mecha",
+    ["Музыка"] = "Music",
+    ["Пародия"] = "Parody",
+    ["Повседневность"] = "Slice of Life",
+    ["Полиция"] = "Police",
+    ["Приключения"] = "Adventure",
+    ["Психологическое"] = "Psychological",
+    ["Романтика"] = "Romance",
+    ["Самураи"] = "Samurai",
+    ["Сверхъестественное"] = "Supernatural",
+    ["Сёдзе"] = "Shoujo",
+    ["Сёдзе Ай"] = "Shoujo Ai",
+    ["Сейнен"] = "Seinen",
+    ["Сёнен"] = "Shounen",
+    ["Сёнен Ай"] = "Shounen Ai",
+    ["Смена пола"] = "Gender Bender",
+    ["Спорт"] = "Sports",
+    ["Супер сила"] = "Super Power",
+    ["Триллер"] = "Thriller",
+    ["Ужасы"] = "Horror",
+    ["Фантастика"] = "Sci-Fi",
+    ["Фэнтези"] = "Fantasy",
+    ["Хентай"] = "Hentai",
+    ["Школа"] = "School",
+    ["Экшен"] = "Action",
+    ["Этти"] = "Ecchi",
+    ["Юри"] = "Yuri",
+    ["Яой"] = "Yaoi"
+}
+
+local desu_api = "https://desu.me/manga/api"
+
 local function downloadContent(link)
     local file = {}
     Threads.insertTask(file, {
@@ -27,28 +160,49 @@ end
 
 function Desu:getManga(link, dt, is_search)
     local content = downloadContent(link)
-    local pattern = is_search and '<a href="(manga/%S-)".-src="(.-)".-SubTitle">(.-)</div>' or 'memberListItem.-<a href="(manga/%S-)".-url%(\'([^\']-)\'%);.-title="([^"]-)"'
     dt.NoPages = true
-    for Link, ImageLink, Name in content:gmatch(pattern) do
-        ImageLink = "https://desu.me/data/manga/covers/x225/" .. (Link:match("%.([^%.]-)/?$") or "") .. ".jpg"
-        dt[#dt + 1] = CreateManga(stringify(Name), "/" .. Link, ImageLink, self.ID, self.Link .. "/" .. Link)
-        if not is_search then
-            dt.NoPages = false
-        end
+    for Name, RName, ImageLink, Link in content:gmatch('"id":%d-,"name":"(.-)","russian":"(.-)","image":.-:"(.-)".-"url":".-(manga/%S-)"') do
+        dt[#dt + 1] = CreateManga(stringify((Name .. " (" .. RName .. ")"):gsub("\\", "")), "/" .. Link, ImageLink, self.ID, self.Link .. "/" .. Link)
+        dt.NoPages = false
         coroutine.yield(false)
     end
 end
 
 function Desu:getPopularManga(page, dt)
-    Desu:getManga(self.Link .. "/manga/?order_by=popular&page=" .. page, dt)
+    Desu:getManga(desu_api .. "?limit=50&order=popular&page=" .. page, dt)
+end
+
+function Desu:getAZManga(page, dt)
+    Desu:getManga(desu_api .. "?limit=50&order=name&page=" .. page, dt)
 end
 
 function Desu:getLatestManga(page, dt)
-    Desu:getManga(self.Link .. "/manga/?page=" .. page, dt)
+    Desu:getManga(desu_api .. "?limit=50&order=updated&page=" .. page, dt)
 end
 
-function Desu:searchManga(search, _, dt)
-    Desu:getManga(self.Link .. "/manga/search?q=" .. search, dt, true)
+function Desu:searchManga(search, page, dt, tags)
+    local query = ""
+    if search:gsub(" ", "") ~= "" then
+        query = query .. "&search=" .. search
+    end
+    if tags then
+        query = query .. "&order=" .. self.Keys[tags[1]]
+        local types = {}
+        for _, v in ipairs(tags[2]) do
+            types[#types + 1] = self.Keys[v]
+        end
+        if #types > 0 then
+            query = query .. "&kinds=" .. table.concat(types, ",")
+        end
+        local genres = {}
+        for _, v in ipairs(tags[3]) do
+            genres[#genres + 1] = self.Keys[v]
+        end
+        if #genres > 0 then
+            query = query .. "&genres=" .. table.concat(genres, ",")
+        end
+    end
+    Desu:getManga(desu_api .. "?limit=20&page=" .. page .. query, dt, true)
 end
 
 function Desu:getChapters(manga, dt)
@@ -77,9 +231,6 @@ function Desu:prepareChapter(chapter, dt)
     for link in images:gmatch('"(.-)"') do
         if not link:find("%.gif") then
             dt[#dt + 1] = dir .. link
-            Console.write("Got " .. dt[#dt])
-        else
-            Console.write("Skipping " .. link)
         end
     end
 end

@@ -1,5 +1,144 @@
-RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "JAP", "RAWDEVARTJP")
+RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "JAP", "RAWDEVARTJP", 1)
 
+RawDevArt.Filters = {
+    {
+        Name = "Types",
+        Type = "checkcross",
+        Tags = {
+            "Manga",
+            "Webtoon - Korean",
+            "Webtoon - Chinese",
+            "Webtoon - Japanese",
+            "Manhwa - Korean",
+            "Manhua - Chinese",
+            "Comic",
+            "Doujinshi"
+        }
+    },
+    {
+        Name = "Status",
+        Type = "checkcross",
+        Tags = {
+            "Ongoing",
+            "Haitus",
+            "Axed",
+            "Unknown",
+            "Finished"
+        }
+    },
+    {
+        Name = "Genre",
+        Type = "checkcross",
+        Tags = {
+            "4-koma",
+            "Action",
+            "Adult",
+            "Adventure",
+            "Comedy",
+            "Cooking",
+            "Crime",
+            "Drama",
+            "Ecchi",
+            "Fantasy",
+            "Gender Bender",
+            "Gore",
+            "Harem",
+            "Historical",
+            "Horror",
+            "Isekai",
+            "Josei",
+            "Lolicon",
+            "Martial Arts",
+            "Mature",
+            "Mecha",
+            "Medical",
+            "Music",
+            "Mystery",
+            "Philosophical",
+            "Psychological",
+            "Romance",
+            "School Life",
+            "Sci-Fi",
+            "Seinen",
+            "Shotacon",
+            "Shoujo",
+            "Shoujo Ai",
+            "Shounen",
+            "Shounen Ai",
+            "Slice of Life",
+            "Smut",
+            "Sports",
+            "Supernatural",
+            "Super Powers",
+            "Thriller",
+            "Tragedy",
+            "Wuxia",
+            "Yaoi",
+            "Yuri"
+        }
+    }
+}
+
+RawDevArt.Keys = {
+    ["Manga"] = "0",
+    ["Webtoon - Korean"] = "1",
+    ["Webtoon - Chinese"] = "6",
+    ["Webtoon - Japanese"] = "7",
+    ["Manhwa - Korean"] = "2",
+    ["Manhua - Chinese"] = "3",
+    ["Comic"] = "4",
+    ["Doujinshi"] = "5",
+    ["Ongoing"] = "0",
+    ["Haitus"] = "1",
+    ["Axed"] = "2",
+    ["Unknown"] = "3",
+    ["Finished"] = "4",
+    ["4-koma"] = "29",
+    ["Action"] = "1",
+    ["Adult"] = "37",
+    ["Adventure"] = "2",
+    ["Comedy"] = "3",
+    ["Cooking"] = "33",
+    ["Crime"] = "4",
+    ["Drama"] = "5",
+    ["Ecchi"] = "30",
+    ["Fantasy"] = "6",
+    ["Gender Bender"] = "34",
+    ["Gore"] = "31",
+    ["Harem"] = "39",
+    ["Historical"] = "7",
+    ["Horror"] = "8",
+    ["Isekai"] = "9",
+    ["Josei"] = "42",
+    ["Lolicon"] = "48",
+    ["Martial Arts"] = "35",
+    ["Mature"] = "36",
+    ["Mecha"] = "10",
+    ["Medical"] = "11",
+    ["Music"] = "38",
+    ["Mystery"] = "12",
+    ["Philosophical"] = "13",
+    ["Psychological"] = "14",
+    ["Romance"] = "15",
+    ["School Life"] = "40",
+    ["Sci-Fi"] = "16",
+    ["Seinen"] = "41",
+    ["Shotacon"] = "49",
+    ["Shoujo"] = "28",
+    ["Shoujo Ai"] = "17",
+    ["Shounen"] = "27",
+    ["Shounen Ai"] = "18",
+    ["Slice of Life"] = "19",
+    ["Smut"] = "32",
+    ["Sports"] = "20",
+    ["Supernatural"] = "43",
+    ["Super Powers"] = "21",
+    ["Thriller"] = "22",
+    ["Tragedy"] = "23",
+    ["Wuxia"] = "24",
+    ["Yaoi"] = "25",
+    ["Yuri"] = "26"
+}
 ---NSFW variable, if parser SFW you can skip this line
 RawDevArt.NSFW = false
 
@@ -20,9 +159,9 @@ local function downloadContent(link)
     local file = {}
     Threads.insertTask(file, {
         Type = "StringRequest",
-        Link = link,    --Link to the site
-        Table = file,   --table where StringRequest will save data
-        Index = "string"--index of table where StringRequest should write data
+        Link = link, --Link to the site
+        Table = file, --table where StringRequest will save data
+        Index = "string" --index of table where StringRequest should write data
     --- HttpMethod = --GET_METHOD|POST_METHOD|HEAD_METHOD|OPTIONS_METHOD|PUT_METHOD|DELETE_METHOD|TRACE_METHOD|CONNECT_METHOD
     --- PostData = "" --Some post data that you need
     --- ContentType = --XWWW(default) | JSON
@@ -33,7 +172,7 @@ local function downloadContent(link)
     --- Header4 = "" --Header slot 4 of 4
     --- That is okay if not all of commented table vars will be defined
     })
-
+    
     ---In two words: While downloading, update app `file` is the table where StringRequest writes data
     while Threads.check(file) do
         coroutine.yield(false)
@@ -85,8 +224,37 @@ end
 ---@param dest_table table
 ---Function to searchManga `search` variable already consist of %20, + and other chars
 ---But if site doesn't support widechars like `Фывйцучя`, and you want to translate them to % chars, translate them by yourself
-function RawDevArt:searchManga(search, page, dest_table)
-    self:getManga(self.Link .. "/search/?title=" .. search, page, dest_table)
+function RawDevArt:searchManga(search, page, dest_table, tags)
+    local query = ""
+    if tags then
+        for k, f in ipairs({tags[1], tags[2], tags[3]}) do
+            local str = ""
+            if k == 1 then
+                str = "ctype"
+            elseif k == 2 then
+                str = "status"
+            elseif k == 3 then
+                str = "genre"
+            end
+            if #f.exclude > 0 then
+                query = query .. "&" .. str .. "_exc="
+                local types = {}
+                for p, t in ipairs(f.exclude) do
+                    types[#types + 1] = self.Keys[t]
+                end
+                query = query .. table.concat(types, ",")
+            end
+            if #f.include > 0 then
+                query = query .. "&" .. str .. "_inc="
+                local types = {}
+                for p, t in ipairs(f.include) do
+                    types[#types + 1] = self.Keys[t]
+                end
+                query = query .. table.concat(types, ",")
+            end
+        end
+    end
+    self:getManga(self.Link .. "/search/?title=" .. search..query, page, dest_table)
 end
 
 ---Function that gives all chapters in manga
@@ -131,3 +299,4 @@ function ParserName:loadChapterPage(link, dest_table)
     dest_table.Link = content:match("<img src="(%S-)")
 end
 ]]
+

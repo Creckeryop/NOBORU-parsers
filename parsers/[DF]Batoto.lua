@@ -123,7 +123,6 @@ function BatoTo:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. chapter.Link)
     for Link in content:gmatch('"%d-":"([^"]-)"') do
         dt[#dt + 1] = Link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

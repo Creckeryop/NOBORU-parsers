@@ -72,7 +72,6 @@ function Manga1000:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. "/" .. chapter.Link)
     for Link in content:gmatch('src="(%S-)" alt') do
         dt[#dt + 1] = Link:gsub("^https://", "")
-        Console.write("Got " .. dt[#dt])
     end
 end
 

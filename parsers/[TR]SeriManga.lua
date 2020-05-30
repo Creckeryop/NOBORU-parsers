@@ -25,7 +25,7 @@ function SeriManga:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch('mangas%-item">.-href="[^"]-(/manga/[^"]-)".-url%(\'([^"]-)\'%).-"mlb%-name">([^<]-)</span>') do
-        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link..Link)
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
         dt.NoPages = false
         coroutine.yield(false)
     end
@@ -41,12 +41,12 @@ end
 
 function SeriManga:getChapters(manga, dt)
     local t = {}
-    local next = self.Link..manga.Link
+    local next = self.Link .. manga.Link
     repeat
         local content = downloadContent(next)
         for Link, Name in content:gmatch('spl%-list%-item">[^"]-href="[^"]-(/manga/[^"]-)" title="([^"]-)"') do
             t[#t + 1] = {
-                Name = stringify(Name):gsub("^"..manga.Name,""):gsub("^[ -]+",""),
+                Name = stringify(Name):gsub("^" .. manga.Name, ""):gsub("^[ -]+", ""),
                 Link = Link,
                 Pages = {},
                 Manga = manga
@@ -60,10 +60,9 @@ function SeriManga:getChapters(manga, dt)
 end
 
 function SeriManga:prepareChapter(chapter, dt)
-    local content = downloadContent(self.Link..chapter.Link)
+    local content = downloadContent(self.Link .. chapter.Link)
     for Link in content:gmatch('<img class="chapter%-pages__[^<]-src="([^"]-)"') do
         dt[#dt + 1] = Link
-        Console.write("Got " .. dt[#dt])
     end
 end
 

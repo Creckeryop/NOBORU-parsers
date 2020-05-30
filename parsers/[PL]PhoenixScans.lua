@@ -56,7 +56,6 @@ function PhoenixScansPoland:searchManga(search, _, dt)
         return old_gsub(self, sec, one)
     end
     search = search:gsub("!", "%%%%21"):gsub("#", "%%%%23"):gsub("%$", "%%%%24"):gsub("&", "%%%%26"):gsub("'", "%%%%27"):gsub("%(", "%%%%28"):gsub("%)", "%%%%29"):gsub("%*", "%%%%2A"):gsub("%+", "%%%%2B"):gsub(",", "%%%%2C"):gsub("%.", "%%%%2E"):gsub("/", "%%%%2F"):gsub(" ", "%+"):gsub("%%", "%%%%25")
-    Console.write(search)
     string.gsub = old_gsub
     local searchLink = self.Link .. "/search?query=" .. search
     local content = downloadContent(searchLink)
@@ -88,7 +87,6 @@ function PhoenixScansPoland:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
     for Link in content:gmatch("img%-responsive\"[^>]-data%-src=' ([^']-) '") do
         dt[#dt + 1] = Link:gsub(" ", "%%20"):gsub("%%", "%%%%")
-        Console.write("Got " .. dt[#dt])
     end
 end
 
