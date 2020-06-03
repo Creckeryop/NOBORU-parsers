@@ -1,4 +1,4 @@
-MangaKakalot = Parser:new("MangaKakalot", "https://mangakakalot.com", "ENG", "MANGAKAKALOT", 1)
+MangaKakalot = Parser:new("MangaKakalot", "https://mangakakalot.com", "ENG", "MANGAKAKALOT", 2)
 
 local Patterns = {
     ["https://manganelo.com"] = {"a%-h", 'class="container%-chapter%-reader">(.-)$'},
@@ -81,7 +81,10 @@ end
 function MangaKakalot:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Manga.Data.Source .. "/chapter/" .. chapter.Manga.Link .. "/" .. chapter.Link):match(Patterns[chapter.Manga.Data.Source][2]) or ""
     for Link in content:gmatch('img src="(%S-)" alt') do
-        dt[#dt + 1] = Link:gsub("%%", "%%%%")
+        dt[#dt + 1] = {
+            Link = Link:gsub("%%", "%%%%"),
+            Header1 = "referer: "..chapter.Manga.Data.Source .. "/chapter/" .. chapter.Manga.Link .. "/" .. chapter.Link
+        }
     end
 end
 
@@ -89,7 +92,7 @@ function MangaKakalot:loadChapterPage(link, dt)
     dt.Link = link
 end
 
-MangaNelo = MangaKakalot:new("MangaNelo", "https://manganelo.com", "ENG", "MANGANELO", 1)
+MangaNelo = MangaKakalot:new("MangaNelo", "https://manganelo.com", "ENG", "MANGANELO", 2)
 
 function MangaNelo:getManga(link, page, dt)
     local content = downloadContent(link .. page)
