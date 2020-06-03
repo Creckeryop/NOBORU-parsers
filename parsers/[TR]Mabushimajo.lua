@@ -1,5 +1,7 @@
 Mabushimajo = Parser:new("Mabushimajo", "http://mabushimajo.com", "TUR", "MABUSHTR", 1)
 
+Mabushimajo.Disabled = true
+
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)

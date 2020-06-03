@@ -1,5 +1,7 @@
 Manga1000 = Parser:new("Manga1000", "http://manga1000.com", "JAP", "MANGA1000JP", 2)
 
+Manga1000.Disabled = true
+
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)
