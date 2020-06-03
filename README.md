@@ -34,13 +34,13 @@ This repo is created to store parsers for NOBORU app on PS vita
 |                   | PervEden  |            |               |           |           |
 
 ## Cloudflare-sites
-  Parsers in this folder will work if there will be the way to bypass cloudflare with cURL or sites will remove cloudflare thing (that will never happen).
+  Parsers in this folder will work if there is the way to bypass cloudflare with cURL or with sites that avoid cloudflare thing (that will never happen).
 
 ## Manual Installation
   Throw `*.lua` file to `ux0:data/noboru/parsers/` and launch app
 
 ## Creating parsers
-  For understanding how to create parser you can check `parsers/[JP]RawDevArt.lua`, there all functions described and you can see here how it all works
+  For understanding how to create parser you can check `parsers/[JP]RawDevArt.lua`, there all functions described and you can see how it all works.
 
 ## Tables
   ```Lua
