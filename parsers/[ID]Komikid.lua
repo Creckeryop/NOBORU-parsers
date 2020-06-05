@@ -1,4 +1,4 @@
-Komikid = Parser:new("Komikid", "https://www.komikid.com", "IDN", "KOMIKIDIDN", 1)
+Komikid = Parser:new("Komikid", "https://www.komikid.com", "IDN", "KOMIKIDIDN", 2)
 
 Komikid.Tags = {"Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Fantasy", "Gender Bender", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports", "Supernatural", "Tragedy", "Yaoi", "Yuri"}
 
@@ -44,6 +44,10 @@ local function stringify(string)
     end):gsub("&(.-);", function(a) return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";" end)
 end
 
+local function stringify2(string)
+    return string:gsub("\\u(....)", function(a) return u8c(tonumber("0x" .. a)) end)
+end
+
 local function downloadContent(link)
     local f = {}
     Threads.insertTask(f, {
@@ -62,7 +66,7 @@ function Komikid:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
     for Link, ImageLink, Name in content:gmatch("<a href=\"[^\"]-/manga/([^\"]-)\"[^>]->[^>]-src='([^']-)' alt='([^']-)'>[^<]-</a>") do
-        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link.."/manga/"..Link, self.Link.."/manga/"..Link)
         dt.NoPages = false
         coroutine.yield(false)
     end
@@ -70,6 +74,10 @@ end
 
 function Komikid:getPopularManga(page, dt)
     self:getManga(self.Link .. "/filterList?sortBy=views&asc=false&page=" .. page, dt)
+end
+
+function Komikid:getAZManga(page, dt)
+    self:getManga(self.Link .. "/filterList?sortBy=name&asc=true&page=" .. page, dt)
 end
 
 function Komikid:getLetterManga(page, dt, letter)
@@ -81,7 +89,12 @@ function Komikid:getTagManga(page, dt, tag)
 end
 
 function Komikid:searchManga(search, page, dt)
-    self:getManga(self.Link .. "/filterList?alpha=" .. search .. "&sortBy=views&asc=false&page=" .. page, dt)
+    local content = downloadContent(self.Link.."/search?query="..search)
+    dt.NoPages = true
+    for value, data in content:gmatch('{"value":"(.-)","data":"(.-)"}') do
+        dt[#dt + 1] = CreateManga(stringify2(value), data, self.Link.."/uploads/manga/"..data.."/cover/cover_250x350.jpg", self.ID, self.Link.."/manga/"..data, self.Link.."/manga/"..data)
+        coroutine.yield(false)
+    end
 end
 
 function Komikid:getChapters(manga, dt)
