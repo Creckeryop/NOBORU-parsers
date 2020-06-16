@@ -1,4 +1,4 @@
-nhentai = Parser:new("nhentai", "https://nhentai.net", "DIF", "NHENTAI", 1)
+nhentai = Parser:new("nhentai", "https://nhentai.net", "DIF", "NHENTAI", 2)
 
 nhentai.NSFW = true
 
@@ -58,5 +58,5 @@ function nhentai:prepareChapter(chapter, dt)
 end
 
 function nhentai:loadChapterPage(link, dt)
-    dt.Link = downloadContent(link):match('image%-container">.-src="(%S-)"')
+    dt.Link = downloadContent(link):match('image%-container".-src="(%S-)"')
 end
