@@ -17,7 +17,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 |              |            | MangaSee         |           |              |             |           |
 |              |            | XoXoComics       |           |              |             |           |
 | **NSFW**     | **NSFW**   | **NSFW**         | **NSFW**  | **NSFW**     | **NSFW**    | **NSFW**  |
-| nhentai      | Nude-Moon  | PervEden         |           |              |             |           |
+| nhentai      | Nude-Moon  | PervEden         |           | DoujinHentai |             |           |
 | HentaiRead   | AllHentai  | HentaiCafe       |           |              |             |           |
 | 9hentai      |            |                  |           |              |             |           |
 | Hentai Shark |            |                  |           |              |             |           |
