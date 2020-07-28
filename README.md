@@ -8,7 +8,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 |              | MintManga  | MangaPanda       | Manga1000 | Submanga     | GoldenMangas| NineManga |
 |              | SelfManga  | MangaTown        |           | NineManga    |             |           |
 |              | Desu       | MangaOwl         |           | HeavenManga  |             |           |
-|              | NineManga  | ReadComicsOnline |           |              |             |           |
+|              | NineManga  | ReadComicsOnline |           | TumangaOnline|             |           |
 |              |            | MangaKakalot     |           |              |             |           |
 |              |            | MangaNelo        |           |              |             |           |
 |              |            | VLComic          |           |              |             |           |
