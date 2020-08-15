@@ -1,4 +1,4 @@
-NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU", 3)
+NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU", 4)
 
 NudeMoon.Filters = {
     {
@@ -193,7 +193,8 @@ local function downloadContent(link)
         Type = "StringRequest",
         Link = link,
         Table = f,
-        Index = "text"
+        Index = "text",
+        Header1 = "referer: https://www.google.com/"
     })
     while Threads.check(f) do
         coroutine.yield(false)
