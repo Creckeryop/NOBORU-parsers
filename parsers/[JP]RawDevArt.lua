@@ -1,4 +1,4 @@
-RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "JAP", "RAWDEVARTJP", 1)
+RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "JAP", "RAWDEVARTJP", 2)
 
 RawDevArt.Filters = {
     {
@@ -262,17 +262,30 @@ end
 ---dest_table[#dest_table + 1] = {Pages = {}, Manga = manga, Name = "Name", Link = "ID|LINK|UNIQUEKEY|HALFLINK"}
 function RawDevArt:getChapters(manga, dest_table)
     ---You can see that i concatinate self.Link with manga.Link, because manga.Link is HALFLINK in this way
-    local content = downloadContent(self.Link .. manga.Link)
-    ---Parsing chapters from manga link
-    for Link, Name in content:gmatch('rounded%-0".-<a href="(/comic/%S-)".-text%-truncate">(.-)</span>') do
-        dest_table[#dest_table + 1] = {
-            Name = stringify(Name),
-            Link = Link,
-            Pages = {},     --Should be defined
-            Manga = manga   --Should be defined
-        }
+    local page = 1
+    local t = {}
+    while true do
+        local content = downloadContent(self.Link .. manga.Link.."?page="..page)
+        ---Parsing chapters from manga link
+        for Link, Name in content:gmatch('rounded%-0".-<a href="(/comic/%S-)".-text%-truncate">(.-)</span>') do
+            t[#t + 1] = {
+                Name = stringify(Name),
+                Link = Link,
+                Pages = {},     --Should be defined
+                Manga = manga   --Should be defined
+            }
+        end
+        local last_page = content:match("of (%d+) Pages")
+        if not last_page or last_page == tostring(page) then
+            break
+        else
+            page = page + 1
+        end
     end
-    table.reverse(dest_table) --to make 1->N order
+    table.reverse(t) --to make 1->N order
+    for k, v in pairs(t) do
+        dest_table[k] = v
+    end
 end
 
 ---This function is needed to get all chapter pages or all chapter images
