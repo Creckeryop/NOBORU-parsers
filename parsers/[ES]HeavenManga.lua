@@ -1,4 +1,4 @@
-HeavenManga = Parser:new("HeavenManga", "https://heavenmanga.com", "ESP", "HEAVENMANGAESP", 1)
+HeavenManga = Parser:new("HeavenManga", "https://heavenmanga.com", "ESP", "HEAVENMANGAESP", 2)
 
 HeavenManga.Tags = {
     "Accion",
@@ -178,7 +178,7 @@ end
 function HeavenManga:getManga(post, dt)
     local content = downloadContent(post)
     dt.NoPages = true
-    for Name, Link, ImageLink  in content:gmatch('"manga%-name">[\n%s]+(.-)[\n%s]+</div>.-href=".-%.com(/[^"]-)".-src=\'([^\']-)\'') do
+    for Name, Link, ImageLink in content:gmatch('"manga%-name">[\n%s]+(.-)[\n%s]+</div>.-href=".-%.com(/[^"]-)".-src=\'([^\']-)\'') do
         dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
         dt.NoPages = false
         coroutine.yield(false)
@@ -186,18 +186,18 @@ function HeavenManga:getManga(post, dt)
 end
 
 function HeavenManga:getPopularManga(page, dt)
-    self:getManga(self.Link.."/top?page=" .. page, dt)
+    self:getManga(self.Link .. "/top?page=" .. page, dt)
 end
 
 function HeavenManga:getTagManga(page, dt, tag)
-    self:getManga(self.Link..tostring(self.Keys[tag]).."?page=" .. page, dt)
+    self:getManga(self.Link .. tostring(self.Keys[tag]) .. "?page=" .. page, dt)
 end
 
 function HeavenManga:searchManga(search, page, dt)
-    local content = downloadContent(self.Link.."/buscar?query="..search)
+    local content = downloadContent(self.Link .. "/buscar?query=" .. search)
     dt.NoPages = true
     for ImageLink, Link, Name in content:gmatch('item__content">.-src=\'([^\']-)\'.-<a href=".-%.com(/[^"]-)">(.-)</a>') do
-        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link, self.Link..Link)
+        dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link, self.Link .. Link)
     end
 end
 
@@ -221,8 +221,8 @@ end
 function HeavenManga:prepareChapter(chapter, dt)
     local content = downloadContent(self.Link .. chapter.Manga.Link .. chapter.Link)
     local leer = content:match('leer" rel="nofollow" href="[^"]-(/manga/leer/[^"]-)"') or ""
-    content = downloadContent(self.Link..leer)
-    for Link in content:gmatch('"imgURL":"([^"]-) "') do
+    content = downloadContent(self.Link .. leer)
+    for Link in content:gmatch('"imgURL":"([^"]-)%s-"') do
         dt[#dt + 1] = Link
     end
 end
