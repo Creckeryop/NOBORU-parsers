@@ -1,4 +1,4 @@
-ReadManga = Parser:new("ReadManga", "https://readmanga.me", "RUS", "READMANGARU", 3)
+ReadManga = Parser:new("ReadManga", "https://readmanga.live", "RUS", "READMANGARU", 4)
 
 ReadManga.Filters = {
     {
