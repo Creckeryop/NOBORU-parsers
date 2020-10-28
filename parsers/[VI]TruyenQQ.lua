@@ -1,5 +1,5 @@
 if Settings.Version > 0.35 then
-    TruyenQQ = Parser:new("TruyenQQ", "http://truyenqq.com", "VIE", "TRUYENQQVIE", 1)
+    TruyenQQ = Parser:new("TruyenQQ", "http://truyenqq.com", "VIE", "TRUYENQQVIE", 2)
     local cookie
     local function downloadContent(link)
         local file = {}
@@ -13,10 +13,12 @@ if Settings.Version > 0.35 then
         while Threads.check(file) do
             coroutine.yield(false)
         end
+        --[[
         if not cookie then
             cookie = file.string:match("document.cookie%s-=%s-\"(.-)\"")
             return downloadContent(link)
         end
+        --]]
         return file.string or ""
     end
     
