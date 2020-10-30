@@ -3185,3 +3185,5 @@ end
 function NineHentai:loadChapterPage(link, dt)
     dt.Link = link
 end
+
+NineHentaiRU = NineHentai:new("NineHentai (RU PASS)", "https://9hentai.ru", "DIF", "NINEHENTAIRUPASS", 1)
