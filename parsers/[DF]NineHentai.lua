@@ -1,4 +1,4 @@
-NineHentai = Parser:new("NineHentai", "https://9hentai.com", "DIF", "NINEHENTAIEN", 4)
+NineHentai = Parser:new("NineHentai", "https://9hentai.ru", "DIF", "NINEHENTAIEN", 5)
 
 NineHentai.NSFW = true
 
@@ -3186,4 +3186,4 @@ function NineHentai:loadChapterPage(link, dt)
     dt.Link = link
 end
 
-NineHentaiRU = NineHentai:new("NineHentai (RU PASS)", "https://9hentai.ru", "DIF", "NINEHENTAIRUPASS", 1)
+--NineHentaiRU = NineHentai:new("NineHentai (RU PASS)", "https://9hentai.ru", "DIF", "NINEHENTAIRUPASS", 1)
