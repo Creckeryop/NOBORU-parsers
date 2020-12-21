@@ -1,4 +1,4 @@
-TumangaOnline = Parser:new("TumangaOnline", "http://tumangaonline.uno", "ESP", "TMANGAONLESP", 1)
+TumangaOnline = Parser:new("TumangaOnline", "http://tumangaonline.uno", "ESP", "TMANGAONLESP", 2)
 
 TumangaOnline.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 TumangaOnline.Tags = {"Acción", "Aventura", "Comedia", "Drama", "Ecchi", "Fantasía", "Gender Bender", "Harem", "Histórico", "Horror", "Josei", "Artes Marciales", "Maduro", "Mecha", "Misterio", "One Shot", "Psicológico", "Romance", "Escolar", "Ciencia Ficción", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Recuentos de la vida", "Deportes", "Supernatural", "Tragedia", "Yaoi", "Yuri", "Demonios", "Juegos", "Policial", "Militar", "Thriller", "Autos", "Música", "Vampiros", "Magia", "Samurai", "Boys love"}
@@ -124,7 +124,7 @@ end
 
 function TumangaOnline:prepareChapter(chapter, dt)
     local content = downloadContent(chapter.Link)
-    for Link in content:gmatch("img%-responsive\"[^>]-data%-src='//([^']-)'") do
+    for Link in content:gmatch("img%-responsive\"[^>]-data%-src='[/]*([^']-)'") do
         dt[#dt + 1] = Link
     end
 end
