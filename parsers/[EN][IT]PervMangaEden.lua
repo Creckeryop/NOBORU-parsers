@@ -1,5 +1,5 @@
 MangaEdenIt = Parser:new("MangaEden Italy", "https://www.mangaeden.com", "ITA", "MAEDENITA")
-
+MangaEdenIt.Disabled = true
 MangaEdenIt.API = "/api/list/1/"
 MangaEdenIt.Site = "mangaeden"
 local notify = false
@@ -103,15 +103,18 @@ function MangaEdenIt:loadChapterPage(link, dest_table)
 end
 
 MangaEdenEn = MangaEdenIt:new("MangaEden English", "https://www.mangaeden.com", "ENG", "MAEDENENG")
+MangaEdenEn.Disabled = true
 
 MangaEdenEn.API = "/api/list/0/"
 
 PervEdenIt = MangaEdenIt:new("PervEden Italy", "http://www.perveden.com", "ITA", "PVEDENITA")
+PervEdenIt.Disabled = false
 
 PervEdenIt.Site = "perveden"
 PervEdenIt.NSFW = true
 
 PervEdenEn = MangaEdenEn:new("PervEden English", "http://www.perveden.com", "ENG", "PVEDENENG")
+PervEdenEn.Disabled = false
 
 PervEdenEn.Site = "perveden"
 PervEdenEn.NSFW = true
