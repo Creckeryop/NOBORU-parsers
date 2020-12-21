@@ -1,4 +1,4 @@
-DoujinHentai = Parser:new("DoujinHentai", "https://www.doujinhentai.net", "ESP", "DOUJINHENTAIESP", 1)
+DoujinHentai = Parser:new("DoujinHentai", "https://www.doujinhentai.net", "ESP", "DOUJINHENTAIESP", 2)
 
 DoujinHentai.NSFW = true
 
@@ -26,7 +26,7 @@ end
 function DoujinHentai:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
-    for Link, Name, ImageLink in content:gmatch('class="col%-sm%-6 col%-md%-3">.-href="([^"]-)".-title="(.-)">.-<img data%-src="(.-)" class') do
+    for Link, Name, ImageLink in content:gmatch('class="col%-sm%-6 col%-md%-3.-href="([^"]-)".-title="(.-)">.-<img data%-src="(.-)" class') do
         dt[#dt + 1] = CreateManga(stringify(Name:gsub("^Leer ", "")), Link:gsub("%%", "%%%%"):gsub(" ", "%%%%20"):match("/manga%-hentai/(.+)$") or " ", ImageLink:gsub("%%", "%%%%"):gsub(" ", "%%%%20"), self.ID, Link)
         dt.NoPages = false
         coroutine.yield(false)
