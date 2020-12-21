@@ -7,7 +7,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 |~~Bato.to*~~     | МангаПоиск   | MangaReader       | SenManga      | InManga      | UnionMangas     | ScanFR        |
 | LoveHeaven (RAW)| MintManga    | MangaPanda        | ~~Manga1000~~ | Submanga     | ~~GoldenMangas~~| NineManga     |
 |                 | SelfManga    | MangaTown         |               | NineManga    |                 |               |
-|                 | Desu         | MangaOwl          |               | HeavenManga  |                 |               |
+|                 | Desu         | ~~MangaOwl~~      |               | HeavenManga  |                 |               |
 |                 | NineManga    | ReadComicsOnline  |               | TumangaOnline|                 |               |
 |                 | MangaOneLove | MangaKakalot      |               |              |                 |               |
 |                 |              | MangaNelo         |               |              |                 |               |

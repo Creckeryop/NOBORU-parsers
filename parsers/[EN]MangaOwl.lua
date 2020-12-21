@@ -1,5 +1,7 @@
 MangaOwl = Parser:new("MangaOwl", "https://mangaowl.net", "ENG", "MANGAOWLEN", 2)
 
+MangaOwl.Disabled = true
+
 local function stringify(string)
     return string:gsub("&#([^;]-);", function(a)
         local number = tonumber("0" .. a) or tonumber(a)
