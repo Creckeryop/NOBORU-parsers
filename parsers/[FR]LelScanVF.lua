@@ -1,5 +1,7 @@
 LelScanVF = Parser:new("LELSCAN-VF", "https://www.lelscan-vf.com", "FRA", "LELSCANFRA", 2)
 
+LelScanVF.Disabled = true
+
 LelScanVF.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
 local function stringify(string)
