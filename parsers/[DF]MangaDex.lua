@@ -1,4 +1,4 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 6)
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 7)
 
 MangaDex.Filters = {
     {
@@ -472,9 +472,10 @@ function MangaDex:getChapters(manga, dt)
         prefLang = Settings.ParserLanguage
     end
     local found = false
-    for Id, Count, Title, Lang in content:gmatch('"(%d-)":{[^}]-"chapter":"(.-)","title":"(.-)","lang_code":"([^,]-)",.-}') do
+    for Id, Volume, Count, Title, Lang in content:gmatch('"(%d-)":{"volume":"(.-)","chapter":"(.-)","title":"(.-)",[^}]-"lang_code":"([^"]-)",.-}') do
         if prefLang and LtoL[Lang] == prefLang or not prefLang then
             t[#t + 1] = {Id = Id, Count = Count, Title = Title, Lang = Lang}
+            t[#t].Volume = tonumber(Volume) or 0
             if i > 100 then
                 coroutine.yield(false)
                 i = 0
@@ -510,7 +511,7 @@ function MangaDex:getChapters(manga, dt)
             new_title = new_title:gsub("\\u(....)", function(a) return u8c(tonumber(string.format("0x%s", a))) end)
         end
         dt[#dt + 1] = {
-            Name = stringify("[" .. (Lang_codes[t[k].Lang] or t[k].Lang) .. "] " .. t[k].Count .. ": " .. new_title),
+            Name = stringify("[" .. (Lang_codes[t[k].Lang] or t[k].Lang) .. "] " .. t[k].Volume .. "-" .. t[k].Count .. ": " .. new_title),
             Link = t[k].Id,
             Pages = {},
             Manga = manga
