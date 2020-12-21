@@ -4,8 +4,8 @@ This repo is created to store parsers for NOBORU app on PS vita
 | Different       | Russian      | English           | Japan     | Spanish      | Portuguese  | French    |
 |:---------------:|:------------:|:-----------------:|:---------:|:------------:|:-----------:|:---------:|
 | MangaDex*       | ReadManga    | MangaHub          | RawDevArt | LeoManga     | Animaregia  | LelScanVF |
-| Bato.to*        | МангаПоиск   | MangaReader       | SenManga  | InManga      | UnionMangas | ScanFR    |
-| LoveHeaven (RAW)| MintManga    | MangaPanda        | Manga1000 | Submanga     | ~~GoldenMangas~~| NineManga |
+|~~Bato.to*~~        | МангаПоиск   | MangaReader       | SenManga  | InManga      | UnionMangas | ScanFR    |
+| LoveHeaven (RAW)| MintManga    | MangaPanda        | ~~Manga1000~~ | Submanga     | ~~GoldenMangas~~| NineManga |
 |                 | SelfManga    | MangaTown         |           | NineManga    |             |           |
 |                 | Desu         | MangaOwl          |           | HeavenManga  |             |           |
 |                 | NineManga    | ReadComicsOnline  |           | TumangaOnline|             |           |
@@ -27,9 +27,9 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 | Turkish           | Italian   | Vietnamese | Polish        | German    | Brazil    | Indonesian |
 |:-----------------:|:---------:|:----------:|:-------------:|:---------:|:---------:|:----------:|
-| Mabushimajo       | MangaEden | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    |
+| ~~Mabushimajo~~   | MangaEden | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    |
 | Puzzmos           | NineManga |            |               |           |           |            |
-| MangaTR(disabled) |           |            |               |           |           |            |
+| ~~MangaTR~~ |           |            |               |           |           |            |
 | SeriManga         |           |            |               |           |           |            |
 | MangaDenizi       |           |            |               |           |           |            |
 | **NSFW**          | **NSFW**  | **NSFW**   | **NSFW**      | **NSFW**  | **NSFW**  | **NSFW**   |
