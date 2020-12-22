@@ -21,7 +21,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 | nhentai         | Nude-Moon    | PervEden          |               | DoujinHentai |                 |               |
 | HentaiRead      | AllHentai    | HentaiCafe        |               |              |                 |               |
 | 9hentai         | Яой-Тян!     |                   |               |              |                 |               |
-| Hentai Shark    |              |                   |               |              |                 |               |
+| Hentai Shark    | Хентай-Тян!  |                   |               |              |                 |               |
 
 **Catalog works with option Preferred Language and deletes extra manga from it* 
 

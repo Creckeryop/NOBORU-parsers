@@ -93,3 +93,51 @@ end
 
 YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 1)
 YaoiChan.NSFW = true
+
+HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentai-chan.pro", "RUS", "HENTAICHANRU", 1)
+HentaiChan.NSFW = true
+
+local extended_hentai_link = "http://exhentai-dono.me"
+
+function HentaiChan:getManga(link, dt)
+	local content = downloadContent(link)
+	dt.NoPages = true
+	for ImageLink, Link, Name in content:gmatch('content_row" title=".-src="([^"]-)".-href="[^"]*/manga/([^"]-)%.html[^>]->(.-)<') do
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"):gsub("manganew_thumbs_blur","manganew_thumbs"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
+		dt.NoPages = false
+		coroutine.yield(false)
+	end
+end
+
+function HentaiChan:getPopularManga(page, dt)
+	self:getManga(self.Link .. "/manga/new&n=favdesc?offset=" .. ((page - 1) * 20), dt)
+end
+
+function HentaiChan:getLatestManga(page, dt)
+	self:getManga(self.Link .. "/manga/new?offset=" .. ((page - 1) * 20), dt)
+end
+
+function HentaiChan:searchManga(search, page, dt)
+	self:getManga(self.Link .. "/?do=search&subaction=search&story=" .. search .. "&search_start=" .. (1 + (page - 1) * 40) .. "&result_num=20", dt)
+end
+
+function HentaiChan:getChapters(manga, dt)
+	local url = {
+		Name = stringify(manga.Name),
+		Link = manga.Link,
+		Pages = {},
+		Manga = manga
+	}
+	dt[#dt + 1] = url
+end
+
+function HentaiChan:prepareChapter(chapter, dt)
+	local content = downloadContent(extended_hentai_link .. "/online/" .. chapter.Link .. ".html?development_access=true"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
+	for link in content:gmatch('\'([^\']-)\'') do
+		dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
+	end
+end
+
+function HentaiChan:loadChapterPage(link, dt)
+	dt.Link = link
+end
