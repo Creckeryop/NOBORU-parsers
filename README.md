@@ -28,7 +28,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 | Turkish           | Italian       | Vietnamese | Polish        | German    | Brazil    | Indonesian |
 |:-----------------:|:-------------:|:----------:|:-------------:|:---------:|:---------:|:----------:|
 | ~~Mabushimajo~~   | ~~MangaEden~~ | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    |
-| Puzzmos           | NineManga     |            |               |           |           |            |
+| Puzzmos           | NineManga     |            |               | Wie Manga!|           |            |
 | ~~MangaTR~~       |               |            |               |           |           |            |
 | SeriManga         |               |            |               |           |           |            |
 | MangaDenizi       |               |            |               |           |           |            |
