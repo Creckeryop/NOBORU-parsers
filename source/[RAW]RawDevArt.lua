@@ -1,4 +1,4 @@
-RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "JAP", "RAWDEVARTJP", 2)
+RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "RAW", "RAWDEVARTJP", 3)
 
 RawDevArt.Filters = {
     {
