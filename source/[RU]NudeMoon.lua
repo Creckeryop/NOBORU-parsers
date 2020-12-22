@@ -1,4 +1,4 @@
-NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU", 4)
+NudeMoon = Parser:new("Nude-Moon", "https://nude-moon.net", "RUS", "NUDEMOONRU", 5)
 
 NudeMoon.Filters = {
     {
@@ -194,7 +194,8 @@ local function downloadContent(link)
         Link = link,
         Table = f,
         Index = "text",
-        Header1 = "referer: https://www.google.com/"
+        Header1 = "referer: https://www.google.com/",
+        Header2 = "cookie: fusion_user=323815.769acb94801026e2f219844529cf51d0"
     })
     while Threads.check(f) do
         coroutine.yield(false)
