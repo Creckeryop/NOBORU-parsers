@@ -55,7 +55,7 @@ function MangaChan:getLatestManga(page, dt)
 end
 
 function MangaChan:searchManga(search, page, dt)
-	local content = downloadContent(self.Link .. "/index.php?do=search&subaction=search&search_start=1&full_search=0&result_from=" .. (1 + (page-1) * 40) .. "&result_num=40&story=" .. search .. "&need_sort_date=false")
+	local content = downloadContent(self.Link .. "/index.php?do=search&subaction=search&search_start=1&full_search=0&result_from=" .. (1 + (page - 1) * 40) .. "&result_num=40&story=" .. search .. "&need_sort_date=false")
 	dt.NoPages = true
 	for ImageLink, Link, Name in content:gmatch('content_row" title=".-<img src="([^"]-)".-href="[^"]*/manga/([^"]-)%.html[^>]->(.-)</a>') do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
@@ -81,7 +81,7 @@ function MangaChan:getChapters(manga, dt)
 end
 
 function MangaChan:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .. "/online/" .. chapter.Link .. ".html"):match('"fullimg":%[(.-)%]') or ""
+	local content = downloadContent(self.Link .. "/online/" .. chapter.Link .. ".html"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
 	for link in content:gmatch('"([^"]-)"') do
 		dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
 	end
@@ -90,3 +90,6 @@ end
 function MangaChan:loadChapterPage(link, dt)
 	dt.Link = link
 end
+
+YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 1)
+YaoiChan.NSFW = true
