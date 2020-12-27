@@ -336,12 +336,12 @@ end
 function WIEManga:prepareChapter(chapter, dt)
 	local pages = tonumber(downloadContent(self.Link .. "/chapter/" .. chapter.Link):match(">(%d+)</option>[^<]-</select>") or "0")
 	for i = 1, pages do
-		dt[#dt + 1] = self.Link .."/chapter/".. chapter.Link.."-"..i..".html"
+		dt[#dt + 1] = self.Link .. "/chapter/" .. chapter.Link .. "-" .. i .. ".html"
 	end
 end
 
 function WIEManga:loadChapterPage(link, dt)
-	local image_link = downloadContent(link):match("comicpic' src=\"([^\"]-)\"") or ""
+	local image_link = downloadContent(link):match('comicpic\' src="([^"]-)"') or ""
 	dt.Link = {
 		Link = image_link,
 		Header1 = "Accept-Language: en-US,en;q=0.5",

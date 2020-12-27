@@ -103,7 +103,7 @@ function HentaiChan:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
 	for ImageLink, Link, Name in content:gmatch('content_row" title=".-src="([^"]-)".-href="[^"]*/manga/([^"]-)%.html[^>]->(.-)<') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"):gsub("manganew_thumbs_blur","manganew_thumbs"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"):gsub("manganew_thumbs_blur", "manganew_thumbs"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
@@ -133,7 +133,7 @@ end
 
 function HentaiChan:prepareChapter(chapter, dt)
 	local content = downloadContent(extended_hentai_link .. "/online/" .. chapter.Link .. ".html?development_access=true"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
-	for link in content:gmatch('\'([^\']-)\'') do
+	for link in content:gmatch("'([^']-)'") do
 		dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
 	end
 end
