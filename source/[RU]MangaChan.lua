@@ -94,7 +94,7 @@ end
 YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 1)
 YaoiChan.NSFW = true
 
-HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentai-chan.pro", "RUS", "HENTAICHANRU", 1)
+HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentai-chan.pro", "RUS", "HENTAICHANRU", 2)
 HentaiChan.NSFW = true
 
 local extended_hentai_link = "http://exhentai-dono.me"
@@ -122,13 +122,44 @@ function HentaiChan:searchManga(search, page, dt)
 end
 
 function HentaiChan:getChapters(manga, dt)
-	local url = {
-		Name = stringify(manga.Name),
-		Link = manga.Link,
-		Pages = {},
-		Manga = manga
-	}
-	dt[#dt + 1] = url
+	local content = downloadContent(self.Link .. "/related/" .. manga.Link .. ".html")
+	manga.NewImageLink = content:match('<img id="cover" src="(.-)"') or ""
+	if manga.NewImageLink == "" then
+		manga.NewImageLink = nil
+	end
+	if content:match('<p class="extra_on">Все главы</p>') or content:match('<p class="extra_on">Все части</p>') then
+		local t = {}
+		local offset = 0
+		while true do
+			local flag = false
+			for Link, Name in content:gmatch('related_info">.-href="[^"]*/manga/([^"]-)%.html"[^>]->(.-)<') do
+				flag = true
+				t[#t + 1] = {
+					Name = stringify(Name),
+					Link = Link,
+					Pages = {},
+					Manga = manga
+				}
+			end
+			coroutine.yield(true)
+			if not flag then
+				break
+			end
+			offset = offset + 20
+			content = downloadContent(self.Link .. "/related/" .. manga.Link .. ".html?offset=" .. offset)
+		end
+		for i = 1, #t do
+			dt[i] = t[i]
+		end
+	else
+		local url = {
+			Name = stringify(manga.Name),
+			Link = manga.Link,
+			Pages = {},
+			Manga = manga
+		}
+		dt[#dt + 1] = url
+	end
 end
 
 function HentaiChan:prepareChapter(chapter, dt)
