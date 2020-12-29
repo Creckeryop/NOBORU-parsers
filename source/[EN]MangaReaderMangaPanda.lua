@@ -1,4 +1,4 @@
-MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", "MANGAREADEREN", 3)
+MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", "MANGAREADEREN", 4)
 
 MangaReader.Tags = {"Action", "Adventure", "Comedy", "Demons", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Magic", "Martial Arts", "Mature", "Mecha", "Military", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-Fi", "Seinen", "Shoujo", "Shoujoai", "Shounen", "Shounenai", "Slice of Life", "Smut", "Sports", "Super Power", "Supernatural", "Tragedy", "Vampire", "Yaoi", "Yuri"}
 MangaReader.TagValues = {
@@ -207,7 +207,9 @@ end
 function MangaReader:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
 	local chapters = content:match("<td>Date Added</td>(.+)$") or ""
+	local description = content:match('<p>([^<]-)</p>') or ""
 	manga.NewImageLink = content:match('src="//([^"]-)" alt')
+	dt.Description = stringify(description)
 	Console.error(manga.NewImageLink)
 	for Link, Name, subName in chapters:gmatch('<i class.-<a href%="/.-(/%S-)">(.-)</a>(.-)</td>') do
 		dt[#dt + 1] = {
