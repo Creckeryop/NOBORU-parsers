@@ -1,4 +1,4 @@
-WIEManga = Parser:new("Wie Manga!", "https://www.wiemanga.com", "DEU", "WIEMANGADE", 1)
+WIEManga = Parser:new("Wie Manga!", "https://www.wiemanga.com", "DEU", "WIEMANGADE", 2)
 
 local function stringify(string)
 	if u8c then
@@ -319,6 +319,8 @@ end
 
 function WIEManga:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. manga.Link)
+	local description = content:match("<h4>Beschreibung</h4>(.-)</p>") or ""
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch('"col1"><a href="[^"]-/chapter/([^"]-)[/]*"[^>]->([^<]-)</a>') do
 		t[#t + 1] = {
