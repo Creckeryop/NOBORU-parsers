@@ -1,4 +1,4 @@
-InManga = Parser:new("InManga", "https://inmanga.com", "ESP", "INMANGASPA", 2)
+InManga = Parser:new("InManga", "https://inmanga.com", "ESP", "INMANGASPA", 3)
 
 InManga.Filters = {
 	{
@@ -263,9 +263,11 @@ end
 
 function InManga:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/chapter/getall?mangaIdentification=" .. manga.Data.id)
+	local description = (downloadContent(self.Link..manga.Link.."/"..manga.Data.id):match('class="panel%-body">(.-)</div>') or ""):gsub("^%s+",""):gsub("%s+$","")
+	dt.Description = stringify(description)
 	local t = {}
 	for Id, Num in content:gmatch('\\"Identification\\":\\"(.-)\\".-Number\\":\\"(.-)\\"') do
-		Num = tonumber(Num)
+		Num = tonumber(Num) or 0
 		t[#t + 1] = {
 			Name = Num,
 			Link = Id,
