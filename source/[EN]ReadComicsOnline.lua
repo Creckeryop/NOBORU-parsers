@@ -1,5 +1,5 @@
 --https://readcomicsonline.ru/filterList?sortBy=Views&page=1
-ReadComicsOnline = Parser:new("ReadComicsOnline", "https://readcomicsonline.ru", "ENG", "READCONLINEENG", 1)
+ReadComicsOnline = Parser:new("ReadComicsOnline", "https://readcomicsonline.ru", "ENG", "READCONLINEENG", 2)
 
 local function stringify(string)
 	return string:gsub(
@@ -57,6 +57,8 @@ end
 
 function ReadComicsOnline:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('manga well">.-<p[^>]->(.-)</p>') or ""
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {
