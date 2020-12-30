@@ -1,4 +1,4 @@
-MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", "MANGATOWNEN", 2)
+MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", "MANGATOWNEN", 3)
 
 MangaTown.Filters = {
 	{
@@ -221,6 +221,8 @@ end
 function MangaTown:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
 	local t = {}
+	local description = (content:match('id="show"[^>]->(.-)<a') or "")
+	dt.Description = stringify(description)
 	for Link, Name, SubName in content:gmatch('href="([^"]-)" name=".-">%s*(.-)%s*</a>(.-)</li>') do
 		SubName = SubName:gsub('<span class="time">(.-)</span>', ""):gsub("<[^>]->", ""):gsub(" +", " ")
 		if SubName ~= " " and SubName ~= "" then
