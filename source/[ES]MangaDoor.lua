@@ -1,4 +1,4 @@
-MangaDoor = Parser:new("MangaDoor", "http://mangadoor.com", "ESP", "MANGADOORESP", 1)
+MangaDoor = Parser:new("MangaDoor", "http://mangadoor.com", "ESP", "MANGADOORESP", 2)
 
 MangaDoor.Tags = {"Acción", "Aventura", "Comedia", "Drama", "Ecchi", "Fantasía", "Gender Bender", "Harem", "Histórico", "Horror", "Josei", "Artes Marciales", "Maduro", "Mecha", "Misterio", "One Shot", "Psicológico", "Romance", "Escolar", "Ciencia Ficción", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Recuentos de la vida", "Deportes", "Supernatural", "Tragedia", "Yaoi", "Yuri", "Demonios", "Juegos", "Policial", "Militar", "Thriller", "Autos", "Música", "Vampiros", "Magia", "Samurai", "Boys love", "Hentai"}
 
@@ -128,6 +128,8 @@ end
 
 function MangaDoor:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
+	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
 	local t = {}
 	for Link, Name, SubName in content:gmatch('chapter%-title%-rtl">[^<]-<a href="[^"]-/manga/([^"]-)">([^<]-)</a>(.-)</h5>') do
 		SubName = SubName:match("<em>([^<]-)</em>")
