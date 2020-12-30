@@ -1,4 +1,4 @@
-RComicOnlineTo = Parser:new("ReadComicOnline.to", "https://readcomiconline.to", "ENG", "RCOMICONLINETOENG", 1)
+RComicOnlineTo = Parser:new("ReadComicOnline.to", "https://readcomiconline.to", "ENG", "RCOMICONLINETOENG", 2)
 
 local function stringify(string)
 	return string:gsub(
@@ -60,6 +60,10 @@ end
 
 function RComicOnlineTo:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
+	local description = content:match('<span class="info">Summary:</span>.-<p[^>]->(.-)</p>') or ""
+	if string.upper(description) ~= "N/A" then
+		dt.Description = stringify(description)
+	end
 	local t = {}
 	for Link, Name in content:gmatch('<td>[^<]-<a[^>]-href="/Comic/[^/]-(/[^"]-)"[^>]->[ \n\r]+(.-)</a>') do
 		t[#t + 1] = {
