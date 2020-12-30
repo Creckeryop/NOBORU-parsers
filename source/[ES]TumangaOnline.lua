@@ -1,4 +1,4 @@
-TumangaOnline = Parser:new("TumangaOnline", "http://tumangaonline.uno", "ESP", "TMANGAONLESP", 2)
+TumangaOnline = Parser:new("TumangaOnline", "http://tumangaonline.uno", "ESP", "TMANGAONLESP", 3)
 
 TumangaOnline.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 TumangaOnline.Tags = {"Acción", "Aventura", "Comedia", "Drama", "Ecchi", "Fantasía", "Gender Bender", "Harem", "Histórico", "Horror", "Josei", "Artes Marciales", "Maduro", "Mecha", "Misterio", "One Shot", "Psicológico", "Romance", "Escolar", "Ciencia Ficción", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Recuentos de la vida", "Deportes", "Supernatural", "Tragedia", "Yaoi", "Yuri", "Demonios", "Juegos", "Policial", "Militar", "Thriller", "Autos", "Música", "Vampiros", "Magia", "Samurai", "Boys love"}
@@ -119,6 +119,8 @@ end
 
 function TumangaOnline:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
+	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
 	local t = {}
 	for Link, Name in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {
