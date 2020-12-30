@@ -1,5 +1,5 @@
 if Settings.Version > 0.35 then
-	ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA", 4)
+	ESNineManga = Parser:new("NineManga Español", "http://es.ninemanga.com", "ESP", "NINEMANGASPA", 5)
 
 	ESNineManga.Filters = {
 		{
@@ -351,6 +351,8 @@ if Settings.Version > 0.35 then
 
 	function ESNineManga:getChapters(manga, dt)
 		local content = downloadContent(manga.Link .. "?waring=1")
+		local description = (content:match('itemprop="description".-</b>(.-)</p>') or ""):gsub("^\n+",""):gsub("\n+$","")
+		dt.Description = stringify(description)
 		local t = {}
 		for Link, Name in content:gmatch('chapter_list_a" href="([^"]-)"[^>]->([^<]-)</a>') do
 			t[#t + 1] = {
@@ -375,7 +377,7 @@ if Settings.Version > 0.35 then
 	function ESNineManga:loadChapterPage(link, dt)
 		dt.Link = downloadContent(self.Link .. link):match('.+img src="([^"]-)".-$'):gsub("%%", "%%%%") or ""
 	end
-	ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG", 4)
+	ENNineManga = ESNineManga:new("NineManga English", "http://ninemanga.com", "ENG", "NINEMANGAENG", 5)
 
 	ENNineManga.Filters = {
 		{
@@ -523,7 +525,7 @@ if Settings.Version > 0.35 then
 		["Yuri"] = "43"
 	}
 
-	RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS", 4)
+	RUNineManga = ESNineManga:new("NineManga Россия", "http://ru.ninemanga.com", "RUS", "NINEMANGARUS", 5)
 
 	RUNineManga.Filters = {
 		{
@@ -641,7 +643,7 @@ if Settings.Version > 0.35 then
 		["Яой"] = "92"
 	}
 
-	DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 5)
+	DENineManga = ESNineManga:new("NineManga Deutschland", "http://de.ninemanga.com", "DEU", "NINEMANGAGER", 6)
 	DENineManga.Filters = {
 		{
 			Name = "Genres",
@@ -749,7 +751,7 @@ if Settings.Version > 0.35 then
 		["Videospiel"] = "77",
 		["Yaoi"] = "93"
 	}
-	ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA", 4)
+	ITNineManga = ESNineManga:new("NineManga Italy", "http://it.ninemanga.com", "ITA", "NINEMANGAITA", 5)
 
 	ITNineManga.Filters = {
 		{
@@ -783,7 +785,7 @@ if Settings.Version > 0.35 then
 		["Vita Quotidiana"] = "77"
 	}
 
-	BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA", 4)
+	BRNineManga = ESNineManga:new("NineManga Brazil", "http://br.ninemanga.com", "BRA", "NINEMANGABRA", 5)
 
 	BRNineManga.Filters = {
 		{
