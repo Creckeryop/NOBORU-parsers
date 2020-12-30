@@ -1,4 +1,4 @@
-MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN", 2)
+MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN", 3)
 MangaHub.Filters = {
 	{
 		Name = "Genre",
@@ -187,7 +187,7 @@ function MangaHub:searchManga(search, page, dest_table, tag)
 	self:getManga(string.format("%s/search/page/%s?q=%s&order=POPULAR&genre=" .. (self.Keys[tag and tag["Genre"]] or "all"), self.Link, page, search), dest_table)
 end
 
-function MangaHub:getChapters(manga, dest_table)
+function MangaHub:getChapters(manga, dt)
 	local file = {}
 	Threads.insertTask(
 		file,
@@ -202,6 +202,8 @@ function MangaHub:getChapters(manga, dest_table)
 		coroutine.yield(false)
 	end
 	local content = file.string or ""
+	local description = content:match('<p class="ZyMp7">([^<]-)</p>') or ""
+	dt.Description = description:gsub("\n+","\n")
 	local t = {}
 	for Link, Name in content:gmatch('<li.-<a href="([^"]-/chapter.-chapter[^"]-)".-([^>]+)</span>') do
 		t[#t + 1] = {
@@ -212,7 +214,7 @@ function MangaHub:getChapters(manga, dest_table)
 		}
 	end
 	for i = #t, 1, -1 do
-		dest_table[#dest_table + 1] = t[i]
+		dt[#dt + 1] = t[i]
 	end
 end
 
