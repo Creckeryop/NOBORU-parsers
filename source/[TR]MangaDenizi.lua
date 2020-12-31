@@ -1,4 +1,4 @@
-MangaDenizi = Parser:new("MangaDenizi", "https://mangadenizi.com", "TUR", "MANGADENIZI", 1)
+MangaDenizi = Parser:new("MangaDenizi", "https://mangadenizi.com", "TUR", "MANGADENIZI", 2)
 
 MangaDenizi.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
@@ -58,6 +58,8 @@ end
 
 function MangaDenizi:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</p>') or ""
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name, SubName in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>.-<em>(.-)</em>') do
 		t[#t + 1] = {

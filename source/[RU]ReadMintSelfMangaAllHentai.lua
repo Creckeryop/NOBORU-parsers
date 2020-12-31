@@ -1,4 +1,4 @@
-ReadManga = Parser:new("ReadManga", "https://readmanga.live", "RUS", "READMANGARU", 6)
+ReadManga = Parser:new("ReadManga", "https://readmanga.live", "RUS", "READMANGARU", 7)
 
 ReadManga.Filters = {
 	{
@@ -239,6 +239,8 @@ end
 
 function ReadManga:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
+	local description = (content:match('class="manga%-description.->(.-)<div class="clearfix"') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n")
+	dt.Description = stringify(description):gsub("^%s+",""):gsub("%s+$","")
     local t = {}
     manga.NewImageLink = content:match('<img class="" src="(.-)"')
 	for Link, Name in content:gmatch('<td class%=.-<a href%="/.-(/vol%S-)".->%s*(.-)</a>') do
@@ -269,7 +271,7 @@ function ReadManga:loadChapterPage(link, dt)
 	dt.Link = link
 end
 
-MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU", 3)
+MintManga = ReadManga:new("MintManga", "https://mintmanga.live", "RUS", "MINTMANGARU", 4)
 
 MintManga.Filters = {
 	{
@@ -431,7 +433,7 @@ MintManga.Keys = {
 	["Ожидает загрузки"] = "s_wait_upload"
 }
 
-SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU", 3)
+SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU", 4)
 
 SelfManga.Filters = {
 	{
@@ -551,7 +553,7 @@ SelfManga.Keys = {
 	["Продается"] = "s_sale"
 }
 
-AllHentai = ReadManga:new("AllHentai", "http://allhentai.ru", "RUS", "ALLHENTAIRU", 4)
+AllHentai = ReadManga:new("AllHentai", "http://allhentai.ru", "RUS", "ALLHENTAIRU", 5)
 
 AllHentai.NSFW = true
 

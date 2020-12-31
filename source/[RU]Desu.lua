@@ -1,4 +1,4 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 3)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 4)
 
 Desu.Filters = {
 	{
@@ -218,6 +218,8 @@ end
 
 function Desu:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
+	local description = (content:match('itemprop="description">(.-)</div>') or ""):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	dt.Description = stringify(description)
 	local t = {}
 	local rus_name = content:match('<span class="rus%-name"[^>]->(.-)</span>') or ""
 	local org_name = content:match('<span class="name"[^>]->(.-)</span>') or manga.Name

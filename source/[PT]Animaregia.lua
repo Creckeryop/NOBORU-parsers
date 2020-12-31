@@ -1,4 +1,4 @@
-Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG", 2)
+Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG", 3)
 
 Animeregia.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 Animeregia.Tags = {"Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports", "Supernatural", "Tragedy", "Yaoi", "Yuri"}
@@ -109,6 +109,8 @@ end
 
 function Animeregia:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
+	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
 	local t = {}
 	for Link, Name in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {

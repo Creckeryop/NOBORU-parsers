@@ -1,4 +1,4 @@
-PhoenixScansPoland = Parser:new("Phoenix Scans", "https://phoenix-scans.pl", "POL", "PHNXSCNSPOL", 1)
+PhoenixScansPoland = Parser:new("Phoenix Scans", "https://phoenix-scans.pl", "POL", "PHNXSCNSPOL", 2)
 
 local function downloadContent(link)
 	local f = {}
@@ -85,6 +85,8 @@ end
 
 function PhoenixScansPoland:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
+	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
 	local t = {}
 	for Link, Name in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {

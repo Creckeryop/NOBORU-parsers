@@ -1,4 +1,4 @@
-MangaChan = Parser:new("Манга-Тян!", "https://manga-chan.me", "RUS", "MANGACHANRU", 1)
+MangaChan = Parser:new("Манга-Тян!", "https://manga-chan.me", "RUS", "MANGACHANRU", 2)
 
 local function stringify(string)
 	if u8c then
@@ -66,6 +66,8 @@ end
 
 function MangaChan:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. manga.Link .. ".html")
+	local description = (content:match('id="description" style.->(.-)<div') or ""):gsub("<br[^>]->","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch("href='/online/([^']-).html' title='[^']-'>(.-)</span>") do
 		t[#t + 1] = {
@@ -91,7 +93,7 @@ function MangaChan:loadChapterPage(link, dt)
 	dt.Link = link
 end
 
-YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 1)
+YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 2)
 YaoiChan.NSFW = true
 
 HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentai-chan.pro", "RUS", "HENTAICHANRU", 2)

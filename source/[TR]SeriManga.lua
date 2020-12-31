@@ -1,4 +1,4 @@
-SeriManga = Parser:new("SeriManga", "https://serimanga.com", "TUR", "SERIMANGATR", 1)
+SeriManga = Parser:new("SeriManga", "https://serimanga.com", "TUR", "SERIMANGATR", 2)
 
 local function stringify(string)
 	return string:gsub(
@@ -53,8 +53,13 @@ end
 function SeriManga:getChapters(manga, dt)
 	local t = {}
 	local next = self.Link .. manga.Link
+	local description = nil
 	repeat
 		local content = downloadContent(next)
+		if description == nil then
+			description = (content:match('class="demo1">(.-)</p>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+			dt.Description = stringify(description)
+		end
 		for Link, Name in content:gmatch('spl%-list%-item">[^"]-href="[^"]-(/manga/[^"]-)" title="([^"]-)"') do
 			t[#t + 1] = {
 				Name = stringify(Name):gsub("^" .. manga.Name, ""):gsub("^[ -]+", ""),

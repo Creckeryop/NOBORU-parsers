@@ -1,4 +1,4 @@
-MangaOneLove = Parser:new("MangaOneLove", "https://mangaonelove.ru", "RUS", "MANGAONELOVERU", 1)
+MangaOneLove = Parser:new("MangaOneLove", "https://mangaonelove.ru", "RUS", "MANGAONELOVERU", 2)
 
 local function downloadContent(link)
 	local f = {}
@@ -75,6 +75,8 @@ end
 
 function MangaOneLove:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. manga.Link)
+	local description = (content:match('class="summary__content.-p>(.-)</p>') or ""):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch('wp%-manga%-chapter%s*"> <a href="[^"]+/([^"]-)/">(.-)</a>') do
 		t[#t + 1] = {

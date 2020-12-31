@@ -1,4 +1,4 @@
-MangaPoisk = Parser:new("МангаПоиск", "https://mangapoisk.ru", "RUS", "MANGAPOISK", 1)
+MangaPoisk = Parser:new("МангаПоиск", "https://mangapoisk.ru", "RUS", "MANGAPOISK", 2)
 
 local function stringify(string)
 	return string:gsub(
@@ -56,6 +56,8 @@ end
 
 function MangaPoisk:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link .. "/chaptersList")
+	local description = (downloadContent(self.Link .. manga.Link):match('class="manga%-description.->(.-)</div>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name, subName in content:gmatch('d%-none.-href="(%S-)".-class="chapter%-title">\n(.-)</span>\n(.-)\n') do
 		local sub_n = subName:gsub("%s+", " "):match("^%s*(.-)%s*$")

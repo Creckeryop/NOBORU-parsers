@@ -1,4 +1,4 @@
-Komikid = Parser:new("Komikid", "https://www.komikid.com", "IDN", "KOMIKIDIDN", 2)
+Komikid = Parser:new("Komikid", "https://www.komikid.com", "IDN", "KOMIKIDIDN", 3)
 
 Komikid.Tags = {"Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Fantasy", "Gender Bender", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports", "Supernatural", "Tragedy", "Yaoi", "Yuri"}
 
@@ -115,6 +115,8 @@ end
 
 function Komikid:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
+	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
 	local t = {}
 	for Link, Name, SubName in content:gmatch('chapter%-title%-rtl">[^<]-<a href="[^"]-/manga/([^"]-)">([^<]-)</a>(.-)</h5>') do
 		SubName = SubName:match("<em>([^<]-)</em>")

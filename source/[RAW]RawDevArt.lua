@@ -1,4 +1,4 @@
-RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "RAW", "RAWDEVARTJP", 3)
+RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "RAW", "RAWDEVARTJP", 4)
 
 RawDevArt.Filters = {
 	{
@@ -275,8 +275,14 @@ function RawDevArt:getChapters(manga, dest_table)
 	---You can see that i concatinate self.Link with manga.Link, because manga.Link is HALFLINK in this way
 	local page = 1
 	local t = {}
+	local description = nil
 	while true do
 		local content = downloadContent(self.Link .. manga.Link .. "?page=" .. page)
+		--Setting Description
+		if description == nil then
+			description = (content:match('<div class="description.-<p[^>]->(.-)</div>') or ""):gsub("<.->",""):gsub("^%s+",""):gsub("%s+$","")
+			dest_table.Description = stringify(description)
+		end
 		---Parsing chapters from manga link
 		for Link, Name in content:gmatch('rounded%-0".-<a href="(/comic/%S-)".-text%-truncate">(.-)</span>') do
 			t[#t + 1] = {

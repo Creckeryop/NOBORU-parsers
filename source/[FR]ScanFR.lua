@@ -1,4 +1,4 @@
-ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA", 1)
+ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA", 2)
 
 local function stringify(string)
 	return string:gsub(
@@ -52,6 +52,8 @@ end
 
 function ScanFR:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
+	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
 	local t = {}
 	for Link, Name, SubName in content:gmatch('chapter%-title%-rtlrr">[^<]-<a href="([^"]-)">([^<]-)</a>.-<em>(.-)</em>') do
 		t[#t + 1] = {

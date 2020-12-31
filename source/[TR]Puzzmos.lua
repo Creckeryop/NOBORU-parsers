@@ -1,4 +1,4 @@
-Puzzmos = Parser:new("Puzzmos", "https://www.puzzmos.com", "TUR", "PUZZMOSTUR", 2)
+Puzzmos = Parser:new("Puzzmos", "https://www.puzzmos.com", "TUR", "PUZZMOSTUR", 3)
 
 local function downloadContent(link)
 	local f = {}
@@ -91,6 +91,8 @@ end
 
 function Puzzmos:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
+	local description = content:match('class="well">.-<p[^>]->(.-)</p>') or ""
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {

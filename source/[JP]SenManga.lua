@@ -1,4 +1,4 @@
-SenManga = Parser:new("SenManga", "https://raw.senmanga.com", "JAP", "SENGMANGAJAP", 1)
+SenManga = Parser:new("SenManga", "https://raw.senmanga.com", "JAP", "SENGMANGAJAP", 2)
 
 SenManga.Filters = {
 	{
@@ -141,6 +141,8 @@ end
 
 function SenManga:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/" .. manga.Link)
+	local description = (content:match('<span itemprop="description">(.-)</span>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch('class="element">[^>]-class="title">[^<]-<a href="(%S-)">[\n%s]*(.-)[\n%s]*</a>') do
 		t[#t + 1] = {
