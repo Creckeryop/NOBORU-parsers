@@ -1,4 +1,9 @@
-LoveHeaven = Parser:new("LoveHeaven", "https://loveheaven.net", "RAW", "LOVEHEAVENRAW", 1)
+--[[
+	Links structure
+	Manga.Link = 964/
+	Chapter.Link = 964/32976/
+--]]
+LoveHug = Parser:new("LoveHug", "https://lovehug.net", "RAW", "LOVEHUGRAW", 1)
 
 local function stringify(string)
 	return string:gsub(
@@ -15,8 +20,8 @@ local function stringify(string)
 	)
 end
 
-local manga_list = "https://loveheaven.net/manga-list.html?listType=pagination&page=%s&artist=&author=&group=&m_status=&name=&genre=&ungenre=&sort=%s&sort_type=%s"
-local manga_srch = "https://loveheaven.net/manga-list.html?listType=pagination&page=%s&artist=&author=&group=&m_status=&name=%s&genre=&ungenre=&sort=views&sort_type=DESC"
+local manga_list = "https://lovehug.net/manga-list.html?listType=pagination&page=%s&artist=&author=&group=&m_status=&name=&genre=&ungenre=&magazine=&sort=%s&sort_type=%s"
+local manga_srch = "https://lovehug.net/manga-list.html?listType=pagination&page=%s&artist=&author=&group=&m_status=&name=%s&genre=&ungenre=&magazine=&sort=views&sort_type=DESC"
 
 local function genMangaListLink(page, sort, sort_type)
 	return manga_list:format(page, sort, sort_type)
@@ -43,12 +48,12 @@ local function downloadContent(link)
 	return f.text or ""
 end
 
-function LoveHeaven:getManga(link, dt)
+function LoveHug:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
 	local pageA, pageB = content:match("Page (%d+) of (%d+)")
-	for Link, ImageLink, Name in content:gmatch('<div class="col%-lg%-12 col%-md%-12.-href="(.-)".-data%-src="([^"]-)" alt="([^"]-)"') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, {Link = ImageLink, Header1 = "Referer: https://loveheaven.net/manga-list.html"}, self.ID, self.Link .. "/" .. Link)
+	for ImageLink, Link, Name in content:gmatch('<div class="thumb%-item%-flow.-data%-bg="([^"]-)".-class="thumb_attr series%-title">.-href="/(.-)"[^>]->([^<]-)<') do
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, {Link = ImageLink, Header1 = "Referer: https://lovehug.net/manga-list.html"}, self.ID, self.Link .. "/" .. Link)
 		if tonumber(pageA) < tonumber(pageB) then
 			dt.NoPages = false
 		end
@@ -56,26 +61,26 @@ function LoveHeaven:getManga(link, dt)
 	end
 end
 
-function LoveHeaven:getPopularManga(page, dt)
+function LoveHug:getPopularManga(page, dt)
 	self:getManga(genMangaListLink(page, "views", "DESC"), dt)
 end
 
-function LoveHeaven:getLatestManga(page, dt)
+function LoveHug:getLatestManga(page, dt)
 	self:getManga(genMangaListLink(page, "last_update", "DESC"), dt)
 end
 
-function LoveHeaven:getAZManga(page, dt)
+function LoveHug:getAZManga(page, dt)
 	self:getManga(genMangaListLink(page, "name", "DESC"), dt)
 end
 
-function LoveHeaven:searchManga(search, page, dt)
+function LoveHug:searchManga(search, page, dt)
 	self:getManga(genMangaSearchLink(page, search), dt)
 end
 
-function LoveHeaven:getChapters(manga, dt)
+function LoveHug:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/" .. manga.Link)
 	local t = {}
-	for Link, Name in content:gmatch('<a class="chapter" href=\'([^\']-)\'.-<b>(.-)</b>') do
+	for Link, Name in content:gmatch('<a href="/(.-)" target="_blank" title=[^>]->[^<]-<li>[^<]-<div class="chapter%-name text%-truncate">([^<]-)</div>') do
 		t[#t + 1] = {
 			Name = stringify(Name),
 			Link = Link,
@@ -88,16 +93,16 @@ function LoveHeaven:getChapters(manga, dt)
 	end
 end
 
-function LoveHeaven:prepareChapter(chapter, dt)
+function LoveHug:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. "/" .. chapter.Link)
-	for Link in content:gmatch("<img class='chapter%-img' .-data%-src='([^']-)'") do
+	for Link in content:gmatch("<img class='chapter%-img' .-src='([^']-)'") do
 		dt[#dt + 1] = {
 			Link = Link:gsub("[\r\n]", ""),
-			Header1 = "Referer: https://loveheaven.net/manga-list.html"
+			Header1 = "Referer: https://lovehug.net/manga-list.html"
 		}
 	end
 end
 
-function LoveHeaven:loadChapterPage(link, dt)
+function LoveHug:loadChapterPage(link, dt)
 	dt.Link = link
 end
