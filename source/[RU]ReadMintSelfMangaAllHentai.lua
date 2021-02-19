@@ -553,7 +553,7 @@ SelfManga.Keys = {
 	["Продается"] = "s_sale"
 }
 
-AllHentai = ReadManga:new("AllHentai", "http://allhentai.ru", "RUS", "ALLHENTAIRU", 5)
+AllHentai = ReadManga:new("AllHentai", "http://allhen.me", "RUS", "ALLHENTAIRU", 6)
 
 AllHentai.NSFW = true
 
@@ -908,3 +908,14 @@ AllHentai.Keys = {
 	["Ожидает загрузки"] = "s_wait_upload",
 	["Продается"] = "s_sale"
 }
+
+function AllHentai:prepareChapter(chapter, dt)
+	local content = downloadContent(self.Link .. chapter.Manga.Link .. chapter.Link .. "?mtr=1")
+	local text = content:match("rm_h.init%( %[%[(.-)%]%]")
+	if text then
+		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
+		for i = 1, #list do
+			dt[i] = (list[i][1] .. list[i][3]):gsub("^//","http://")
+		end
+	end
+end
