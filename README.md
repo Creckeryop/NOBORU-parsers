@@ -25,15 +25,15 @@ This repo is created to store parsers for NOBORU app on PS vita
 
 **Catalog works with option Preferred Language and deletes extra manga from it* 
 
-| Turkish           | Italian       | Vietnamese | Polish        | German    | Brazil    | Indonesian |
-|:-----------------:|:-------------:|:----------:|:-------------:|:---------:|:---------:|:----------:|
-| ~~Mabushimajo~~   | ~~MangaEden~~ | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    |
-| Puzzmos           | NineManga     |            |               | Wie Manga!|           |            |
-| ~~MangaTR~~       |               |            |               |           |           |            |
-| SeriManga         |               |            |               |           |           |            |
-| MangaDenizi       |               |            |               |           |           |            |
-| **NSFW**          | **NSFW**      | **NSFW**   | **NSFW**      | **NSFW** | **NSFW**  | **NSFW**   |
-|                   | PervEden      |            |               |           |           |            |
+| Turkish           | Italian       | Vietnamese | Polish        | German    | Brazil    | Indonesian | Korean     |
+|:-----------------:|:-------------:|:----------:|:-------------:|:---------:|:---------:|:----------:|:----------:|
+| ~~Mabushimajo~~   | ~~MangaEden~~ | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    | manatoki95 |
+| Puzzmos           | NineManga     |            |               | Wie Manga!|           |            |            |
+| ~~MangaTR~~       |               |            |               |           |           |            |            |
+| SeriManga         |               |            |               |           |           |            |            |
+| MangaDenizi       |               |            |               |           |           |            |            |
+| **NSFW**          | **NSFW**      | **NSFW**   | **NSFW**      | **NSFW** | **NSFW**  | **NSFW**   |**NSFW**   |
+|                   | PervEden      |            |               |           |           |            |            |
     
 ## Cloudflare-sites
   Parsers in this folder will work if there is the way to bypass cloudflare with cURL or with sites that avoid cloudflare thing (that will never happen).
