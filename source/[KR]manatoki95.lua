@@ -1,4 +1,4 @@
-Manatoki95 = Parser:new("마나토끼", "https://manatoki95.net", "KOR", "MANATOKI95KR", 1)
+Manatoki95 = Parser:new("마나토끼", "https://manatoki95.net", "KOR", "MANATOKI95KR", 2)
 
 Manatoki95.Filters = {
 	{
@@ -57,7 +57,7 @@ local SortingsKeys = {
 	["Update"] = "as_update"
 }
 
-local search_url = "/comic?publish=&jaum=&tag=%s&sst=%s&sod=desc&stx=%s&artist="
+local search_url = "/comic/p%s?publish=&jaum=&tag=%s&sst=%s&sod=desc&stx=%s&artist="
 
 local function stringify(string)
 	return string:gsub(
@@ -122,9 +122,9 @@ function Manatoki95:searchManga(search, page, dt, tags)
 		if SortingsKeys[sorting] then
 			srt_str = SortingsKeys[sorting]
 		end
-		str = str:format(gnr_str, srt_str, search)
+		str = str:format(page, gnr_str, srt_str, search)
 	else
-		str = str:format("", "", search)
+		str = str:format(page, "", "", search)
 	end
 	self:getManga(self.Link .. str, dt)
 end
