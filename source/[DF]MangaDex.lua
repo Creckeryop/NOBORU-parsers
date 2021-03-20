@@ -1,4 +1,4 @@
-MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 9)
+MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 10)
 
 MangaDex.Filters = {
 	{
@@ -296,8 +296,8 @@ MangaDex.TagMode = {
 	["Any (OR)"] = "any"
 }
 
-local api_manga = "/api/manga/"
-local api_chapters = "/api/chapter/"
+local api_manga = "https://api.mangadex.org/v2/manga/"
+local api_chapters = "https://api.mangadex.org/v2/chapter/"
 local Lang_codes = {
 	["bg"] = "Bulgaria",
 	["br"] = "Brazil",
@@ -396,7 +396,7 @@ function MangaDex:searchManga(search, page, dt, tags)
 			dt.NoPages = true
 		end
 		if id then
-			local content = downloadContent(self.Link .. api_manga .. id):gsub("\\/", "/")
+			local content = downloadContent(api_manga .. id .. "?include=chapters"):gsub("\\/", "/")
 			local manga_imgurl, title = content:match('"cover_url":"(.-)",.-"title":"(.-)",')
 			if title and manga_imgurl then
 				dt[#dt + 1] = CreateManga(stringify(title), id, self.Link .. manga_imgurl, self.ID, self.Link .. "/title/" .. search)
@@ -479,8 +479,8 @@ function MangaDex:searchManga(search, page, dt, tags)
 end
 
 function MangaDex:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. api_manga .. manga.Link)
-	local description = (content:match('"description":"(.-)","title"') or ""):gsub("\\/", "/"):gsub("%[.+%]",""):gsub("\\r",""):gsub("\\n","\n"):gsub("\n+","\n"):gsub("\n*$","")
+	local content = downloadContent(api_manga .. manga.Link.."?include=chapters")
+	local description = (content:match('"description":"(.-)","') or ""):gsub("\\/", "/"):gsub("%[.+%]",""):gsub("\\r",""):gsub("\\n","\n"):gsub("\n+","\n"):gsub("\n*$","")
 	manga.NewImageLink = self.Link..(content:match('"cover_url":"(.-)"') or ""):gsub("\\/", "/")
 	dt.Description = stringify(description)
 	local t = {}
@@ -491,7 +491,7 @@ function MangaDex:getChapters(manga, dt)
 		prefLang = Settings.ParserLanguage
 	end
 	local found = false
-	for Id, Volume, Count, Title, Lang in content:gmatch('"(%d-)":{"volume":"(.-)","chapter":"(.-)","title":"(.-)",[^}]-"lang_code":"([^"]-)",.-}') do
+	for Id, Volume, Count, Title, Lang in content:gmatch('{"id":(%d-),[^}]+"volume":"(.-)","chapter":"(.-)","title":"(.-)",[^}]-"language":"([^"]-)",.-}') do
 		if prefLang and LtoL[Lang] == prefLang or not prefLang then
 			t[#t + 1] = {Id = Id, Count = Count, Title = Title, Lang = Lang}
 			t[#t].Volume = tonumber(Volume) or 0
@@ -548,8 +548,8 @@ function MangaDex:getChapters(manga, dt)
 end
 
 function MangaDex:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .. api_chapters .. chapter.Link)
-	for hash, server, array in content:gmatch('"hash":"(.-)",.-"server":"(.-)","page_array":%[(.-)%]') do
+	local content = downloadContent(api_chapters .. chapter.Link)
+	for hash, array, server in content:gmatch('"hash":"(.-)",.-"pages":%[(.-)%].-"server":"(.-)"') do
 		server = server:gsub("\\/", "/")
 		for pic in array:gmatch('"(.-)"') do
 			dt[#dt + 1] = server .. hash .. "/" .. pic
