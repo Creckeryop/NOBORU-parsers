@@ -1,4 +1,4 @@
-MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN", 3)
+MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN", 4)
 MangaHub.Filters = {
 	{
 		Name = "Genre",
@@ -145,7 +145,26 @@ MangaHub.Keys = {
 	["Philosophical"] = "philosophical"
 }
 
-function MangaHub:getManga(link, dest_table)
+local function stringify(string)
+	if u8c then
+		return string:gsub(
+			"&#([^;]-);",
+			function(a)
+				local number = tonumber("0" .. a) or tonumber(a)
+				return number and u8c(number) or "&#" .. a .. ";"
+			end
+		):gsub(
+			"&([^;]-);",
+			function(a)
+				return HTML_entities and HTML_entities[a] and u8c(HTML_entities[a]) or "&" .. a .. ";"
+			end
+		)
+	else
+		return string
+	end
+end
+
+local function downloadContent(link)
 	local file = {}
 	Threads.insertTask(
 		file,
@@ -159,7 +178,11 @@ function MangaHub:getManga(link, dest_table)
 	while Threads.check(file) do
 		coroutine.yield(false)
 	end
-	local content = file.string or ""
+	return file.string or ""
+end
+
+function MangaHub:getManga(link, dest_table)
+	local content = downloadContent(link)
 	local t = dest_table
 	local done = true
 	for Link, ImageLink, Name in content:gmatch('media%-left">.-<a href="([^"]-/manga/[^"]-)">.-src="([^"]-)" alt="(.-)"') do
@@ -188,20 +211,7 @@ function MangaHub:searchManga(search, page, dest_table, tag)
 end
 
 function MangaHub:getChapters(manga, dt)
-	local file = {}
-	Threads.insertTask(
-		file,
-		{
-			Type = "StringRequest",
-			Link = manga.Link,
-			Table = file,
-			Index = "string"
-		}
-	)
-	while Threads.check(file) do
-		coroutine.yield(false)
-	end
-	local content = file.string or ""
+	local content = downloadContent(manga.Link)
 	local description = content:match('<p class="ZyMp7">([^<]-)</p>') or ""
 	dt.Description = description:gsub("\n+","\n")
 	local t = {}
@@ -222,6 +232,17 @@ MangaHub.query = [[
 		{"query":"{chapter(x:m01,slug:\"%s\",number:%s){id,title,mangaID,number,slug,date,pages,noAd,manga{id,title,slug,mainSlug,author,isWebtoon,isYaoi,isPorn,isSoftPorn,unauthFile,isLicensed}}}"}
 ]]
 
+function MangaHub:prepareChapter(chapter, dest_table)
+	local content = downloadContent(chapter.Link)
+	local slug, num = chapter.Link:match(".-/chapter/(.-)/chapter%-([^/]+)")
+	local t = dest_table
+	local pages = tonumber(content:match(">1/(%d+)</p>") or "0")
+	for i=1, pages do
+		t[#t + 1] = "https://img.mghubcdn.com/file/imghub/"..slug.."/"..num.."/"..i..".jpg"
+	end
+end
+
+--[[
 function MangaHub:prepareChapter(chapter, dest_table)
 	local file = {}
 	Threads.insertTask(
@@ -246,6 +267,7 @@ function MangaHub:prepareChapter(chapter, dest_table)
 		t[#t + 1] = "https://img.mghubcdn.com/file/imghub/" .. link
 	end
 end
+--]]
 
 function MangaHub:loadChapterPage(link, dest_table)
 	dest_table.Link = link
