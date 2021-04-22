@@ -1,4 +1,4 @@
-UnionMangas = Parser:new("UnionMangas", "https://unionleitor.top", "PRT", "UNIONMANGASPT", 1)
+UnionMangas = Parser:new("UnionMangas", "https://unionleitor.top", "PRT", "UNIONMANGASPT", 2)
 
 local function stringify(string)
 	return string:gsub(
@@ -58,9 +58,7 @@ function UnionMangas:searchManga(search, page, dt)
 		done = false
 		coroutine.yield(false)
 	end
-	if done then
-		dt.NoPages = true
-	end
+	dt.NoPages = true
 end
 
 function UnionMangas:getChapters(manga, dt)
