@@ -1,4 +1,4 @@
-InManga = Parser:new("InManga", "https://inmanga.com", "ESP", "INMANGASPA", 3)
+InManga = Parser:new("InManga", "https://inmanga.com", "ESP", "INMANGASPA", 4)
 
 InManga.Filters = {
 	{
@@ -287,12 +287,14 @@ function InManga:getChapters(manga, dt)
 	end
 end
 
+local image_server_link = "https://pack-yak.intomanga.com"
+
 function InManga:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. "/chapter/chapterIndexControls?identification=" .. chapter.Link)
 	local manga_title = chapter.Manga.Link:match(".+/(.-)$")
 	content = content:match("<select[^>]-PageList.-</select>") or ""
 	for Link, Num in content:gmatch('value="([^"]-)">(.-)<') do
-		dt[#dt + 1] = self.Link .. "/images/manga/" .. manga_title .. "/chapter/" .. chapter.Name .. "/page/" .. Num .. "/" .. Link
+		dt[#dt + 1] = image_server_link .. "/images/manga/" .. manga_title .. "/chapter/" .. chapter.Name .. "/page/" .. Num .. "/" .. Link
 	end
 end
 
