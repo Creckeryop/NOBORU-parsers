@@ -553,7 +553,7 @@ SelfManga.Keys = {
 	["Продается"] = "s_sale"
 }
 
-AllHentai = ReadManga:new("AllHentai", "http://allhen.me", "RUS", "ALLHENTAIRU", 6)
+AllHentai = ReadManga:new("AllHentai", "http://allhen.live", "RUS", "ALLHENTAIRU", 7)
 
 AllHentai.NSFW = true
 
