@@ -1,5 +1,7 @@
 MangaChan = Parser:new("Манга-Тян!", "https://manga-chan.me", "RUS", "MANGACHANRU", 2)
 
+MangaChan.Disabled = true
+
 local function stringify(string)
 	if u8c then
 		return string:gsub(
