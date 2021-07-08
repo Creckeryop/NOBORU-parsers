@@ -1,5 +1,7 @@
 MangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEX", 10)
 
+MangaDex.Disabled = true
+
 MangaDex.Filters = {
 	{
 		Name = "Original Language",
@@ -479,9 +481,9 @@ function MangaDex:searchManga(search, page, dt, tags)
 end
 
 function MangaDex:getChapters(manga, dt)
-	local content = downloadContent(api_manga .. manga.Link.."?include=chapters")
-	local description = (content:match('"description":"(.-)","') or ""):gsub("\\/", "/"):gsub("%[.+%]",""):gsub("\\r",""):gsub("\\n","\n"):gsub("\n+","\n"):gsub("\n*$","")
-	manga.NewImageLink = self.Link..(content:match('"cover_url":"(.-)"') or ""):gsub("\\/", "/")
+	local content = downloadContent(api_manga .. manga.Link .. "?include=chapters")
+	local description = (content:match('"description":"(.-)","') or ""):gsub("\\/", "/"):gsub("%[.+%]", ""):gsub("\\r", ""):gsub("\\n", "\n"):gsub("\n+", "\n"):gsub("\n*$", "")
+	manga.NewImageLink = self.Link .. (content:match('"cover_url":"(.-)"') or ""):gsub("\\/", "/")
 	dt.Description = stringify(description)
 	local t = {}
 	local i = 0
