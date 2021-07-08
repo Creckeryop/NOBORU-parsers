@@ -1,4 +1,4 @@
-UnionMangas = Parser:new("UnionMangas", "https://unionleitor.top", "PRT", "UNIONMANGASPT", 2)
+UnionMangas = Parser:new("UnionMangas", "https://unionmangas.top", "PRT", "UNIONMANGASPT", 3)
 
 local function stringify(string)
 	return string:gsub(
@@ -50,12 +50,10 @@ function UnionMangas:getPopularManga(page, dt)
 	self:getManga(self.Link .. "/lista-mangas/visualizacoes/" .. page, dt)
 end
 
-function UnionMangas:searchManga(search, page, dt)
-	local content = downloadContent(self.Link .. "/assets/busca.php?q=" .. search)
-	local done = true
+function UnionMangas:searchManga(search, _, dt)
+	local content = downloadContent(self.Link .. "/assets/busca.php?nomeManga=" .. search)
 	for ImageLink, Name, Link in content:gmatch('"imagem":"([^"]-)","titulo":"([^"]-)","url":"([^"]-)"') do
 		dt[#dt + 1] = CreateManga(Name, Link, ImageLink:gsub("\\/", "/"), self.ID, self.Link .. "/perfil-manga/" .. Link)
-		done = false
 		coroutine.yield(false)
 	end
 	dt.NoPages = true
@@ -63,10 +61,10 @@ end
 
 function UnionMangas:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/perfil-manga/" .. manga.Link)
-	local description = (content:match('class="panel%-body">(.-)</div>') or ""):gsub("^%s+",""):gsub("%s+$","")
+	local description = (content:match('class="panel%-body">(.-)</div>') or ""):gsub("^%s+", ""):gsub("%s+$", "")
 	dt.Description = stringify(description)
 	local t = {}
-	for Link, Name in content:gmatch('row lancamento%-linha">.-href="([^"]-)">([^<]-)</a>') do
+	for Link, Name in content:gmatch('row capitulos".-href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {
 			Name = stringify(Name),
 			Link = Link,
