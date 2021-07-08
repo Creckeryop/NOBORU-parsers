@@ -1,5 +1,7 @@
 Submanga = Parser:new("Submanga", "https://submangas.net", "ESP", "SUBMANGASPA", 2)
 
+Submanga.Disabled = true
+
 local function stringify(string)
 	return string:gsub(
 		"&#([^;]-);",
@@ -59,7 +61,7 @@ end
 
 function Submanga:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
-	local description = (content:match('span class="list%-group%-item">.-<br>(.-)</span>') or ""):gsub("^%s+",""):gsub("%s+$","")
+	local description = (content:match('span class="list%-group%-item">.-<br>(.-)</span>') or ""):gsub("^%s+", ""):gsub("%s+$", "")
 	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch('fa fa%-eye"></i>[^<]-<a href="([^"]-)">([^<]-)</a>') do
