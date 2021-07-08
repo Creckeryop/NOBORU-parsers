@@ -1,4 +1,4 @@
-MangaPoisk = Parser:new("МангаПоиск", "https://mangapoisk.ru", "RUS", "MANGAPOISK", 2)
+MangaPoisk = Parser:new("МангаПоиск", "https://mangapoisk.ru", "RUS", "MANGAPOISK", 3)
 
 local function stringify(string)
 	return string:gsub(
@@ -35,7 +35,7 @@ end
 function MangaPoisk:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
-	for Link, ImageLink, Name in content:gmatch('rounded">.-href="(%S-)".-src="(%S-)" class.-title pl%-1 h3">([^<]-)</h2>') do
+	for Link, ImageLink, Name in content:gmatch('rounded">.-href="(%S-)".-src="(%S-)"%s*width=.-class.-title pl%-1 h3">([^<]-)</h2>') do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
 		coroutine.yield(false)
 		dt.NoPages = false
@@ -55,18 +55,29 @@ function MangaPoisk:searchManga(search, page, dest_table)
 end
 
 function MangaPoisk:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. manga.Link .. "/chaptersList")
 	local description = (downloadContent(self.Link .. manga.Link):match('class="manga%-description.->(.-)</div>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
 	dt.Description = stringify(description)
+	local page = 1
+	local res = 0
 	local t = {}
-	for Link, Name, subName in content:gmatch('d%-none.-href="(%S-)".-class="chapter%-title">\n(.-)</span>\n(.-)\n') do
-		local sub_n = subName:gsub("%s+", " "):match("^%s*(.-)%s*$")
-		t[#t + 1] = {
-			Name = stringify(Name:gsub("%s+", " "):match("^%s*(.-)%s*$")) .. (sub_n ~= "" and (": " .. sub_n) or ""),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
+	while true do
+		local content = downloadContent(self.Link .. manga.Link .. "/chaptersList?infinite=1&page="..page)
+		for Link, Name, subName in content:gmatch('href="(%S-)"[^>]->%s+<span class="chapter%-title">%s*(.-)%s*</span>%s*(.-)%s*</a>') do
+			local sub_n = stringify(subName:gsub("%s+", " "):gsub("<[^>]->",""))
+			t[#t + 1] = {
+				Name = stringify(Name:gsub("%s+", " ")) .. (sub_n ~= "" and (": " .. sub_n) or ""),
+				Link = Link,
+				Pages = {},
+				Manga = manga
+			}
+			res = res + 1
+		end
+		if res == 0 then
+			break
+		else
+			page = page + 1
+			res = 0
+		end
 	end
 	for i = #t, 1, -1 do
 		dt[#dt + 1] = t[i]
@@ -75,7 +86,7 @@ end
 
 function MangaPoisk:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. chapter.Link)
-	for Link in content:gmatch('data%-alternative="(%S-)"') do
+	for Link in content:gmatch('src="(%S-)"%s*class="img%-fluid page%-image') do
 		dt[#dt + 1] = Link
 	end
 end
