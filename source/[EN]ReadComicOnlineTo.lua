@@ -1,4 +1,4 @@
-RComicOnlineTo = Parser:new("ReadComicOnline.to", "https://readcomiconline.to", "ENG", "RCOMICONLINETOENG", 2)
+RComicOnlineTo = Parser:new("ReadComicOnline.to", "https://readcomiconline.li", "ENG", "RCOMICONLINETOENG", 3)
 
 local function stringify(string)
 	return string:gsub(
