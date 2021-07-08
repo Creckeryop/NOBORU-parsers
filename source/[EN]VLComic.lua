@@ -1,5 +1,7 @@
 VLComic = Parser:new("VLComic", "http://vlcomic.com", "ENG", "VLCOMIC", 1)
 
+VLComic.Disabled = true
+
 local function stringify(string)
 	return string:gsub(
 		"&#([^;]-);",
