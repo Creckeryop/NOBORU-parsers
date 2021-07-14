@@ -219,7 +219,7 @@ function ReadManga:addQuery(table)
 	return query
 end
 
-function ReadManga:searchManga(data, page, dt, tags)
+function ReadManga:searchManga(data, _, dt, tags)
 	local postdata = "q=" .. data
 	if tags then
 		for _, f in ipairs(self.Filters) do
@@ -433,7 +433,7 @@ MintManga.Keys = {
 	["Ожидает загрузки"] = "s_wait_upload"
 }
 
-SelfManga = ReadManga:new("SelfManga", "https://selfmanga.ru", "RUS", "SELFMANGARU", 4)
+SelfManga = ReadManga:new("SelfManga", "https://selfmanga.live", "RUS", "SELFMANGARU", 5)
 
 SelfManga.Filters = {
 	{
