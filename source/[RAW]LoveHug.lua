@@ -3,7 +3,7 @@
 	Manga.Link = 964/
 	Chapter.Link = 32976/
 --]]
-LoveHug = Parser:new("LoveHug", "https://lovehug.net", "RAW", "LOVEHUGRAW", 2)
+LoveHug = Parser:new("LoveHug", "https://lovehug.net", "RAW", "LOVEHUGRAW", 3)
 
 local function stringify(string)
 	return string:gsub(
@@ -80,7 +80,7 @@ end
 function LoveHug:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/" .. manga.Link)
 	local t = {}
-	for Link, Name in content:gmatch('<a href="/[^/]-/(.-/)" target="_blank" title=[^>]->[^<]-<li>[^<]-<div class="chapter%-name text%-truncate">([^<]-)</div>') do
+	for Link, Name in content:gmatch('<a href="/[^/>]-/([^/>]-/)" target="_blank" title=[^>]->[^<]-<li>[^<]-<div class="chapter%-name text%-truncate">([^<]-)</div>') do
 		t[#t + 1] = {
 			Name = stringify(Name),
 			Link = Link,
@@ -95,7 +95,7 @@ end
 
 function LoveHug:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. "/" .. chapter.Manga.Link .. chapter.Link)
-	for Link in content:gmatch("<img class='chapter%-img' .-src='([^']-)'") do
+	for Link in content:gmatch("<img class='[^']-chapter%-img' [^>]+src[^>]-='%s*([^']-)%s*'") do
 		dt[#dt + 1] = {
 			Link = Link:gsub("[\r\n]", ""),
 			Header1 = "Referer: https://lovehug.net/manga-list.html"
