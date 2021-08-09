@@ -96,7 +96,7 @@ end
 YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 2)
 YaoiChan.NSFW = true
 
-HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentai-chan.pro", "RUS", "HENTAICHANRU", 2)
+HentaiChan = MangaChan:new("Хентай-Тян!", "https://hchan.me", "RUS", "HENTAICHANRU", 3)
 HentaiChan.NSFW = true
 
 local extended_hentai_link = "http://exhentai-dono.me"
