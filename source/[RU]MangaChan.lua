@@ -66,7 +66,7 @@ end
 
 function MangaChan:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. manga.Link .. ".html")
-	local description = (content:match('id="description" style.->(.-)<div') or ""):gsub("<br[^>]->","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	local description = (content:match('id="description" style.->(.-)<div') or ""):gsub("<br[^>]->", "\n"):gsub("<.->", ""):gsub("\n+", "\n"):gsub("^%s+", ""):gsub("%s+$", "")
 	dt.Description = stringify(description)
 	local t = {}
 	for Link, Name in content:gmatch("href='/online/([^']-).html' title='[^']-'>(.-)</span>") do
@@ -96,13 +96,31 @@ end
 YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 2)
 YaoiChan.NSFW = true
 
-HentaiChan = MangaChan:new("Хентай-Тян!", "https://hchan.me", "RUS", "HENTAICHANRU", 3)
+HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentaichan.live", "RUS", "HENTAICHANRU", 4)
 HentaiChan.NSFW = true
+
+local function downloadHContent(link)
+	local file = {}
+	Threads.insertTask(
+		file,
+		{
+			Type = "StringRequest",
+			Link = link,
+			Table = file,
+			Index = "string",
+			Header1 = "Cookie:dle_restore_pass11=1"
+		}
+	)
+	while Threads.check(file) do
+		coroutine.yield(false)
+	end
+	return file.string or ""
+end
 
 local extended_hentai_link = "http://exhentai-dono.me"
 
 function HentaiChan:getManga(link, dt)
-	local content = downloadContent(link)
+	local content = downloadHContent(link)
 	dt.NoPages = true
 	for ImageLink, Link, Name in content:gmatch('content_row" title=".-src="([^"]-)".-href="[^"]*/manga/([^"]-)%.html[^>]->(.-)<') do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"):gsub("manganew_thumbs_blur", "manganew_thumbs"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
@@ -124,7 +142,7 @@ function HentaiChan:searchManga(search, page, dt)
 end
 
 function HentaiChan:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. "/related/" .. manga.Link .. ".html")
+	local content = downloadHContent(self.Link .. "/related/" .. manga.Link .. ".html")
 	manga.NewImageLink = content:match('<img id="cover" src="(.-)"') or ""
 	if manga.NewImageLink == "" then
 		manga.NewImageLink = nil
@@ -148,7 +166,7 @@ function HentaiChan:getChapters(manga, dt)
 				break
 			end
 			offset = offset + 20
-			content = downloadContent(self.Link .. "/related/" .. manga.Link .. ".html?offset=" .. offset)
+			content = downloadHContent(self.Link .. "/related/" .. manga.Link .. ".html?offset=" .. offset)
 		end
 		for i = 1, #t do
 			dt[i] = t[i]
@@ -165,7 +183,7 @@ function HentaiChan:getChapters(manga, dt)
 end
 
 function HentaiChan:prepareChapter(chapter, dt)
-	local content = downloadContent(extended_hentai_link .. "/online/" .. chapter.Link .. ".html?development_access=true"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
+	local content = downloadHContent(extended_hentai_link .. "/online/" .. chapter.Link .. ".html?development_access=true"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
 	for link in content:gmatch("'([^']-)'") do
 		dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
 	end
