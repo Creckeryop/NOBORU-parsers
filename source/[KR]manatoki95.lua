@@ -1,4 +1,4 @@
-Manatoki95 = Parser:new("마나토끼", "https://manatoki95.net", "KOR", "MANATOKI95KR", 2)
+Manatoki95 = Parser:new("마나토끼", "https://manatoki97.net", "KOR", "MANATOKI95KR", 3)
 
 Manatoki95.Filters = {
 	{
