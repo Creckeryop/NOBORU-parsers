@@ -20,7 +20,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 |                 |              | Mangafast         |               |                   |                  |               |                   |               |            |               |           |           |            |            |
 | **NSFW**        | **NSFW**     | **NSFW**          | **NSFW**      | **NSFW**          | **NSFW**         | **NSFW**      | **NSFW**          | **NSFW**      | **NSFW**   | **NSFW**      | **NSFW**  | **NSFW**  | **NSFW**   | **NSFW**   |
 | nhentai         | Nude-Moon    | PervEden          |               | DoujinHentai      |                  |               |                   | PervEden      |            |               |           |           |            |            |
-| HentaiRead      |~~AllHentai~~ | HentaiCafe        |               |                   |                  |               |                   |               |            |               |           |           |            |            |
+| HentaiRead      |~~AllHentai~~ | HentaiCafe        |               | VerComicsPorno.xxx|                  |               |                   |               |            |               |           |           |            |            |
 | 9hentai         | Яой-Тян!     | MyHentaiGallery   |               |                   |                  |               |                   |               |            |               |           |           |            |            |
 | Hentai Shark    | Хентай-Тян!  | Hentai20          |               |                   |                  |               |                   |               |            |               |           |           |            |            |
 
