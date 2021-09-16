@@ -1,4 +1,4 @@
-VerComicsPorno = Parser:new("VerComicsPorno", "https://vercomicsporno.xxx", "ESP", "VERCOMICSPORNOESP", 1)
+VerComicsPorno = Parser:new("VerComicsPorno", "https://vercomicsporno.xxx", "ESP", "VERCOMICSPORNOESP", 2)
 
 VerComicsPorno.NSFW = true
 
@@ -42,7 +42,7 @@ function VerComicsPorno:getManga(link, dt)
     local content = downloadContent(link)
     dt.NoPages = true
     for Link, Name, ImageLink in content:gmatch('<div id="post%-.-href="[^"]-/([^/"]-)/" title="([^"]-)">.-src="([^"]-)"') do
-        dt[#dt + 1] = CreateManga(stringify(Name:gsub("<[^>]->", "")), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/hc.fyi/" .. Link)
+        dt[#dt + 1] = CreateManga(stringify(Name:gsub("<[^>]->", "")), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/" .. Link .. "/")
         dt.NoPages = false
         coroutine.yield(false)
     end
