@@ -239,10 +239,10 @@ end
 
 function ReadManga:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
-	local description = (content:match('class="manga%-description.->(.-)<div class="clearfix"') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n")
-	dt.Description = stringify(description):gsub("^%s+",""):gsub("%s+$","")
-    local t = {}
-    manga.NewImageLink = content:match('<img class="" src="(.-)"')
+	local description = (content:match('class="manga%-description.->(.-)<div class="clearfix"') or ""):gsub("<br>", "\n"):gsub("<.->", ""):gsub("\n+", "\n")
+	dt.Description = stringify(description):gsub("^%s+", ""):gsub("%s+$", "")
+	local t = {}
+	manga.NewImageLink = content:match('<img class="" src="(.-)"')
 	for Link, Name in content:gmatch('<td class%=.-<a href%="/.-(/vol%S-)".->%s*(.-)</a>') do
 		t[#t + 1] = {
 			Name = stringify(Name:gsub("%s+", " "):gsub("<sup>.-</sup>", "")),
@@ -553,7 +553,7 @@ SelfManga.Keys = {
 	["Продается"] = "s_sale"
 }
 
-AllHentai = ReadManga:new("AllHentai", "http://allhen.live", "RUS", "ALLHENTAIRU", 7)
+AllHentai = ReadManga:new("AllHentai", "http://24.allhen.online", "RUS", "ALLHENTAIRU", 8)
 
 AllHentai.NSFW = true
 
@@ -915,7 +915,12 @@ function AllHentai:prepareChapter(chapter, dt)
 	if text then
 		local list = load("return {{" .. text:gsub("%],%[", "},{") .. "}}")()
 		for i = 1, #list do
-			dt[i] = (list[i][1] .. list[i][3]):gsub("^//","http://")
+			dt[i] = (list[i][1] .. list[i][3]):gsub("^//", "http://")
 		end
 	end
 end
+
+ReadManga.Disabled = true
+MintManga.Disabled = true
+SelfManga.Disabled = true
+AllHentai.Disabled = true
