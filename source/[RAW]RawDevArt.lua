@@ -1,4 +1,4 @@
-RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "RAW", "RAWDEVARTJP", 4)
+RawDevArt = Parser:new("RawDevArt", "https://rawdevart.com", "RAW", "RAWDEVARTJP", 5)
 
 RawDevArt.Filters = {
 	{
@@ -222,7 +222,7 @@ end
 
 ---SHOULD BE DEFINED, or it will give error if there only getLatest supported, use this function to give Latest
 function RawDevArt:getPopularManga(page, dest_table)
-	self:getManga(self.Link .. "/comic/?lister=5", page, dest_table)
+	self:getManga(self.Link .. "/comic/?lister=3", page, dest_table)
 end
 
 ---You could skip this function if your Parser doesn't have ability to get Latest manga
