@@ -1,5 +1,6 @@
 HentaiCafe = Parser:new("HentaiCafe", "https://hentai.cafe", "ENG", "HENCAFENG", 1)
 
+HentaiCafe.Disabled = true
 HentaiCafe.NSFW = true
 
 local function stringify(string)
