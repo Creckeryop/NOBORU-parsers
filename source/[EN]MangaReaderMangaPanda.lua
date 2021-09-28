@@ -1,5 +1,5 @@
 MangaReader = Parser:new("MangaReader", "https://www.mangareader.net", "ENG", "MANGAREADEREN", 4)
-
+MangaReader.Disabled = true
 MangaReader.Tags = {"Action", "Adventure", "Comedy", "Demons", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Magic", "Martial Arts", "Mature", "Mecha", "Military", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-Fi", "Seinen", "Shoujo", "Shoujoai", "Shounen", "Shounenai", "Slice of Life", "Smut", "Sports", "Super Power", "Supernatural", "Tragedy", "Vampire", "Yaoi", "Yuri"}
 MangaReader.TagValues = {
 	["Action"] = "action",
@@ -234,6 +234,7 @@ end
 
 MangaPanda = MangaReader:new("MangaPanda", "https://www.mangapanda.com", "ENG", "MANGAPANDAEN", 1)
 
+MangaPanda.Disabled = true
 MangaPanda.Filters = nil
 
 function MangaPanda:getManga(link, dt)
