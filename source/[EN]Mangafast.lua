@@ -1,12 +1,18 @@
-Mangafast = Parser:new("Mangafast", "https://mangafast.net", "ENG", "MANGAFAST", 1)
+--[[
+	Links structure
+	https://mangafast.org/read/the-making-of-a-princess 		=>	Manga.Link = the-making-of-a-princess
+	https://mangafast.org/the-making-of-a-princess-chapter-46 	=>	Chapter.Link = the-making-of-a-princess-chapter-46
+--]]
+
+Mangafast = Parser:new("Mangafast", "https://mangafast.org", "ENG", "MANGAFAST", 2)
 
 local API_search = 'https://search.mangafast.net/comics/ms'
 
 Mangafast.Tags = {"Manga", "Manhua", "Manhwa"}
 Mangafast.TagValues = {
-    ["Manga"] = "list-manga",
-    ["Manhua"] = "list-manhua",
-    ["Manhwa"] = "list-manhwa"
+    ["Manga"] = "manga",
+    ["Manhua"] = "manhua",
+    ["Manhwa"] = "manhwa"
 }
 
 local function stringify(string)
@@ -45,22 +51,21 @@ local function downloadContent(link)
 	return file.string or ""
 end
 
-function Mangafast:getManga(link, dt)
-	local content = downloadContent(link)
-	dt.NoPages = true
-    for Link, Name, ImageLink in content:gmatch('class=\'ls4v\'>.-<a href=[\'"]/read/(%S-)[\'"][^>]-title="([^"]-)".-src=\'([^\']-)\'') do
+function Mangafast:getTagManga(page, dt, tag)
+	local content = downloadContent(self.Link .. "/list-manga?cat=" .. self.TagValues[tag] .. (page == 1 and "" or ("/" .. page)))
+	for Link, ImageLink, Name in content:gmatch('"ranking1">.-href="/read/([^"]-)".-data%-src="([^"]-)".-<h4>%s*([^<]-)%s*</h4>') do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/read/" .. Link)
-		dt.NoPages = false
 		coroutine.yield(false)
 	end
-end
-
-function Mangafast:getTagManga(page, dt, tag)
-	self:getManga(self.Link .. "/" .. self.TagValues[tag] .. (page == 1 and "" or ("/" .. page)), dt)
+	dt.NoPages = true
 end
 
 function Mangafast:getLatestManga(_, dt)
-	self:getManga(self.Link, dt)
+	local content = downloadContent(self.Link.."/read")
+    for Link, ImageLink, Name in content:gmatch('"ls5">.-href="/read/([^"]-)".-data%-src="([^"]-)".-<h3>%s*([^<]-)%s*</h3>') do
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/read/" .. Link)
+		coroutine.yield(false)
+	end
 	dt.NoPages = true
 end
 
@@ -82,10 +87,10 @@ end
 function Mangafast:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/read/" .. manga.Link)
     local t = {}
-    dt.Description = stringify(content:match("class=\"desc\">%s*(.-)%s*</p>"):gsub("<br>","\n"):gsub("<[^>]->","")):gsub("^%l", string.upper):gsub("%.%s*%l", string.upper)
-    for Link, Name in content:gmatch('chapter%-link".-href="/([^"]-)".-left">%s*(.-)%s*</span>') do
+    --dt.Description = stringify((content:match("class=\"desc\">%s*(.-)%s*</p>") or ""):gsub("<br>","\n"):gsub("<[^>]->","")):gsub("^%l", string.upper):gsub("%.%s*%l", string.upper)
+	for Link, Name in content:gmatch('"jds">.-href="/([^"]-)"[^>]->%s*(.-)%s*</a>') do
         t[#t + 1] = {
-            Name = stringify(Name),
+            Name = stringify(Name:gsub("<[^>]->","")),
             Link = Link,
             Pages = {},
             Manga = manga
@@ -98,7 +103,7 @@ end
 
 function Mangafast:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. "/" .. chapter.Link)
-    for link in content:gmatch('img loading="lazy" [^>]-Page %d*" src="(%S+)"') do
+    for link in content:gmatch('<img[^<]-loading="lazy"[^<]-data%-src="([^"]-)"') do
 		dt[#dt + 1] = {
             Link = link:gsub("\\/", "/"):gsub("%%", "%%%%"),
             Header1 = "Referer:"..self.Link .. "/"
