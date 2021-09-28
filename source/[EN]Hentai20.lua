@@ -1,4 +1,4 @@
-Hentai20 = Parser:new("Hentai20", "https://hentai20.com", "ENG", "HENTAITWENTYENG", 1)
+Hentai20 = Parser:new("Hentai20", "https://hentai20.com", "ENG", "HENTAITWENTYENG", 2)
 
 Hentai20.NSFW = true
 
@@ -68,7 +68,7 @@ end
 function Hentai20:getChapters(manga, dt)
     local content = downloadContent(self.Link .. "/manga/" .. manga.Link .. "/")
     local t = {}
-    dt.Description = stringify(content:match('<div class="summary__content ">%s*(.-)%s*</div>'):gsub("<br>", "\n"):gsub("<[^>]->", "")):gsub("^%l", string.upper):gsub("%.%s*%l", string.upper)
+    dt.Description = stringify((content:match('<div class="summary__content ">%s*(.-)%s*</div>') or content:match('<div class="summary__content show%-more">%s*<p>(.-)</p>') or ""):gsub("<br>", "\n"):gsub("<[^>]->", "")):gsub("^%l", string.upper):gsub("%.%s*%l", string.upper)
     for Link, Name in content:gmatch('<li class="wp%-manga%-chapter.-href="[^"]-/manga/[^/]-/([^"]-)/">%s*(.-)%s*</a>') do
         t[#t + 1] = {
             Name = stringify(Name),
