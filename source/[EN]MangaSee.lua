@@ -1,4 +1,5 @@
 MangaSee = Parser:new("MangaSee", "https://mangaseeonline.us", "ENG", "MANGASEE", 2)
+MangaSee.Disabled = true
 MangaSee.Filters = {
 	{
 		Name = "Sort By",
