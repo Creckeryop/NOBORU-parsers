@@ -1,19 +1,48 @@
-SenManga = Parser:new("SenManga", "https://raw.senmanga.com", "JAP", "SENGMANGAJAP", 2)
+--[[
+	Links structure
+	https://raw.senmanga.com/Kingdom 		=>	Manga.Link = Kingdom
+	https://raw.senmanga.com/Kingdom/VOLUME_28 	=>	Chapter.Link = VOLUME_28
+--]]
+
+SenManga = Parser:new("SenManga", "https://raw.senmanga.com", "JAP", "SENGMANGAJAP", 3)
 
 SenManga.Filters = {
 	{
-		Name = "Sort By",
+		Name = "Status",
 		Type = "radio",
 		Tags = {
-			"Title",
-			"Total Views",
-			"Rank",
-			"Last Update"
+			"All",
+			"Ongoing",
+			"Completed"
+		},
+		Default = "All"
+	},
+	{
+		Name = "Type",
+		Type = "radio",
+		Tags = {
+			"All",
+			"Manga",
+			"Manhwa",
+			"Manhua",
+			"Novel"
+		},
+		Default = "All"
+	},
+	{
+		Name = "Order by",
+		Type = "radio",
+		Tags = {
+			"A-Z",
+			"Z-A",
+			"Latest Update",
+			"Latest Added",
+			"Popular"
 		}
 	},
 	{
 		Name = "Genre",
-		Type = "checkcross",
+		Type = "check",
 		Tags = {
 			"Action",
 			"Adult",
@@ -52,23 +81,15 @@ SenManga.Filters = {
 			"Yaoi",
 			"Yuri"
 		}
-	},
-	{
-		Name = "Completed",
-		Type = "radio",
-		Tags = {
-			"Yes",
-			"No"
-		},
-		Default = "No"
 	}
 }
 
-SenManga.Sorts = {
-	["Title"] = "title",
-	["Total Views"] = "total_views",
-	["Rank"] = "rank",
-	["Last Update"] = "last_update"
+SenManga.Orders = {
+	["A-Z"] = "titleasc",
+	["Z-A"] = "titlereverse",
+	["Latest Update"] = "update",
+	["Latest Added"] = "latest",
+	["Popular"] = "popular",
 }
 
 local function stringify(string)
@@ -106,14 +127,11 @@ end
 function SenManga:getManga(link, dt, page, search)
 	local content = downloadContent(link)
 	local class = search and "series" or "border%-light"
-
-	for Link, ImageLink, Name in content:gmatch(class .. '">.-href="(%S-)".-src="(%S-)" alt="([^"]-)"') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link:match(self.Link .. "/(.*)$"), ImageLink:gsub("%%", "%%%%"), self.ID, Link)
+	dt.NoPages = true
+	for Link, ImageLink, Name in content:gmatch('class="item">.-href="[^"]-/([^/"]-)">.-src="([^"]-)".-series%-title">(.-)</div>') do
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link.."/"..Link)
 		coroutine.yield(false)
-	end
-
-	if page == tonumber(content:match('^.*page=(%d*)">.-$') or 1) then
-		dt.NoPages = true
+		dt.NoPages = false
 	end
 end
 
@@ -127,27 +145,29 @@ end
 
 function SenManga:searchManga(search, page, dt, tags)
 	local include = ""
-	local exclude = ""
-	local completed = 0
-	local sort = "title"
+	local status = ""
+	local order = ""
+	local type = ""
 	if tags then
-		sort = self.Sorts[tags["Sort By"]]
-		include = table.concat(tags["Genre"].include, "%%2C"):gsub(" ", "+")
-		exclude = table.concat(tags["Genre"].exclude, "%%2C"):gsub(" ", "+")
-		completed = tags["Completed"] == "Yes" and 1 or 0
+		order = self.Orders[tags["Order by"]] == "All" and "" or self.Orders[tags["Order by"]]
+		for _, v in ipairs(tags["Genre"]) do
+			include = include .. "&genre%%5B%%5D=" .. v:gsub(" ", "+")
+		end
+		status = tags["Status"] == "All" and "" or tags["Status"]
+		type = tags["Type"] == "All" and "" or tags["Type"]
 	end
-	self:getManga(self.Link .. "/search?s=" .. search .. "&author=&artist=&genre=" .. include .. "&nogenre=" .. exclude .. "&completed=" .. completed .. "&released=&page=" .. page .. "&sort=" .. sort, dt, page, true)
+	self:getManga(self.Link .. "/search?s=" .. search .. "&author=&artist=" .. include .. "&status=" .. status .. "&released=&type="..type.."&page=" .. page .. "&order=" .. order, dt, page, true)
 end
 
 function SenManga:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. "/" .. manga.Link)
-	local description = (content:match('<span itemprop="description">(.-)</span>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	local description = (content:match('<div class="summary">(.-)</div>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
 	dt.Description = stringify(description)
 	local t = {}
-	for Link, Name in content:gmatch('class="element">[^>]-class="title">[^<]-<a href="(%S-)">[\n%s]*(.-)[\n%s]*</a>') do
+	for Link, Name in content:gmatch('<li class="">.-href="[^"]-/([^/"]-)" class="series">%s*(.-)%s*</a>') do
 		t[#t + 1] = {
 			Name = stringify(Name),
-			Link = Link:match(self.Link .. "/(.*)"),
+			Link = Link,
 			Pages = {},
 			Manga = manga
 		}
@@ -158,9 +178,9 @@ function SenManga:getChapters(manga, dt)
 end
 
 function SenManga:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .. "/" .. chapter.Link)
-	for i = 1, tonumber(content:match(" of (%d*)") or 0) do
-		dt[#dt + 1] = self.Link .. "/viewer/" .. chapter.Link .. "/" .. i
+	local content = downloadContent(self.Link .. "/" .. chapter.Manga.Link .. "/" .. chapter.Link)
+	for i = 1, tonumber(content:match("</select> of (%d*)") or 0) do
+		dt[#dt + 1] = self.Link .. "/viewer/" .. chapter.Manga.Link .. "/"  .. chapter.Link .. "/" .. i
 	end
 end
 
