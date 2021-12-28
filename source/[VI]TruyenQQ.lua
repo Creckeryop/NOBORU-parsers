@@ -1,5 +1,5 @@
 if Settings.Version > 0.35 then
-	TruyenQQ = Parser:new("TruyenQQ", "http://truyenqq.com", "VIE", "TRUYENQQVIE", 3)
+	TruyenQQ = Parser:new("TruyenQQ", "http://truyenqqvip.com", "VIE", "TRUYENQQVIE", 4)
 
 	local function stringify(string)
 		return string:gsub(
@@ -32,12 +32,10 @@ if Settings.Version > 0.35 then
 		while Threads.check(file) do
 			coroutine.yield(false)
 		end
-		--[[
         if not cookie then
-            cookie = file.string:match("document.cookie%s-=%s-\"(.-)\"")
+            cookie = file.string:match("document%.cookie%s-=%s-\"(.-)\"")
             return downloadContent(link)
         end
-        --]]
 		return file.string or ""
 	end
 
