@@ -1,4 +1,4 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 4)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 5)
 
 Desu.Filters = {
 	{
@@ -239,12 +239,10 @@ end
 
 function Desu:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. chapter.Link)
-	local dir = content:match('dir: "\\/\\/([^"]-)",'):gsub("\\/", "/") or ""
+	local dir = ((content:match('dir: "([^"]-)",') or ""):gsub("^[\\/]*", "") or ""):gsub("\\/", "/") or ""
 	local images = content:match("images: %[%[(.-)%]%],") or ""
 	for link in images:gmatch('"(.-)"') do
-		if not link:find("%.gif") then
-			dt[#dt + 1] = dir .. link
-		end
+		dt[#dt + 1] = dir .. link
 	end
 end
 
