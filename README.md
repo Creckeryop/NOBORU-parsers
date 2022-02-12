@@ -3,7 +3,7 @@ This repo is created to store parsers for NOBORU app on PS vita
 ## Supported Parsers: 
 | Different       | Russian      | English           | Japan         | Spanish           | Portuguese       | French        | Turkish           | Italian       | Vietnamese | Polish        | German    | Brazil    | Indonesian | Korean     |
 |:---------------:|:------------:|:-----------------:|:-------------:|:-----------------:|:----------------:|:-------------:|:-----------------:|:-------------:|:----------:|:-------------:|:---------:|:---------:|:----------:|:----------:|
-| ~~MangaDex*~~   | ~~ReadManga~~| ~~MangaHub~~      | SenManga      | LeoManga          | Animaregia       | ~~LelScanVF~~ | ~~Mabushimajo~~   | ~~MangaEden~~ | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    | manatoki95 |
+| MangaDex        | ~~ReadManga~~| ~~MangaHub~~      | SenManga      | LeoManga          | Animaregia       | ~~LelScanVF~~ | ~~Mabushimajo~~   | ~~MangaEden~~ | TruyenQQ   | Phoenix-Scans | NineManga | NineManga | Komikid    | manatoki95 |
 | ~~Bato.to*~~    | МангаПоиск   |~~MangaReader~~    | ~~Manga1000~~ | InManga           | UnionMangas      | ScanFR        | Puzzmos           | NineManga     |            |               | Wie Manga!|           |            |            |
 | LoveHug (RAW)   | ~~MintManga~~|~~MangaPanda       |               | ~~Submanga~~      | ~~GoldenMangas~~ | NineManga     | ~~MangaTR~~       |               |            |               |           |           |            |            |
 | RawDevArt (RAW) | ~~SelfManga~~| MangaTown         |               | NineManga         | BRMangas         |               | SeriManga         |               |            |               |           |           |            |            |
