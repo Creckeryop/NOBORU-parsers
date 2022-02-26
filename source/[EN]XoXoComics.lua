@@ -1,4 +1,4 @@
-XoXoComics = Parser:new("XoXoComics", "https://www.xoxocomics.com", "ENG", "XOXOCEN", 2)
+XoXoComics = Parser:new("XoXoComics", "https://www.xoxocomics.com", "ENG", "XOXOCEN", 4)
 
 local function stringify(string)
 	return string:gsub(
@@ -62,7 +62,7 @@ function XoXoComics:getChapters(manga, dt)
 	while true do
 		local content = downloadContent(self.Link .. "/comic/" .. manga.Link .. "?page=" .. page)
 		if description == nil then
-			description = (content:match("Summary.-<p[^>]->(.-)</p>") or "")
+			description = stringify(content:match("Summary.-<p[^>]->(.-)</p>") or "")
 			dt.Description = description
 		end
 		for Link, Name in content:gmatch('chapter">[\r\n]+<a href=".-/comic/.-/(.-)">(.-)</a>') do
@@ -95,5 +95,5 @@ end
 
 function XoXoComics:loadChapterPage(link, dt)
 	local content = downloadContent(link)
-	dt.Link = content:match("class='page%-chapter'><[^>]-src='([^']-)'") or content:match('class=\'page%-chapter\'><[^>]-src="([^"]-)"') or ""
+	dt.Link = content:match("class=[^>]-page%-chapter[^>]-><[^>]-src='([^']-)'") or content:match('class=[^>]-page%-chapter[^>]-><[^>]-src="([^"]-)"') or ""
 end
