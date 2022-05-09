@@ -1,4 +1,4 @@
-MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", "MANGATOWNEN", 3)
+MangaTown = Parser:new("MangaTown", "https://www.mangatown.com", "ENG", "MANGATOWNEN", 4)
 
 MangaTown.Filters = {
 	{
@@ -171,7 +171,7 @@ function MangaTown:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
 	for ImageLink, Link, Name in content:gmatch('cover".-src="([^"]-)".-href="([^"]-)" title="([^>]-)">') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, {Link = ImageLink, Header1 = "Referer: https://www.mangatown.com"}, self.ID, self.Link .. Link)
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
@@ -248,5 +248,5 @@ function MangaTown:prepareChapter(chapter, dt)
 end
 
 function MangaTown:loadChapterPage(link, dt)
-	dt.Link = downloadContent(link):match('img src="//([^"]-)"')
+	dt.Link = {Link = downloadContent(link):match('img src="//([^"]-)"'), Header1 = "Referer: https://www.mangatown.com"}
 end
