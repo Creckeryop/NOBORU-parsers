@@ -1,5 +1,5 @@
 if Settings.Version > 0.35 then
-	TruyenQQ = Parser:new("TruyenQQ", "http://truyenqqvip.com", "VIE", "TRUYENQQVIE", 4)
+	TruyenQQ = Parser:new("TruyenQQ", "http://truyenqqpro.com", "VIE", "TRUYENQQVIE", 5)
 
 	local function stringify(string)
 		return string:gsub(
@@ -15,7 +15,7 @@ if Settings.Version > 0.35 then
 			end
 		)
 	end
-	
+
 	local cookie
 	local function downloadContent(link)
 		local file = {}
@@ -32,10 +32,10 @@ if Settings.Version > 0.35 then
 		while Threads.check(file) do
 			coroutine.yield(false)
 		end
-        if not cookie then
-            cookie = file.string:match("document%.cookie%s-=%s-\"(.-)\"")
-            return downloadContent(link)
-        end
+		if not cookie then
+			cookie = file.string:match('document%.cookie%s-=%s-"(.-)"')
+			return downloadContent(link)
+		end
 		return file.string or ""
 	end
 
@@ -43,8 +43,8 @@ if Settings.Version > 0.35 then
 		local content = downloadContent(link)
 		local t = dt
 		local done = true
-		for Link, ImageLink, Name in content:gmatch('item">[^<]-<a.-href="([^"]-)".->.-<img[^>]-src="([^"]-)".-alt="([^"]-)"') do
-			local manga = CreateManga(stringify(Name), Link, {Link = ImageLink, Header1 = "Referer: " .. link}, self.ID, Link)
+		for ImageLink, Link, Name in content:gmatch('"book_avatar">.-src="([^"]-)".-book_info">.-<a.-href="[^"]-/truyen%-tranh/([^"]-)">([^>]-)</a>') do
+			local manga = CreateManga(stringify(Name), Link, {Link = ImageLink, Header1 = "Referer: " .. link}, self.ID, self.Link .. "/truyen-tranh/" .. Link)
 			if manga then
 				t[#t + 1] = manga
 				done = false
@@ -69,11 +69,11 @@ if Settings.Version > 0.35 then
 	end
 
 	function TruyenQQ:getChapters(manga, dt)
-		local content = downloadContent(manga.Link)
-		local description = (content:match('" itemprop="description".-p>(.-)</p>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+		local content = downloadContent(self.Link .. "/truyen-tranh/" .. manga.Link)
+		local description = (content:match('class="story%-detail%-info.-p>(.-)</p>') or ""):gsub("<br>", "\n"):gsub("<.->", ""):gsub("\n+", "\n"):gsub("^%s+", ""):gsub("%s+$", "")
 		dt.Description = stringify(description)
 		local t = {}
-		for Link, Name in content:gmatch('item row">.-<a.-href="([^"]-)">([^>]-)</a>') do
+		for Link, Name in content:gmatch('chapter%-item">.-<a[^>]-href="[^"]-/truyen%-tranh/([^"]-)">([^>]-)</a>') do
 			t[#t + 1] = {
 				Name = stringify(Name):gsub("%s+", ""),
 				Link = Link,
@@ -87,10 +87,10 @@ if Settings.Version > 0.35 then
 	end
 
 	function TruyenQQ:prepareChapter(chapter, dt)
-		local content = downloadContent(chapter.Link)
+		local content = downloadContent(self.Link .. "/truyen-tranh/" .. chapter.Link)
 		local t = dt
 		for Link in content:gmatch('<img class="lazy".-src="([^"]-)"') do
-			t[#t + 1] = Link .. "\n" .. chapter.Link
+			t[#t + 1] = Link .. "\n" .. self.Link .. "/truyen-tranh/" .. chapter.Link
 		end
 	end
 
