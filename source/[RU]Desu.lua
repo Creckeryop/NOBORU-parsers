@@ -1,4 +1,4 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 5)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 6)
 
 Desu.Filters = {
 	{
@@ -218,13 +218,16 @@ end
 
 function Desu:getChapters(manga, dt)
 	local content = downloadContent(self.Link .. manga.Link)
-	local description = (content:match('itemprop="description">(.-)</div>') or ""):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
+	local description = (content:match('itemprop="description">(.-)</div>') or ""):gsub("<.->", ""):gsub("\n+", "\n"):gsub("^%s+", ""):gsub("%s+$", "")
 	dt.Description = stringify(description)
 	local t = {}
 	local rus_name = content:match('<span class="rus%-name"[^>]->(.-)</span>') or ""
 	local org_name = content:match('<span class="name"[^>]->(.-)</span>') or manga.Name
 	manga.Name = stringify(org_name .. (rus_name == "" and "" or " (" .. rus_name .. ")"))
-	for Link, Name in content:gmatch('<a href="(/manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
+	for Link, Name in content:gmatch('<a href="(/?manga/%S-)" class="tips Tooltip"[^>]-title="([^>]-)">') do
+		if Link:sub(1, 1) ~= "/" then
+			Link = "/" .. Link
+		end
 		t[#t + 1] = {
 			Name = stringify(Name),
 			Link = Link,
