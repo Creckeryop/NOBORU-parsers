@@ -1,4 +1,4 @@
-ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA", 2)
+ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA", 3)
 
 local function stringify(string)
 	return string:gsub(
@@ -70,7 +70,7 @@ end
 
 function ScanFR:prepareChapter(chapter, dt)
 	local content = downloadContent(chapter.Link)
-	for Link in content:gmatch('img%-responsive"[^>]-data%-src=\' ([^\']-) \'') do
+	for Link in content:gmatch('img%-responsive"[^>]-data%-src=[\'"]%s*([^\'"]-)%s*[\'"]') do
 		dt[#dt + 1] = Link
 	end
 end
