@@ -1,4 +1,4 @@
-nhentai = Parser:new("nhentai", "https://nhentai.net", "DIF", "NHENTAI", 2)
+nhentai = Parser:new("nhentai", "https://nhentai.to", "DIF", "NHENTAI", 3)
 
 nhentai.NSFW = true
 
