@@ -1,4 +1,4 @@
-nhentai = Parser:new("nhentai", "https://nhentai.to", "DIF", "NHENTAI", 3)
+nhentai = Parser:new("nhentai", "https://nhentai.to", "DIF", "NHENTAI", 4)
 
 nhentai.NSFW = true
 
@@ -38,6 +38,9 @@ function nhentai:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
 	for Link, ImageLink, Name in content:gmatch('class="gallery".-href="(%S-)".-data%-src="(%S-)".->([^<]-)</div>') do
+		if ImageLink:match("^http") == nil then
+			ImageLink = "https://cdn.nload.xyz" .. ImageLink
+		end
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. Link)
 		dt.NoPages = false
 		coroutine.yield(false)
