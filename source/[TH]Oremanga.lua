@@ -1,4 +1,4 @@
-Oremanga = Parser:new("Oremanga", "https://www.oremanga.net", "THA", "OREMANGATHA", 1)
+Oremanga = Parser:new("Oremanga", "https://www.oremanga.net", "THA", "OREMANGATHA", 2)
 
 local function stringify(string)
     return string:gsub(
@@ -33,7 +33,7 @@ local function downloadContent(link)
 end
 
 function Oremanga:getManga(link, dt)
-    local content = downloadContent(self.Link .. "/series/" .. link)
+    local content = downloadContent(link)
     local t = dt
     t.NoPages = true
     for Link, Name, ImageLink in content:gmatch('flexbox2%-item">.-href="[^"]*/([^"]-)/" title="([^"]-)".-img src="([^"]-)"') do
