@@ -87,12 +87,38 @@ This repo is created to store parsers for NOBORU app on PS vita
   ---If page was last sets dest_table.NoPages to `true`
   function Parser:getLatestManga(page, dest_table)
   
+  ---@param page integer
+  ---@param dest_table table
+  ---Adds manga(see Manga Table) in alphabet order to `dest_table`
+  ---If page was last sets dest_table.NoPages to `true`
+  function Parser:getAZManga(page, dest_table)
+
+  ---@param page integer
+  ---@param dest_table table
+  ---@param letter string
+  ---Adds manga(see Manga Table) started with selected `letter` to `dest_table`
+  ---If page was last sets dest_table.NoPages to `true`
+  ---ParserVar.Letters should be initialized
+  ---example: LelScanVF.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+  function Parser:getLetterManga(page, dest_table, letter)
+
+  ---@param page integer
+  ---@param dest_table table
+  ---@param tag string
+  ---Adds manga(see Manga Table) in alphabet order to `dest_table`
+  ---If page was last sets dest_table.NoPages to `true`
+  ---ParserVar.Tags should be initialized
+  ---example: MangaDoor.Tags = {"Acción", "Aventura", "Comedia", "Drama", "Ecchi", "Fantasía", "Gender Bender", "Harem", "Histórico", "Horror", "Josei", "Artes Marciales", "Maduro", "Mecha", "Misterio", "One Shot", "Psicológico", "Romance", "Escolar", "Ciencia Ficción", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Recuentos de la vida", "Deportes", "Supernatural", "Tragedia", "Yaoi", "Yuri", "Demonios", "Juegos", "Policial", "Militar", "Thriller", "Autos", "Música", "Vampiros", "Magia", "Samurai", "Boys love", "Hentai"}
+  function Parser:getTagManga(page, dest_table, tag)
+
   ---@param search string
   ---@param page integer
   ---@param dest_table table
+  ---@param filter? table
   ---Adds searched manga(see Manga Table) with `search` string to `dest_table`
   ---If page was last sets dest_table.NoPages to `true`
-  function Parser:searchManga(search, page, dest_table)
+  ---For `filter` example search for `/source/[RAW]RawDevArt.lua` file
+  function Parser:searchManga(search, page, dest_table, filter)
   
   ---@param manga table
   ---@param dest_table table
