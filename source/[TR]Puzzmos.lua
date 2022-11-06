@@ -1,5 +1,5 @@
-Puzzmos = Parser:new("Puzzmos", "https://www.puzzmos.com", "TUR", "PUZZMOSTUR", 3)
-
+Puzzmos = Parser:new("Puzzmos", "https://www.puzzmos.com", "TUR", "PUZZMOSTUR", 4)
+Puzzmos.Disabled = true --Reason: dead host
 local function downloadContent(link)
 	local f = {}
 	Threads.insertTask(
