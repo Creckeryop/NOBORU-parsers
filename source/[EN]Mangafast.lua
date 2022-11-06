@@ -4,7 +4,9 @@
 	https://mangafast.org/the-making-of-a-princess-chapter-46 	=>	Chapter.Link = the-making-of-a-princess-chapter-46
 --]]
 
-Mangafast = Parser:new("Mangafast", "https://mangafast.org", "ENG", "MANGAFAST", 2)
+Mangafast = Parser:new("Mangafast", "https://mangafast.org", "ENG", "MANGAFAST", 3)
+
+Mangafast.Disabled = true --Reason: Host is dead
 
 local API_search = 'https://search.mangafast.net/comics/ms'
 
