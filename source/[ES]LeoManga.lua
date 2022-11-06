@@ -1,5 +1,7 @@
 LeoManga = Parser:new("LeoManga", "https://leomanga.me", "ESP", "LEOMANGASPA", 1)
 
+LeoManga.Disabled = true --Reason: no host
+
 local function stringify(string)
 	return string:gsub(
 		"&#([^;]-);",
