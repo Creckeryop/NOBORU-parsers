@@ -1,4 +1,4 @@
-ScanFR = Parser:new("ScanFR", "https://www.scan-fr.co", "FRA", "SCANFRA", 3)
+ScanFR = Parser:new("ScanFR", "https://www.scan-fr.org", "FRA", "SCANFRA", 4)
 
 local function stringify(string)
 	return string:gsub(
@@ -36,7 +36,8 @@ function ScanFR:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
 	for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)" class="thumbnail">[^>]-src=\'([^\']-)\' alt=\'([^\']-)\' />[^<]-</a>') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
+		local cover = "https://opfrcdn.xyz/uploads/manga/" .. (Link:match("manga/([^/]*)") or "") .. "/cover/cover_250x350.jpg"
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, cover, self.ID, Link)
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
@@ -53,7 +54,7 @@ end
 function ScanFR:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
 	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
-	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
+	dt.Description = stringify(description:gsub("<.->", ""):gsub("^%s+", ""):gsub("%s+$", ""))
 	local t = {}
 	for Link, Name, SubName in content:gmatch('chapter%-title%-rtlrr">[^<]-<a href="([^"]-)">([^<]-)</a>.-<em>(.-)</em>') do
 		t[#t + 1] = {
