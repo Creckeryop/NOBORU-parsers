@@ -1,4 +1,6 @@
-HeavenManga = Parser:new("HeavenManga", "https://heavenmanga.com", "ESP", "HEAVENMANGAESP", 2)
+HeavenManga = Parser:new("HeavenManga", "https://heavenmanga.com", "ESP", "HEAVENMANGAESP", 3)
+
+HeavenManga.NSFW = true
 
 HeavenManga.Tags = {
 	"Accion",
@@ -213,12 +215,18 @@ function HeavenManga:searchManga(search, page, dt)
 end
 
 function HeavenManga:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. manga.Link)
+	local content =
+		downloadContent(
+		{
+			Link = self.Link .. manga.Link,
+			Header1 = "X-Requested-With: XMLHttpRequest"
+		}
+	)
 	local t = {}
-	for Link, Name in content:gmatch('a href="[^"]+(/[^"]-)" class="text%-warning"><i>([^<]-)</i>') do
+	for Link, Name in content:gmatch('"slug":"([^"]-)".-<i>%s*([^<]-)%s*<\\/i>') do
 		t[#t + 1] = {
 			Name = Name,
-			Link = Link,
+			Link = "/" .. Link,
 			Pages = {},
 			Manga = manga
 		}
@@ -226,6 +234,11 @@ function HeavenManga:getChapters(manga, dt)
 	table.sort(
 		t,
 		function(a, b)
+			local num1 = tonumber(a.Name:match("([0-9.,]*)$") or "")
+			local num2 = tonumber(b.Name:match("([0-9.,]*)$") or "")
+			if num1 ~= nil and num2 ~= nil then
+				return num1 < num2
+			end
 			return (a.Name < b.Name)
 		end
 	)
