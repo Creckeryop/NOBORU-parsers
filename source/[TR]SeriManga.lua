@@ -1,4 +1,4 @@
-SeriManga = Parser:new("SeriManga", "https://serimanga.com", "TUR", "SERIMANGATR", 2)
+SeriManga = Parser:new("SeriManga", "https://serimanga.com", "TUR", "SERIMANGATR", 3)
 
 local function stringify(string)
 	return string:gsub(
@@ -60,7 +60,7 @@ function SeriManga:getChapters(manga, dt)
 			description = (content:match('class="demo1">(.-)</p>') or ""):gsub("<br>","\n"):gsub("<.->",""):gsub("\n+","\n"):gsub("^%s+",""):gsub("%s+$","")
 			dt.Description = stringify(description)
 		end
-		for Link, Name in content:gmatch('spl%-list%-item">[^"]-href="[^"]-(/manga/[^"]-)" title="([^"]-)"') do
+		for Link, Name in content:gmatch('spl%-list%-item">[^"]-href="[^"]-(/manga/[^"]-)"%s*title="([^"]-)"') do
 			t[#t + 1] = {
 				Name = stringify(Name):gsub("^" .. manga.Name, ""):gsub("^[ -]+", ""),
 				Link = Link,
