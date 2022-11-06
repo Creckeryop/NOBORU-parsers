@@ -1,4 +1,4 @@
-HentaiRead = Parser:new("HentaiRead", "https://hentairead.com", "DIF", "HENREADDIF", 2)
+HentaiRead = Parser:new("HentaiRead", "https://hentairead.com", "DIF", "HENREADDIF", 3)
 
 HentaiRead.NSFW = true
 
@@ -37,10 +37,10 @@ end
 function HentaiRead:getManga(link, dt, is_search)
 	local content = downloadContent(link)
 	dt.NoPages = true
-	local regex = 'page%-item%-detail manga">.-href=".-/hentai/([^"]-)/" title="([^"]-)".-data%-src="([^"]-)"'
-	if is_search then
+	local regex = 'item%-thumb c%-image%-hover".-href=".-/hentai/([^"]-)/" title="([^"]-)".-data%-src="([^"]-)"'
+	--[[if is_search then
 		regex = 'row c%-tabs%-item__content">.-href=".-/hentai/([^"]-)/" title="([^"]-)".-data%-src="([^"]-)"'
-	end
+	end]]
 	for Link, Name, ImageLink in content:gmatch(regex) do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. "/hentai/" .. Link)
 		dt.NoPages = false
@@ -61,15 +61,12 @@ function HentaiRead:searchManga(search, page, dt)
 end
 
 function HentaiRead:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. "/hentai/" .. manga.Link):match("page%-content%-listing single%-page(.-)</ul>") or ""
-	for Link, Name in content:gmatch('wp%-manga%-chapter[^>]->[^<]-<a href=".-/hentai/([^"]-)/">.-\n*([^<]-)</a>') do
-		dt[#dt + 1] = {
-			Name = stringify(Name),
-			Link = Link,
-			Pages = {},
-			Manga = manga
-		}
-	end
+	dt[#dt + 1] = {
+		Name = "Read chapter",
+		Link = manga.Link,
+		Pages = {},
+		Manga = manga
+	}
 end
 
 function HentaiRead:prepareChapter(chapter, dt)
