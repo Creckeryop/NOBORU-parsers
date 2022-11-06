@@ -1,5 +1,5 @@
 if u8c then
-    NewMangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEXDIF", 1)
+    NewMangaDex = Parser:new("MangaDex", "https://mangadex.org", "DIF", "MANGADEXDIF", 2)
 
     NewMangaDex.Filters = {
         {
@@ -1023,8 +1023,9 @@ if u8c then
                 end
                 t[#t + 1] = {
                     Id = id,
-                    Volume = volume,
+                    Volume = tonumber(volume) or 0,
                     Chapter = tonumber(chapter) or chapter,
+                    CompareChapter = tonumber(chapter) or tonumber(chapter:match("%d*")) or 0,
                     Title = stringify(title),
                     TranslatedLanguage = (translatedLanguage or ""):lower(),
                     LanguagePoints = langPoints
@@ -1038,8 +1039,8 @@ if u8c then
             page = page + 1
             coroutine.yield(true)
         end
-        t = uniqueOnValues(t, "LanguagePoints", "TranslatedLanguage", "Volume", "Chapter")
-        sortOnValues(t, "LanguagePoints", "TranslatedLanguage", "Volume", "Chapter")
+        t = uniqueOnValues(t, "LanguagePoints", "TranslatedLanguage", "Volume", "CompareChapter")
+        sortOnValues(t, "LanguagePoints", "TranslatedLanguage", "Volume", "CompareChapter")
         for i = 1, #t do
             local lang = ""
             if countryCodes[t[i].TranslatedLanguage] then
@@ -1047,6 +1048,7 @@ if u8c then
             else
                 lang = t[i].TranslatedLanguage
             end
+
             dt[i] = {
                 Link = t[i].Id,
                 Name = (t[i].Volume >= 0 and ("Volume " .. t[i].Volume .. " ") or "") .. "Chapter " .. t[i].Chapter .. (t[i].Title and t[i].Title ~= "" and (" - " .. t[i].Title) or "") .. " '" .. lang .. "'",
