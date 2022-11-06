@@ -3,7 +3,9 @@
 	Manga.Link = 964/
 	Chapter.Link = 32976/
 --]]
-LoveHug = Parser:new("LoveHug", "https://lovehug.net", "RAW", "LOVEHUGRAW", 3)
+LoveHug = Parser:new("LoveHug", "https://lovehug.net", "RAW", "LOVEHUGRAW", 4)
+
+LoveHug.Disabled = true --Reason is simple LoveHug is now mobile app with login password (currently not supported)
 
 local function stringify(string)
 	return string:gsub(
