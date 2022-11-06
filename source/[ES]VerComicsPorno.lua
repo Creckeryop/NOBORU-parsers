@@ -1,4 +1,4 @@
-VerComicsPorno = Parser:new("VerComicsPorno", "https://vercomicsporno.xxx", "ESP", "VERCOMICSPORNOESP", 2)
+VerComicsPorno = Parser:new("VerComicsPorno", "https://vercomicsporno.xxx", "ESP", "VERCOMICSPORNOESP", 3)
 
 VerComicsPorno.NSFW = true
 
@@ -76,5 +76,8 @@ function VerComicsPorno:prepareChapter(chapter, dt)
 end
 
 function VerComicsPorno:loadChapterPage(link, dt)
-    dt.Link = link
+    dt.Link = {
+        Link = link,
+        Header1 = "Referer: "..self.Link
+    }
 end
