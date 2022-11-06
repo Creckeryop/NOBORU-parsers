@@ -1,4 +1,4 @@
-MangaHubRU = Parser:new("MangaHub (Русский)", "https://mangahub.ru", "RUS", "MANGAHUBRU", 1)
+MangaHubRU = Parser:new("MangaHub (Русский)", "https://mangahub.ru", "RUS", "MANGAHUBRU", 2)
 
 local function stringify(string)
 	if u8c then
@@ -27,7 +27,8 @@ local function downloadContent(link)
 			Type = "StringRequest",
 			Link = link,
 			Table = file,
-			Index = "string"
+			Index = "string",
+			Header1 = "Referer: " .. MangaHubRU.Link
 		}
 	)
 	while Threads.check(file) do
@@ -39,45 +40,48 @@ end
 function MangaHubRU:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
-    for Link, ImageLink, Name in content:gmatch('<a href="/([^"]-)" class="d%-block position%-relative">.-data%-background%-image="([^"]-)"></div>.-<a class="comic%-grid%-name[^>]->%s*(.-)%s*</a>') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/" .. Link)
+	for Link, ImageLink, Name in content:gmatch('<a href="/([^"]-)" class="d%-block rounded fast%-view%-layer"[^>]*>.-data%-background%-image="([^"]-)"></div>.-<a class="fw%-medium[^>]->%s*(.-)%s*</a>') do
+		dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/" .. Link)
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
 end
 
 function MangaHubRU:getPopularManga(page, dt)
-	self:getManga(self.Link .. "/explore?filter%5Bsort%5D=rating&filter%5Btypes%5D%5Bexcludes%5D=&filter%5Bgenres%5D%5Bexcludes%5D=&filter%5Bstatus%5D%5Bexcludes%5D=&filter%5Bcountry%5D%5Bexcludes%5D=&page="..page, dt)
+	self:getManga(self.Link .. "/explore?filter%5Bsort%5D=rating&filter%5Btypes%5D%5Bexcludes%5D=&filter%5Bgenres%5D%5Bexcludes%5D=&filter%5Bstatus%5D%5Bexcludes%5D=&filter%5Bcountry%5D%5Bexcludes%5D=&page=" .. page, dt)
 end
 
 function MangaHubRU:getLatestManga(page, dt)
-	self:getManga(self.Link .. "/explore?filter%5Bsort%5D=update&filter%5Btypes%5D%5Bexcludes%5D=&filter%5Bgenres%5D%5Bexcludes%5D=&filter%5Bstatus%5D%5Bexcludes%5D=&filter%5Bcountry%5D%5Bexcludes%5D=&page="..page, dt)
+	self:getManga(self.Link .. "/explore?filter%5Bsort%5D=update&filter%5Btypes%5D%5Bexcludes%5D=&filter%5Bgenres%5D%5Bexcludes%5D=&filter%5Bstatus%5D%5Bexcludes%5D=&filter%5Bcountry%5D%5Bexcludes%5D=&page=" .. page, dt)
 end
 
 function MangaHubRU:searchManga(search, page, dt)
-	self:getManga(self.Link .. "/search/manga?filter%5Bsort%5D=score&query="..search.."&filter%5Bquery%5D="..search.."&filter%5Btypes%5D%5Bexcludes%5D=&filter%5Bgenres%5D%5Bexcludes%5D=&filter%5Bstatus%5D%5Bexcludes%5D=&filter%5Bcountry%5D%5Bexcludes%5D=&page=".. page, dt)
+	self:getManga(self.Link .. "/search/manga?filter%5Bsort%5D=score&query=" .. search .. "&filter%5Bquery%5D=" .. search .. "&filter%5Btypes%5D%5Bexcludes%5D=&filter%5Bgenres%5D%5Bexcludes%5D=&filter%5Bstatus%5D%5Bexcludes%5D=&filter%5Bcountry%5D%5Bexcludes%5D=&page=" .. page, dt)
 end
 
 function MangaHubRU:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. "/" .. manga.Link)
+	local content = downloadContent(self.Link .. "/" .. manga.Link:gsub("title/", "chapters/")) or ""
 	local t = {}
-    for Link, Name in content:gmatch('<a class="[^>]-text%-truncate" href="/[^"]-/read/([^"]-)/">%s*(.-)%s*</a>') do
+	for Link, Name in content:gmatch('href="/read/([^"]-)">%s*<span class="text%-truncate">%s*([^<]*)%s*</span>') do
 		t[#t + 1] = {
-			Name = stringify(Name:gsub("[\t\n ]+"," ")),
+			Name = stringify(Name:gsub("[\t\n ]+", " ")),
 			Link = Link,
 			Pages = {},
 			Manga = manga
 		}
-    end
+	end
 	for i = #t, 1, -1 do
 		dt[#dt + 1] = t[i]
 	end
 end
 
 function MangaHubRU:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .."/"..chapter.Manga.Link.. "/read/" .. chapter.Link)
-    for Link in content:gmatch('src&quot;:&quot;[\\/]*([^&]-)&quot;') do
-		dt[#dt + 1] = Link:gsub("\\/", "/"):gsub("%%", "%%%%")
+	local content = downloadContent(self.Link .. "/read/" .. chapter.Link)
+	for Link in content:gmatch("src&quot;:&quot;[\\/]*([^&]-)&quot;") do
+		dt[#dt + 1] = {
+			Link = "https://" .. Link:gsub("\\/", "/"):gsub("%%", "%%%%"),
+			Header1 = "Referer:" .. self.Link
+		}
 	end
 end
 
