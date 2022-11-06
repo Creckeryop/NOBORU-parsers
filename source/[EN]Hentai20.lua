@@ -1,4 +1,6 @@
-Hentai20 = Parser:new("Hentai20", "https://hentai20.com", "ENG", "HENTAITWENTYENG", 2)
+Hentai20 = Parser:new("Hentai20", "https://hentai20.com", "ENG", "HENTAITWENTYENG", 3)
+
+Hentai20.Disabled = true --Reason: Cloudflare protection
 
 Hentai20.NSFW = true
 
