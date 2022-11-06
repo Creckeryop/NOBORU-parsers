@@ -1,4 +1,4 @@
-HhentaiFR = Parser:new("Histoire d'Hentai", "https://hhentai.fr", "FRA", "HHENFRA", 1)
+HhentaiFR = Parser:new("Histoire d'Hentai", "https://hhentai.fr", "FRA", "HHENFRA", 2)
 
 HhentaiFR.NSFW = true
 
@@ -90,8 +90,8 @@ function HhentaiFR:getChapters(manga, dt)
 end
 
 function HhentaiFR:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .. "/manga/" .. chapter.Link):match("var chapter_preloaded_images = %[([^%]]-)%]") or ""
-	for Link in content:gmatch('"([^"]-)"') do
+	local content = downloadContent(self.Link .. "/manga/" .. chapter.Link)
+	for Link in content:gmatch('id="image%-%d*" src="%s*([^"]-)%s*"') do
 		dt[#dt + 1] = Link:gsub("\\/", "/")
 	end
 end
