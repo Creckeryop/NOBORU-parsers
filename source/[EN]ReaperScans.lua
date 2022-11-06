@@ -1,4 +1,6 @@
-ReaperScans = Parser:new("Reaper Scans", "https://reaperscans.com", "ENG", "REAPERSCANSEN", 1)
+ReaperScans = Parser:new("Reaper Scans", "https://reaperscans.com", "ENG", "REAPERSCANSEN", 2)
+
+ReaperScans.Disabled = true --Reason: JavaScript check
 
 REAPERSCANS_GET_TRENDING = "/page/%s/?s&post_type=wp-manga&op&author&artist&release&adult&m_orderby=trending"
 REAPERSCANS_GET_LATEST = "/page/%s/?s&post_type=wp-manga&op&author&artist&release&adult&m_orderby=latest"
