@@ -1,5 +1,5 @@
-HentaiShark = Parser:new("Hentai Shark", "https://readhent.ai", "DIF", "HENSHARKDIF", 3)
-
+HentaiShark = Parser:new("Hentai Shark", "https://readhent.ai", "DIF", "HENSHARKDIF", 4)
+HentaiShark.Disabled = true --Reason host is dead
 HentaiShark.NSFW = true
 
 HentaiShark.Filters = {
