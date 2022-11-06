@@ -96,7 +96,10 @@ end
 YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 2)
 YaoiChan.NSFW = true
 
-HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentaichan.live", "RUS", "HENTAICHANRU", 4)
+HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentaichan.live", "RUS", "HENTAICHANRU", 5)
+
+HentaiChan.Disabled = true --Reason: Host is dead
+
 HentaiChan.NSFW = true
 
 local function downloadHContent(link)
