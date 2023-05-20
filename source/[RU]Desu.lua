@@ -1,4 +1,4 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 6)
+Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 7)
 
 Desu.Filters = {
 	{
@@ -250,5 +250,8 @@ function Desu:prepareChapter(chapter, dt)
 end
 
 function Desu:loadChapterPage(link, dt)
-	dt.Link = link
+	dt.Link = {
+		Link = link,
+		Header1 = "Referer:" .. self.Link
+	}
 end
