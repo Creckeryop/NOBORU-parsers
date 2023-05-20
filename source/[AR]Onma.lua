@@ -1,4 +1,4 @@
-Onma = Parser:new("Onma", "https://onma.me", "ARA", "ONMAARA", 1)
+Onma = Parser:new("Onma", "https://onma.top", "ARA", "ONMAARA", 2)
 
 Onma.Tags = {
     "أكشن",
