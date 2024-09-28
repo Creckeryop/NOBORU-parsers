@@ -1008,7 +1008,7 @@ if u8c then
         end
         while true do
             local content = downloadContent(apiChapterUrl .. "?manga=" .. manga.Link .. "&" .. contentRating .. "limit=100&offset=" .. (page * 100))
-            for id, volume, chapter, title, translatedLanguage in content:gmatch('{"id":"([^"]-)","type":"chapter",[^{]-{"volume":([^,]-),"chapter":"([^"]-)","title":([^,]-),"translatedLanguage":"([^"]-)"') do
+            for id, volume, chapter, title, translatedLanguage in content:gmatch('{"id":"([^"]-)","type":"chapter",[^{]-{"volume":([^,]-),"chapter":"([^"]-)","title":(.-),"translatedLanguage":"([^"]-)"') do
                 volume = volume:match('"([^"]-)"') or volume
                 if volume == "null" then
                     volume = -1
