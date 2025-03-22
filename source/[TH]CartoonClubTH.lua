@@ -1,5 +1,8 @@
 CartoonClubTH = Parser:new("CartoonClub-TH", "https://www.toonclub-th.co", "THA", "CARTOONCLUBTH", 1)
 
+---Reason: Host is unavailable
+CartoonClubTH.Disabled = true
+
 local function stringify(string)
     return string:gsub(
         "&#([^;]-);",
