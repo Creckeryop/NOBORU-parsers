@@ -1,4 +1,4 @@
-DoujinHentai = Parser:new("DoujinHentai", "https://www.doujinhentai.net", "ESP", "DOUJINHENTAIESP", 2)
+DoujinHentai = Parser:new("DoujinHentai", "https://www.doujinhentai.net", "ESP", "DOUJINHENTAIESP", 3)
 
 DoujinHentai.NSFW = true
 
@@ -37,23 +37,24 @@ end
 function DoujinHentai:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
-	for Link, Name, ImageLink in content:gmatch('class="col%-sm%-6 col%-md%-3.-href="([^"]-)".-title="(.-)">.-<img data%-src="(.-)" class') do
+	for Link, Name, ImageLink in content:gmatch('class="col%-sm%-6 col%-md%-3.-href="([^"]-)".-title="(.-)">.-<img%s*data%-src="(.-)" class') do
 		dt[#dt + 1] = CreateManga(stringify(Name:gsub("^Leer ", "")), Link:gsub("%%", "%%%%"):gsub(" ", "%%%%20"):match("/manga%-hentai/(.+)$") or " ", ImageLink:gsub("%%", "%%%%"):gsub(" ", "%%%%20"), self.ID, Link)
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
 end
 
+
 function DoujinHentai:getPopularManga(page, dt)
-	self:getManga(self.Link .. "/lista-manga-hentai?orderby=views&page=" .. page, dt)
+	self:getManga(self.Link .. "/list-manga-hentai?orderby=views&page=" .. page, dt)
 end
 
 function DoujinHentai:getLatestManga(page, dt)
-	self:getManga(self.Link .. "/lista-manga-hentai?orderby=last&page=" .. page, dt)
+	self:getManga(self.Link .. "/list-manga-hentai?orderby=last&page=" .. page, dt)
 end
 
 function DoujinHentai:getAZManga(page, dt)
-	self:getManga(self.Link .. "/lista-manga-hentai?page=" .. page, dt)
+	self:getManga(self.Link .. "/list-manga-hentai?page=" .. page, dt)
 end
 
 function DoujinHentai:searchManga(search, page, dt)
