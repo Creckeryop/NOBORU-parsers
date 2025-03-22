@@ -1,5 +1,8 @@
 Manatoki95 = Parser:new("마나토끼", "https://manatoki97.net", "KOR", "MANATOKI95KR", 3)
 
+---Reason site is unavailable
+Manatoki95.Disabled = true
+
 Manatoki95.Filters = {
 	{
 		Name = "장르",
