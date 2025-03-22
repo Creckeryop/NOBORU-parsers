@@ -1,5 +1,8 @@
 Komikid = Parser:new("Komikid", "https://www.komikid.com", "IDN", "KOMIKIDIDN", 3)
 
+---Reason server is dead
+Komikid.Disabled = true
+
 Komikid.Tags = {"Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Fantasy", "Gender Bender", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports", "Supernatural", "Tragedy", "Yaoi", "Yuri"}
 
 Komikid.TagValues = {
