@@ -1,7 +1,14 @@
 Animeregia = Parser:new("Animeregia", "https://animaregia.net", "PRT", "ANIMEREGIAPTG", 3)
 
-Animeregia.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-Animeregia.Tags = {"Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports", "Supernatural", "Tragedy", "Yaoi", "Yuri"}
+---Reason: Hosting is dead?
+Animeregia.Disabled = true
+
+Animeregia.Letters = { "#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+	"T", "U", "V", "W", "X", "Y", "Z" }
+Animeregia.Tags = { "Action", "Adventure", "Comedy", "Doujinshi", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem",
+	"Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "One Shot", "Psychological", "Romance",
+	"School Life", "Sci-fi", "Seinen", "Shoujo", "Shoujo Ai", "Shounen", "Shounen Ai", "Slice of Life", "Sports",
+	"Supernatural", "Tragedy", "Yaoi", "Yuri" }
 
 Animeregia.TagValues = {
 	["Action"] = "1",
@@ -85,11 +92,13 @@ function Animeregia:getPopularManga(page, dt)
 end
 
 function Animeregia:getLetterManga(page, dt, letter)
-	self:getManga(self.Link .. "/filterList?alpha=" .. letter:gsub("#", "Other") .. "&sortBy=name&asc=true&page=" .. page, dt)
+	self:getManga(
+	self.Link .. "/filterList?alpha=" .. letter:gsub("#", "Other") .. "&sortBy=name&asc=true&page=" .. page, dt)
 end
 
 function Animeregia:getTagManga(page, dt, tag)
-	self:getManga(self.Link .. "/filterList?alpha=&cat=" .. (self.TagValues[tag] or "0") .. "&sortBy=name&asc=true&page=" .. page, dt)
+	self:getManga(
+	self.Link .. "/filterList?alpha=&cat=" .. (self.TagValues[tag] or "0") .. "&sortBy=name&asc=true&page=" .. page, dt)
 end
 
 function Animeregia:getLatestManga(page, dt)
@@ -97,7 +106,8 @@ function Animeregia:getLatestManga(page, dt)
 	dt.NoPages = true
 	for Link, Name in content:gmatch('manga%-item.-href="([^"]-)">(.-)</a>') do
 		local key = Link:match("manga/(.*)/?") or ""
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, self.Link .. "/uploads/manga/" .. key .. "/cover/cover_250x350.jpg", self.ID, Link)
+		dt[#dt + 1] = CreateManga(stringify(Name), Link,
+			self.Link .. "/uploads/manga/" .. key .. "/cover/cover_250x350.jpg", self.ID, Link)
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
@@ -110,7 +120,7 @@ end
 function Animeregia:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
 	local description = content:match('class="well">.-<p[^>]->(.-)</div>') or ""
-	dt.Description = stringify(description:gsub("<.->",""):gsub("^%s+",""):gsub("%s+$",""))
+	dt.Description = stringify(description:gsub("<.->", ""):gsub("^%s+", ""):gsub("%s+$", ""))
 	local t = {}
 	for Link, Name in content:gmatch('chapter%-title%-rtl">[^<]-<a href="([^"]-)">([^<]-)</a>') do
 		t[#t + 1] = {
