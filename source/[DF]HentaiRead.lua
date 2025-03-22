@@ -1,4 +1,4 @@
-HentaiRead = Parser:new("HentaiRead", "https://hentairead.com", "DIF", "HENREADDIF", 3)
+HentaiRead = Parser:new("HentaiRead", "https://hentairead.com", "DIF", "HENREADDIF", 4)
 
 HentaiRead.NSFW = true
 
@@ -37,11 +37,9 @@ end
 function HentaiRead:getManga(link, dt, is_search)
 	local content = downloadContent(link)
 	dt.NoPages = true
-	local regex = 'item%-thumb c%-image%-hover".-href=".-/hentai/([^"]-)/" title="([^"]-)".-data%-src="([^"]-)"'
-	--[[if is_search then
-		regex = 'row c%-tabs%-item__content">.-href=".-/hentai/([^"]-)/" title="([^"]-)".-data%-src="([^"]-)"'
-	end]]
-	for Link, Name, ImageLink in content:gmatch(regex) do
+	local regex = 'manga%-item__img.-alt="([^"]+)"[^>]*src="([^"]+)".-/hentai/([^/]+)/'
+
+	for Name, ImageLink, Link in content:gmatch(regex) do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. "/hentai/" .. Link)
 		dt.NoPages = false
 		coroutine.yield(false)
@@ -70,9 +68,18 @@ function HentaiRead:getChapters(manga, dt)
 end
 
 function HentaiRead:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .. "/hentai/" .. chapter.Link .. "/english"):match("var chapter_preloaded_images = %[(.-)%]") or ""
-	for Link in content:gmatch('"([^"]-)"') do
-		dt[#dt + 1] = Link:gsub("\\/", "/")
+	local content = downloadContent(self.Link .. "/hentai/" .. chapter.Link .. "/english")
+
+	local current_id, chapter_id = content:match('"currentId"%s*:%s*(%d*).-"chapterId"%s*:%s*(%d*)')
+	local page_count = content:match('Page 1 of (%d*)')
+
+	print(current_id, chapter_id, page_count)
+
+	for i = 1, page_count do
+		dt[#dt + 1] = {
+			Link = "https://henread.xyz/" .. current_id .. "/" .. chapter_id .. ("/hr_%04d.jpg"):format(i),
+			Header1 = "Referer: " .. self.Link
+		}
 	end
 end
 
