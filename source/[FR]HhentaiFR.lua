@@ -1,4 +1,4 @@
-HhentaiFR = Parser:new("Histoire d'Hentai", "https://hhentai.fr", "FRA", "HHENFRA", 2)
+HhentaiFR = Parser:new("Histoire d'Hentai", "https://hhentai.fr", "FRA", "HHENFRA", 3)
 
 HhentaiFR.NSFW = true
 
@@ -25,7 +25,8 @@ local function downloadContent(link)
 			Type = "StringRequest",
 			Link = link,
 			Table = f,
-			Index = "text"
+			Index = "text",
+			Cookie = "age_gate=34"
 		}
 	)
 	while Threads.check(f) do
@@ -38,6 +39,8 @@ function HhentaiFR:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
 	for Link, Name, ImageLink in content:gmatch('c%-image%-hover.-href="[^"]-/manga/([^"/]-)/?" title="([^"]-)".-src="([^"]-)"') do
+		--- ImageLink format is webp, anti-ddos to empty
+		ImageLink = ImageLink:gsub("%-%d*x%d*%.webp$", ".jpg")
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, self.Link .. "/manga/" .. Link .. "/")
 		dt.NoPages = false
 		coroutine.yield(false)
@@ -91,7 +94,7 @@ end
 
 function HhentaiFR:prepareChapter(chapter, dt)
 	local content = downloadContent(self.Link .. "/manga/" .. chapter.Link)
-	for Link in content:gmatch('id="image%-%d*" src="%s*([^"]-)%s*"') do
+	for Link in content:gmatch('id="image%-%d*"[^>]-data%-src="%s*([^"]*)%s*"') do
 		dt[#dt + 1] = Link:gsub("\\/", "/")
 	end
 end
