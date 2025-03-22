@@ -1,4 +1,4 @@
-MangaDenizi = Parser:new("MangaDenizi", "https://mangadenizi.com", "TUR", "MANGADENIZI", 2)
+MangaDenizi = Parser:new("MangaDenizi", "https://mangadenizi.net", "TUR", "MANGADENIZI", 3)
 
 MangaDenizi.Letters = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
@@ -37,7 +37,7 @@ end
 function MangaDenizi:getManga(link, dt)
 	local content = downloadContent(link)
 	dt.NoPages = true
-	for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)" class="thumbnail">[^>]-src=\'//([^\']-)\' alt=\'([^\']-)\'>[^<]-</a>') do
+	for Link, ImageLink, Name in content:gmatch('<a href="([^"]-)" class="thumbnail">[^>]-src=[\'"]//([^\'"]-)[\'"][^>]-alt="([^"]-)"') do
 		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink, self.ID, Link)
 		dt.NoPages = false
 		coroutine.yield(false)
