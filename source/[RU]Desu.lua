@@ -1,4 +1,7 @@
-Desu = Parser:new("Desu", "https://desu.me", "RUS", "DESURU", 7)
+--[[
+Covers Are Unavailable due GZIP encoding
+]]
+Desu = Parser:new("Desu", "https://desu.store", "RUS", "DESURU", 8)
 
 Desu.Filters = {
 	{
@@ -131,7 +134,7 @@ Desu.Keys = {
 	["Яой"] = "Yaoi"
 }
 
-local desu_api = "https://desu.me/manga/api"
+local desu_api = "https://desu.store/manga/api"
 
 local function downloadContent(link)
 	local file = {}
@@ -172,8 +175,8 @@ end
 function Desu:getManga(link, dt, is_search)
 	local content = downloadContent(link)
 	dt.NoPages = true
-	for Name, RName, ImageLink, Link in content:gmatch('"id":%d-,"name":"(.-)","russian":"(.-)","image":.-:"(.-)".-"url":".-(manga/%S-)"') do
-		dt[#dt + 1] = CreateManga(stringify((Name .. " (" .. RName .. ")"):gsub("\\", "")), "/" .. Link, ImageLink, self.ID, self.Link .. "/" .. Link)
+	for Name, RName, ImageLink, Link in content:gmatch('"id":%d-,"name":"(.-)","russian":"(.-)","image":.-:"([^"]-/preview/[^"]-)".-"url":".-(manga/%S-)"') do
+		dt[#dt + 1] = CreateManga(stringify((Name .. " (" .. RName .. ")"):gsub("\\", "")), "/" .. Link, '', self.ID, self.Link .. "/" .. Link)
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
