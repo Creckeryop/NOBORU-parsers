@@ -1,5 +1,8 @@
 BRMangas = Parser:new("BRMangas", "https://www.brmangas.com", "PRT", "BRMANGASPT", 1)
 
+---Reason: Site is dead
+BRMangas.Disabled = true
+
 local function stringify(string)
     if u8c then
         return string:gsub(
