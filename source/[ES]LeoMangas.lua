@@ -1,5 +1,8 @@
 LeoMangas = Parser:new("LeoMangas", "https://leomangas.xyz", "ESP", "LEOMANGASSPA", 1)
 
+--- Site is dead
+LeoMangas.Disabled = true
+
 local function stringify(string)
 	return string:gsub(
 		"&#([^;]-);",
