@@ -1,4 +1,4 @@
-MangaChan = Parser:new("Манга-Тян!", "https://manga-chan.me", "RUS", "MANGACHANRU", 2)
+MangaChan = Parser:new("Манга-Тян!", "https://im.manga-chan.me", "RUS", "MANGACHANRU", 3)
 
 local function stringify(string)
 	if u8c then
@@ -19,7 +19,7 @@ local function stringify(string)
 	end
 end
 
-local function downloadContent(link)
+function MangaChan:downloadContent(link)
 	local file = {}
 	Threads.insertTask(
 		file,
@@ -37,10 +37,10 @@ local function downloadContent(link)
 end
 
 function MangaChan:getManga(link, dt)
-	local content = downloadContent(link)
+	local content = self:downloadContent(link)
 	dt.NoPages = true
-	for Link, ImageLink, Name in content:gmatch('content_row" title=".-href="/manga/([^"]-)%.html"><img src="([^"]-)".-manga_row1.-title_link">(.-)</a>') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
+	for Link, ImageLink, Name in content:gmatch('content_row" title=".-href=[\'"][^\'"]-/manga/([^\'"]-)%.html[\'"]>.-<img[^>]-src="([^"]-)".-manga_row1.-title_link">(.-)</a>') do
+		dt[#dt + 1] = CreateManga(stringify(Name):gsub("<[^>]+>", ""):gsub("%s+", " "), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
@@ -55,23 +55,24 @@ function MangaChan:getLatestManga(page, dt)
 end
 
 function MangaChan:searchManga(search, page, dt)
-	local content = downloadContent(self.Link .. "/index.php?do=search&subaction=search&search_start=1&full_search=0&result_from=" .. (1 + (page - 1) * 40) .. "&result_num=40&story=" .. search .. "&need_sort_date=false")
+	local content = self:downloadContent(self.Link .. "/index.php?do=search&subaction=search&search_start=1&full_search=0&result_from=" .. (1 + (page - 1) * 40) .. "&result_num=40&story=" .. search .. "&need_sort_date=false")
+
 	dt.NoPages = true
-	for ImageLink, Link, Name in content:gmatch('content_row" title=".-<img src="([^"]-)".-href="[^"]*/manga/([^"]-)%.html[^>]->(.-)</a>') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
+	for ImageLink, Link, Name in content:gmatch('content_row"%s*title=".-<img src="([^"]-)".-manga_row1.-href=[\'"][^\'"]-/manga/([^\'"]-)%.html[\'"]%s*>([^>]-)</a>') do
+		dt[#dt + 1] = CreateManga(stringify(Name):gsub("%s+", " "), Link, ImageLink:gsub("%%", "%%%%"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
 		dt.NoPages = false
 		coroutine.yield(false)
 	end
 end
 
 function MangaChan:getChapters(manga, dt)
-	local content = downloadContent(self.Link .. "/manga/" .. manga.Link .. ".html")
+	local content = self:downloadContent(self.Link .. "/manga/" .. manga.Link .. ".html")
 	local description = (content:match('id="description" style.->(.-)<div') or ""):gsub("<br[^>]->", "\n"):gsub("<.->", ""):gsub("\n+", "\n"):gsub("^%s+", ""):gsub("%s+$", "")
-	dt.Description = stringify(description)
+	dt.Description = stringify(description):gsub("<[^>]+>", "")
 	local t = {}
-	for Link, Name in content:gmatch("href='/online/([^']-).html' title='[^']-'>(.-)</span>") do
+	for Link, Name in content:gmatch("href='[^']-/online/([^']-).html' title='[^']-'>(.-)</span>") do
 		t[#t + 1] = {
-			Name = stringify(Name),
+			Name = stringify(Name):gsub("%s+", " "),
 			Link = Link,
 			Pages = {},
 			Manga = manga
@@ -83,9 +84,12 @@ function MangaChan:getChapters(manga, dt)
 end
 
 function MangaChan:prepareChapter(chapter, dt)
-	local content = downloadContent(self.Link .. "/online/" .. chapter.Link .. ".html"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
+	local content = self:downloadContent(self.Link .. "/online/" .. chapter.Link .. ".html"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
 	for link in content:gmatch('"([^"]-)"') do
-		dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
+		dt[#dt + 1] = {
+			Link = link:gsub("\\/", "/"):gsub("%%", "%%%%"),
+			Header1 = "Referer: " .. self.Link
+		}
 	end
 end
 
@@ -93,16 +97,19 @@ function MangaChan:loadChapterPage(link, dt)
 	dt.Link = link
 end
 
-YaoiChan = MangaChan:new("Яой-Тян!", "https://yaoi-chan.me", "RUS", "YAOICHANRU", 2)
+YaoiChan = MangaChan:new("Яой-Тян!", "https://v8.yaoi-chan.me", "RUS", "YAOICHANRU", 3)
 YaoiChan.NSFW = true
 
-HentaiChan = MangaChan:new("Хентай-Тян!", "https://hentaichan.live", "RUS", "HENTAICHANRU", 5)
+function YaoiChan:getPopularManga(page, dt)
+	---Reason Popular doesn't work
+	self:getManga(self.Link .. "/manga/new?offset=" .. ((page - 1) * 20), dt)
+end
 
-HentaiChan.Disabled = true --Reason: Host is dead
+HentaiChan = MangaChan:new("Хентай-Тян!", "https://x2.h-chan.me", "RUS", "HENTAICHANRU", 6)
 
 HentaiChan.NSFW = true
 
-local function downloadHContent(link)
+function HentaiChan:downloadContent(link)
 	local file = {}
 	Threads.insertTask(
 		file,
@@ -111,8 +118,8 @@ local function downloadHContent(link)
 			Link = link,
 			Table = file,
 			Index = "string",
-			Header1 = "Cookie:dle_restore_pass11=1"
-		}
+			Cookie = "dle_restore_pass11=1"
+		}	
 	)
 	while Threads.check(file) do
 		coroutine.yield(false)
@@ -122,30 +129,8 @@ end
 
 local extended_hentai_link = "http://exhentai-dono.me"
 
-function HentaiChan:getManga(link, dt)
-	local content = downloadHContent(link)
-	dt.NoPages = true
-	for ImageLink, Link, Name in content:gmatch('content_row" title=".-src="([^"]-)".-href="[^"]*/manga/([^"]-)%.html[^>]->(.-)<') do
-		dt[#dt + 1] = CreateManga(stringify(Name), Link, ImageLink:gsub("%%", "%%%%"):gsub("manganew_thumbs_blur", "manganew_thumbs"), self.ID, self.Link .. "/manga/" .. Link .. ".html", self.Link .. "/manga/" .. Link .. ".html")
-		dt.NoPages = false
-		coroutine.yield(false)
-	end
-end
-
-function HentaiChan:getPopularManga(page, dt)
-	self:getManga(self.Link .. "/manga/new&n=favdesc?offset=" .. ((page - 1) * 20), dt)
-end
-
-function HentaiChan:getLatestManga(page, dt)
-	self:getManga(self.Link .. "/manga/new?offset=" .. ((page - 1) * 20), dt)
-end
-
-function HentaiChan:searchManga(search, page, dt)
-	self:getManga(self.Link .. "/?do=search&subaction=search&story=" .. search .. "&search_start=" .. (1 + (page - 1) * 40) .. "&result_num=20", dt)
-end
-
 function HentaiChan:getChapters(manga, dt)
-	local content = downloadHContent(self.Link .. "/related/" .. manga.Link .. ".html")
+	local content = self:downloadContent(self.Link .. "/related/" .. manga.Link .. ".html")
 	manga.NewImageLink = content:match('<img id="cover" src="(.-)"') or ""
 	if manga.NewImageLink == "" then
 		manga.NewImageLink = nil
@@ -169,7 +154,7 @@ function HentaiChan:getChapters(manga, dt)
 				break
 			end
 			offset = offset + 20
-			content = downloadHContent(self.Link .. "/related/" .. manga.Link .. ".html?offset=" .. offset)
+			content = self:downloadContent(self.Link .. "/related/" .. manga.Link .. ".html?offset=" .. offset)
 		end
 		for i = 1, #t do
 			dt[i] = t[i]
@@ -186,9 +171,12 @@ function HentaiChan:getChapters(manga, dt)
 end
 
 function HentaiChan:prepareChapter(chapter, dt)
-	local content = downloadHContent(extended_hentai_link .. "/online/" .. chapter.Link .. ".html?development_access=true"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
+	local content = self:downloadContent(extended_hentai_link .. "/online/" .. chapter.Link .. ".html?development_access=true"):match('"fullimg"%s*:%s*%[(.-)%]') or ""
 	for link in content:gmatch("'([^']-)'") do
-		dt[#dt + 1] = link:gsub("\\/", "/"):gsub("%%", "%%%%")
+		dt[#dt + 1] = {
+			Link = link:gsub("\\/", "/"):gsub("%%", "%%%%"),
+			Header1 = "Referer: " .. self.Link
+		}
 	end
 end
 
