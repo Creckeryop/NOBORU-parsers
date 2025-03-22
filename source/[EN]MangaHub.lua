@@ -1,4 +1,7 @@
 MangaHub = Parser:new("MangaHub", "https://mangahub.io", "ENG", "MANGAHUBEN", 4)
+
+---Cookie jar file changed, can't exploit for now :c
+MangaHub.Disabled = true
 MangaHub.Filters = {
 	{
 		Name = "Genre",
@@ -207,13 +210,15 @@ function MangaHub:getPopularManga(page, dest_table)
 end
 
 function MangaHub:searchManga(search, page, dest_table, tag)
-	self:getManga(string.format("%s/search/page/%s?q=%s&order=POPULAR&genre=" .. (self.Keys[tag and tag["Genre"]] or "all"), self.Link, page, search), dest_table)
+	self:getManga(
+	string.format("%s/search/page/%s?q=%s&order=POPULAR&genre=" .. (self.Keys[tag and tag["Genre"]] or "all"), self.Link,
+		page, search), dest_table)
 end
 
 function MangaHub:getChapters(manga, dt)
 	local content = downloadContent(manga.Link)
 	local description = content:match('<p class="ZyMp7">([^<]-)</p>') or ""
-	dt.Description = description:gsub("\n+","\n")
+	dt.Description = description:gsub("\n+", "\n")
 	local t = {}
 	for Link, Name in content:gmatch('<li.-<a href="([^"]-/chapter.-chapter[^"]-)".-([^>]+)</span>') do
 		t[#t + 1] = {
