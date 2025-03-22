@@ -1,5 +1,7 @@
 HentaiCafeV2 = Parser:new("HentaiCafeV2 v2", "https://hentaicafe.xxx", "ENG", "HENCAFENGV2", 1)
 
+---Hosting is dead  
+HentaiCafeV2.Disabled = true
 HentaiCafeV2.NSFW = true
 
 local function stringify(string)
